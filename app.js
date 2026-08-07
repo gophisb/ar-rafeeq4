@@ -1,70 +1,128 @@
 /* ==========================================================
-   الرفيق | config.js
+   الرفيق | app.js
    الإصدار: 1.0.0
 
    المسؤولية:
-   - جميع إعدادات المشروع الأساسية.
-   - ثوابت التطبيق العامة.
-   - إعدادات اللغة والاتجاه والثيم.
+   - تشغيل التطبيق.
+   - تهيئة المكونات الأساسية.
+   - تحميل الصفحة الأولى.
+   - تطبيق الإعدادات العامة.
    - لا يحتوي على بيانات دينية.
-   ========================================================== */
+==========================================================*/
 
 "use strict";
 
-const CONFIG = Object.freeze({
+const App = (() => {
 
-    /* ========= معلومات التطبيق ========= */
-    APP_NAME: "الرفيق",
-    APP_SLOGAN: "تطبيق إسلامي متكامل",
-    VERSION: "1.0.0",
-    AUTHOR: "فريق الرفيق",
+    /*==========================================================
+      حالة التطبيق
+    ==========================================================*/
 
-    /* ========= اللغة والاتجاه ========= */
-    LANG: "ar",
-    DIR: "rtl",
+    let initialized = false;
 
-    /* ========= الثيم الافتراضي ========= */
-    DEFAULT_THEME: "dark", // dark | light | auto
+    /*==========================================================
+      تشغيل التطبيق
+    ==========================================================*/
 
-    /* ========= إعدادات الواجهة ========= */
-    MAX_APP_WIDTH: 480,
-    BORDER_RADIUS: 22,
+    function init() {
 
-    /* ========= مفاتيح التخزين (للاستخدام المستقبلي) ========= */
-    STORAGE_KEYS: Object.freeze({
-        THEME: "ar_rafeeq_theme",
-        FONT_SIZE: "ar_rafeeq_font_size",
-        LAST_PAGE: "ar_rafeeq_last_page",
-        LOCATION: "ar_rafeeq_location"
-    }),
+        if (initialized) {
+            return;
+        }
 
-    /* ========= مسارات الصفحات ========= */
-    PAGES: Object.freeze({
-        HOME: "home",
-        QURAN: "quran",
-        AZKAR: "azkar",
-        PRAYER: "prayer",
-        QIBLA: "qibla",
-        NAWAWI: "nawawi",
-        SETTINGS: "settings"
-    }),
+        initialized = true;
 
-    /* ========= الميزات (Feature Flags) ========= */
-    FEATURES: Object.freeze({
-        PWA: true,
-        OFFLINE_SUPPORT: true,
-        PRAYER_NOTIFICATIONS: false,
-        AUDIO_PLAYER: false,
-        DARK_MODE_TOGGLE: true
-    })
+        applyLanguage();
+
+        applyDirection();
+
+        applyTheme();
+
+        Router.init();
+
+        console.log(
+            `${CONFIG.APP_NAME} v${CONFIG.VERSION} started`
+        );
+
+    }
+
+    /*==========================================================
+      تطبيق اللغة
+    ==========================================================*/
+
+    function applyLanguage() {
+
+        document.documentElement.lang = CONFIG.LANG;
+
+    }
+
+    /*==========================================================
+      تطبيق الاتجاه
+    ==========================================================*/
+
+    function applyDirection() {
+
+        document.documentElement.dir = CONFIG.DIR;
+
+    }
+
+    /*==========================================================
+      تطبيق الثيم
+    ==========================================================*/
+
+    function applyTheme() {
+
+        document.documentElement.setAttribute(
+            "data-theme",
+            CONFIG.DEFAULT_THEME
+        );
+
+    }
+
+    /*==========================================================
+      إعادة تشغيل
+    ==========================================================*/
+
+    function restart() {
+
+        initialized = false;
+
+        init();
+
+    }
+
+    /*==========================================================
+      حالة التطبيق
+    ==========================================================*/
+
+    function isInitialized() {
+
+        return initialized;
+
+    }
+
+    /*==========================================================
+      الواجهة العامة
+    ==========================================================*/
+
+    return Object.freeze({
+
+        init,
+
+        restart,
+
+        isInitialized
+
+    });
+
+})();
+
+/*==========================================================
+  بدء تشغيل التطبيق
+==========================================================*/
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    App.init();
 
 });
-
-/* ========= تجميد الكائن ومنع التعديل ========= */
-Object.freeze(CONFIG);
-Object.freeze(CONFIG.STORAGE_KEYS);
-Object.freeze(CONFIG.PAGES);
-Object.freeze(CONFIG.FEATURES);
-
-/* ========= تصدير (في حال استخدام وحدات ES لاحقًا) ========= */
-// export default CONFIG;
