@@ -2,62 +2,161 @@
 <html lang="ar" dir="rtl">
 
 <head>
+
+    <!-- ======================================================
+         المعلومات الأساسية
+    ======================================================= -->
+
     <meta charset="UTF-8">
+
     <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+          content="width=device-width,
+                   initial-scale=1.0,
+                   viewport-fit=cover">
 
     <title>الرفيق | Al-Rafeeq</title>
 
     <meta name="description"
           content="الرفيق - تطبيق إسلامي متكامل للقرآن الكريم، التفسير، الأذكار، مواقيت الصلاة، القبلة، والأربعين النووية.">
 
-    <meta name="theme-color" content="#0B1220">
+    <meta name="theme-color"
+          content="#0B1220">
 
-    <meta name="color-scheme" content="dark light">
+    <meta name="color-scheme"
+          content="dark light">
 
-    <meta name="application-name" content="الرفيق">
+    <meta name="application-name"
+          content="الرفيق">
 
-    <link rel="manifest" href="manifest.json">
 
-    <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+    <!-- ======================================================
+         PWA
+    ======================================================= -->
 
-    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    <link rel="manifest"
+          href="manifest.json">
 
-    <link rel="stylesheet" href="css/index.css">
+    <link rel="icon"
+          href="assets/icons/favicon.svg"
+          type="image/svg+xml">
 
-    <script src="js/index.js" defer></script>
+    <link rel="apple-touch-icon"
+          href="assets/icons/icon-192.png">
+
+
+    <!-- ======================================================
+         CSS
+    ======================================================= -->
+
+    <link rel="stylesheet"
+          href="css/index.css">
+
+
+    <!-- ======================================================
+         JavaScript
+         الترتيب مهم:
+         1. config.js
+         2. router.js
+         3. app.js
+    ======================================================= -->
+
+    <script src="js/config.js" defer></script>
+
+    <script src="js/router.js" defer></script>
+
+    <script src="js/app.js" defer></script>
+
 </head>
+
 
 <body>
 
-    <a class="skip-link" href="#main-content">
+    <!-- ======================================================
+         رابط الوصول السريع
+    ======================================================= -->
+
+    <a class="skip-link"
+       href="#main-content">
+
         الانتقال إلى المحتوى
+
     </a>
+
+
+    <!-- ======================================================
+         التطبيق
+    ======================================================= -->
 
     <div id="app">
 
-        <!-- Header -->
-        <header id="app-header"></header>
 
-        <!-- Main -->
+        <!-- ==================================================
+             Header
+        =================================================== -->
+
+        <header id="app-header">
+
+        </header>
+
+
+        <!-- ==================================================
+             Main Content
+        =================================================== -->
+
         <main id="main-content">
 
         </main>
 
-        <!-- Bottom Navigation -->
-        <nav id="bottom-navigation"></nav>
 
-        <!-- Dialogs -->
-        <div id="dialog-root"></div>
+        <!-- ==================================================
+             Bottom Navigation
+        =================================================== -->
 
-        <!-- Toast -->
-        <div id="toast-root"></div>
+        <nav id="bottom-navigation"
+             aria-label="التنقل الرئيسي">
 
-        <!-- Loader -->
-        <div id="loader-root"></div>
+        </nav>
 
-        <!-- Offline Banner -->
-        <div id="offline-banner"></div>
+
+        <!-- ==================================================
+             Dialog Root
+        =================================================== -->
+
+        <div id="dialog-root">
+
+        </div>
+
+
+        <!-- ==================================================
+             Toast Root
+        =================================================== -->
+
+        <div id="toast-root"
+             aria-live="polite"
+             aria-atomic="true">
+
+        </div>
+
+
+        <!-- ==================================================
+             Loader Root
+        =================================================== -->
+
+        <div id="loader-root"
+             aria-live="polite"
+             aria-busy="false">
+
+        </div>
+
+
+        <!-- ==================================================
+             Offline Banner
+        =================================================== -->
+
+        <div id="offline-banner">
+
+        </div>
+
 
     </div>
 
