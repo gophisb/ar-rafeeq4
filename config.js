@@ -7,7 +7,7 @@
    - ثوابت التطبيق العامة.
    - إعدادات اللغة والاتجاه والثيم.
    - لا يحتوي على بيانات دينية.
-========================================================== */
+   ========================================================== */
 
 "use strict";
 
@@ -23,14 +23,14 @@ const CONFIG = Object.freeze({
     LANG: "ar",
     DIR: "rtl",
 
-    /* ========= الثيم ========= */
-    DEFAULT_THEME: "dark",
+    /* ========= الثيم الافتراضي ========= */
+    DEFAULT_THEME: "dark", // dark | light | auto
 
-    /* ========= الواجهة ========= */
+    /* ========= إعدادات الواجهة ========= */
     MAX_APP_WIDTH: 480,
     BORDER_RADIUS: 22,
 
-    /* ========= مفاتيح التخزين ========= */
+    /* ========= مفاتيح التخزين (للاستخدام المستقبلي) ========= */
     STORAGE_KEYS: Object.freeze({
         THEME: "ar_rafeeq_theme",
         FONT_SIZE: "ar_rafeeq_font_size",
@@ -38,7 +38,7 @@ const CONFIG = Object.freeze({
         LOCATION: "ar_rafeeq_location"
     }),
 
-    /* ========= أسماء الصفحات ========= */
+    /* ========= مسارات الصفحات ========= */
     PAGES: Object.freeze({
         HOME: "home",
         QURAN: "quran",
@@ -49,7 +49,7 @@ const CONFIG = Object.freeze({
         SETTINGS: "settings"
     }),
 
-    /* ========= الميزات ========= */
+    /* ========= الميزات (Feature Flags) ========= */
     FEATURES: Object.freeze({
         PWA: true,
         OFFLINE_SUPPORT: true,
@@ -59,3 +59,12 @@ const CONFIG = Object.freeze({
     })
 
 });
+
+/* ========= تجميد الكائن ومنع التعديل ========= */
+Object.freeze(CONFIG);
+Object.freeze(CONFIG.STORAGE_KEYS);
+Object.freeze(CONFIG.PAGES);
+Object.freeze(CONFIG.FEATURES);
+
+/* ========= تصدير (في حال استخدام وحدات ES لاحقًا) ========= */
+// export default CONFIG;
