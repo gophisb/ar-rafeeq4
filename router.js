@@ -1,6 +1,6 @@
 /* ==========================================================
    الرفيق | router.js
-   الإصدار: 1.0.0
+   الإصدار: 1.0.1
 
    المسؤولية:
    - إدارة التنقل بين الصفحات.
@@ -13,192 +13,513 @@
 
 const Router = (() => {
 
-    /* ========= المسارات ========= */
+    /* ==========================================================
+       المسارات
+    ========================================================== */
+
     const routes = new Map([
-        [CONFIG.PAGES.HOME,      { file: "pages/home.html",     title: "الرئيسية" }],
-        [CONFIG.PAGES.QURAN,     { file: "pages/quran.html",    title: "القرآن الكريم" }],
-        [CONFIG.PAGES.AZKAR,     { file: "pages/azkar.html",    title: "الأذكار" }],
-        [CONFIG.PAGES.PRAYER,    { file: "pages/prayer.html",   title: "مواقيت الصلاة" }],
-        [CONFIG.PAGES.QIBLA,     { file: "pages/qibla.html",    title: "القبلة" }],
-        [CONFIG.PAGES.NAWAWI,    { file: "pages/nawawi.html",   title: "الأربعين النووية" }],
-        [CONFIG.PAGES.SETTINGS,  { file: "pages/settings.html", title: "الإعدادات" }]
+        [CONFIG.PAGES.HOME, {
+            file: "pages/home.html",
+            title: "الرئيسية"
+        }],
+
+        [CONFIG.PAGES.QURAN, {
+            file: "pages/quran.html",
+            title: "القرآن الكريم"
+        }],
+
+        [CONFIG.PAGES.AZKAR, {
+            file: "pages/azkar.html",
+            title: "الأذكار"
+        }],
+
+        [CONFIG.PAGES.PRAYER, {
+            file: "pages/prayer.html",
+            title: "مواقيت الصلاة"
+        }],
+
+        [CONFIG.PAGES.QIBLA, {
+            file: "pages/qibla.html",
+            title: "القبلة"
+        }],
+
+        [CONFIG.PAGES.NAWAWI, {
+            file: "pages/nawawi.html",
+            title: "الأربعين النووية"
+        }],
+
+        [CONFIG.PAGES.SETTINGS, {
+            file: "pages/settings.html",
+            title: "الإعدادات"
+        }]
     ]);
 
-    /* ========= الصفحة الحالية ========= */
+
+    /* ==========================================================
+       حالة الروتر
+    ========================================================== */
+
     let currentPage = null;
+    let initialized = false;
 
-    /* ========= العناصر ========= */
-    const mainContent = document.getElementById("main-content");
-    const bottomNav = document.getElementById("bottom-navigation");
 
-    /* ========= تهيئة الروتر ========= */
+    /* ==========================================================
+       عناصر الواجهة
+    ========================================================== */
+
+    function getMainContent() {
+        return document.getElementById("main-content");
+    }
+
+    function getBottomNavigation() {
+        return document.getElementById("bottom-navigation");
+    }
+
+
+    /* ==========================================================
+       تهيئة الروتر
+    ========================================================== */
+
     function init() {
-        if (!mainContent) {
-            console.error("العنصر #main-content غير موجود");
+
+        if (initialized) {
             return;
         }
 
-        // تحميل الصفحة الافتراضية
-        navigate(CONFIG.PAGES.HOME, false);
+        const mainContent = getMainContent();
 
-        // ربط أحداث التنقل
+        if (!mainContent) {
+            console.error(
+                "الرفيق: العنصر #main-content غير موجود."
+            );
+            return;
+        }
+
+        initialized = true;
+
         bindNavigationEvents();
+
+        const hash = window.location.hash
+            .replace(/^#/, "")
+            .trim();
+
+        if (hash && routes.has(hash)) {
+
+            navigate(hash, false);
+
+        } else {
+
+            navigate(CONFIG.PAGES.HOME, false);
+
+        }
     }
 
-    /* ========= التنقل إلى صفحة ========= */
-    async function navigate(pageName, addToHistory = true) {
+
+    /* ==========================================================
+       التنقل
+    ========================================================== */
+
+    async function navigate(
+        pageName,
+        addToHistory = true
+    ) {
+
         const route = routes.get(pageName);
 
         if (!route) {
-            console.error(`المسار غير موجود: ${pageName}`);
+
+            console.error(
+                `الرفيق: المسار غير موجود: ${pageName}`
+            );
+
+            return;
+        }
+
+        const mainContent = getMainContent();
+
+        if (!mainContent) {
+
+            console.error(
+                "الرفيق: العنصر #main-content غير موجود."
+            );
+
             return;
         }
 
         try {
-            // عرض التحميل
+
             showLoader();
 
-            // جلب محتوى الصفحة
             const html = await fetchPage(route.file);
 
-            // تحديث المحتوى الرئيسي
             mainContent.innerHTML = html;
 
-            // تحديث العنوان
-            document.title = `${route.title} | ${CONFIG.APP.NAME}`;
+            document.title =
+                `${route.title} | ${CONFIG.APP_NAME}`;
 
-            // تحديث حالة التطبيق
             currentPage = pageName;
-            if (typeof State !== "undefined") {
+
+            if (
+                typeof State !== "undefined" &&
+                State
+            ) {
+
                 State.currentPage = pageName;
             }
 
-            // تحديث التنقل السفلي
             updateActiveNav(pageName);
 
-            // إضافة إلى السجل
             if (addToHistory) {
-                window.history.pushState({ page: pageName }, "", `#${pageName}`);
+
+                const newUrl =
+                    `${window.location.pathname}#${pageName}`;
+
+                window.history.pushState(
+                    { page: pageName },
+                    "",
+                    newUrl
+                );
             }
 
-            // إخفاء التحميل
-            hideLoader();
-
         } catch (error) {
-            console.error(`فشل تحميل الصفحة: ${route.file}`, error);
+
+            console.error(
+                `الرفيق: فشل تحميل الصفحة: ${route.file}`,
+                error
+            );
+
+            showError(
+                "تعذر تحميل الصفحة، يرجى المحاولة مرة أخرى."
+            );
+
+        } finally {
+
             hideLoader();
-            showError("فشل تحميل الصفحة، يرجى المحاولة مرة أخرى");
         }
     }
 
-    /* ========= جلب الصفحة ========= */
+
+    /* ==========================================================
+       تحميل الصفحة
+    ========================================================== */
+
     async function fetchPage(file) {
-        const response = await fetch(file);
+
+        const response = await fetch(file, {
+            cache: "no-cache"
+        });
+
         if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
+
+            throw new Error(
+                `HTTP ${response.status}`
+            );
         }
+
         return await response.text();
     }
 
-    /* ========= ربط أحداث التنقل ========= */
-    function bindNavigationEvents() {
-        // التنقل من الشريط السفلي
-        if (bottomNav) {
-            bottomNav.addEventListener("click", (e) => {
-                const link = e.target.closest("a");
-                if (link && link.dataset.page) {
-                    e.preventDefault();
-                    navigate(link.dataset.page);
-                }
-            });
-        }
 
-        // التنقل من داخل الصفحات (تفويض الأحداث)
-        if (mainContent) {
-            mainContent.addEventListener("click", (e) => {
-                const link = e.target.closest("[data-navigate]");
-                if (link) {
-                    e.preventDefault();
-                    const page = link.dataset.navigate;
+    /* ==========================================================
+       أحداث التنقل
+    ========================================================== */
+
+    function bindNavigationEvents() {
+
+        const bottomNav = getBottomNavigation();
+        const mainContent = getMainContent();
+
+
+        /* ---------- الشريط السفلي ---------- */
+
+        if (bottomNav) {
+
+            bottomNav.addEventListener(
+                "click",
+                (event) => {
+
+                    const link =
+                        event.target.closest(
+                            "[data-page]"
+                        );
+
+                    if (!link) {
+                        return;
+                    }
+
+                    event.preventDefault();
+
+                    const page =
+                        link.dataset.page;
+
                     if (page) {
                         navigate(page);
                     }
                 }
-            });
+            );
         }
 
-        // زر الرجوع في المتصفح
-        window.addEventListener("popstate", (e) => {
-            if (e.state && e.state.page) {
-                navigate(e.state.page, false);
+
+        /* ---------- التنقل داخل الصفحات ---------- */
+
+        if (mainContent) {
+
+            mainContent.addEventListener(
+                "click",
+                (event) => {
+
+                    const link =
+                        event.target.closest(
+                            "[data-navigate]"
+                        );
+
+                    if (!link) {
+                        return;
+                    }
+
+                    event.preventDefault();
+
+                    const page =
+                        link.dataset.navigate;
+
+                    if (page) {
+                        navigate(page);
+                    }
+                }
+            );
+
+
+            /* دعم لوحة المفاتيح */
+
+            mainContent.addEventListener(
+                "keydown",
+                (event) => {
+
+                    if (
+                        event.key !== "Enter" &&
+                        event.key !== " "
+                    ) {
+                        return;
+                    }
+
+                    const link =
+                        event.target.closest(
+                            "[data-navigate]"
+                        );
+
+                    if (!link) {
+                        return;
+                    }
+
+                    event.preventDefault();
+
+                    const page =
+                        link.dataset.navigate;
+
+                    if (page) {
+                        navigate(page);
+                    }
+                }
+            );
+        }
+
+
+        /* ---------- زر الرجوع ---------- */
+
+        window.addEventListener(
+            "popstate",
+            (event) => {
+
+                if (
+                    event.state &&
+                    event.state.page &&
+                    routes.has(event.state.page)
+                ) {
+
+                    navigate(
+                        event.state.page,
+                        false
+                    );
+
+                    return;
+                }
+
+                const hash =
+                    window.location.hash
+                        .replace(/^#/, "")
+                        .trim();
+
+                if (
+                    hash &&
+                    routes.has(hash)
+                ) {
+
+                    navigate(
+                        hash,
+                        false
+                    );
+
+                } else {
+
+                    navigate(
+                        CONFIG.PAGES.HOME,
+                        false
+                    );
+                }
             }
-        });
-
-        // التحميل الأولي من الرابط
-        const hash = window.location.hash.replace("#", "");
-        if (hash && routes.has(hash)) {
-            navigate(hash, false);
-        }
+        );
     }
 
-    /* ========= تحديث حالة التنقل النشط ========= */
+
+    /* ==========================================================
+       تحديث التنقل النشط
+    ========================================================== */
+
     function updateActiveNav(pageName) {
-        if (!bottomNav) return;
 
-        const links = bottomNav.querySelectorAll("a");
-        links.forEach(link => {
-            if (link.dataset.page === pageName) {
-                link.classList.add("active");
-            } else {
-                link.classList.remove("active");
-            }
+        const bottomNav =
+            getBottomNavigation();
+
+        if (!bottomNav) {
+            return;
+        }
+
+        const links =
+            bottomNav.querySelectorAll(
+                "[data-page]"
+            );
+
+        links.forEach((link) => {
+
+            const isActive =
+                link.dataset.page === pageName;
+
+            link.classList.toggle(
+                "active",
+                isActive
+            );
+
+            link.setAttribute(
+                "aria-current",
+                isActive
+                    ? "page"
+                    : "false"
+            );
         });
     }
 
-    /* ========= عرض/إخفاء التحميل ========= */
+
+    /* ==========================================================
+       Loader
+    ========================================================== */
+
     function showLoader() {
-        const loaderRoot = document.getElementById("loader-root");
-        if (loaderRoot) {
-            loaderRoot.innerHTML = '<div class="loader"></div>';
-            loaderRoot.style.display = "flex";
+
+        const loaderRoot =
+            document.getElementById(
+                "loader-root"
+            );
+
+        if (!loaderRoot) {
+            return;
         }
+
+        loaderRoot.innerHTML =
+            '<div class="loader" aria-label="جارٍ التحميل"></div>';
+
+        loaderRoot.style.display = "flex";
+
+        loaderRoot.setAttribute(
+            "aria-busy",
+            "true"
+        );
     }
+
 
     function hideLoader() {
-        const loaderRoot = document.getElementById("loader-root");
-        if (loaderRoot) {
-            loaderRoot.style.display = "none";
-            loaderRoot.innerHTML = "";
+
+        const loaderRoot =
+            document.getElementById(
+                "loader-root"
+            );
+
+        if (!loaderRoot) {
+            return;
         }
+
+        loaderRoot.style.display = "none";
+
+        loaderRoot.innerHTML = "";
+
+        loaderRoot.setAttribute(
+            "aria-busy",
+            "false"
+        );
     }
 
-    /* ========= عرض خطأ ========= */
+
+    /* ==========================================================
+       رسالة الخطأ
+    ========================================================== */
+
     function showError(message) {
-        const toastRoot = document.getElementById("toast-root");
-        if (toastRoot) {
-            const toast = document.createElement("div");
-            toast.className = "toast";
-            toast.textContent = message;
-            toastRoot.appendChild(toast);
-            setTimeout(() => toast.remove(), 3000);
+
+        const toastRoot =
+            document.getElementById(
+                "toast-root"
+            );
+
+        if (!toastRoot) {
+
+            console.error(message);
+
+            return;
         }
+
+        const toast =
+            document.createElement("div");
+
+        toast.className = "toast";
+
+        toast.setAttribute(
+            "role",
+            "alert"
+        );
+
+        toast.textContent = message;
+
+        toastRoot.appendChild(toast);
+
+        window.setTimeout(() => {
+
+            toast.remove();
+
+        }, 3000);
     }
 
-    /* ========= الحصول على الصفحة الحالية ========= */
+
+    /* ==========================================================
+       الصفحة الحالية
+    ========================================================== */
+
     function getCurrentPage() {
+
         return currentPage;
     }
 
-    /* ========= واجهة عامة ========= */
+
+    /* ==========================================================
+       الواجهة العامة
+    ========================================================== */
+
     return Object.freeze({
+
         init,
+
         navigate,
+
         getCurrentPage
+
     });
 
 })();
-
-/* ========= بدء تشغيل الروتر عند تحميل الصفحة ========= */
-document.addEventListener("DOMContentLoaded", () => {
-    Router.init();
-});
