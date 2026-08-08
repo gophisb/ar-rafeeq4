@@ -1,13 +1,14 @@
 <!-- ==========================================================
-     الرفيق | الصفحة الرئيسية Premium
+     الرفيق | الصفحة الرئيسية PREMIUM
      الملف: pages/home.html
-     الإصدار: 2.0.0
+     الإصدار: 3.0.0
 
      المسؤولية:
-     - واجهة الصفحة الرئيسية.
+     - واجهة الصفحة الرئيسية فقط.
      - لا يحتوي على JavaScript.
+     - لا يحتوي على بيانات دينية ثابتة كبيرة.
+     - لا يستخدم رموزًا مسيحية.
      - متوافق مع Router الحالي.
-     - جميع data-navigate متوافقة مع CONFIG.PAGES.
 ========================================================== -->
 
 <section class="page page-home" id="home-page">
@@ -22,26 +23,108 @@
 
             <div class="hero-brand">
 
-                <span class="hero-brand-mark">☾</span>
+                <!-- هلال إسلامي SVG -->
+                <span class="hero-brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 48 48"
+                         width="42"
+                         height="42"
+                         fill="none">
 
-                <div>
-                    <span class="hero-brand-name">الرفيق</span>
+                        <path
+                            d="M31.8 6.5
+                               C22.4 9.2 16 17.9 16 27
+                               C16 36.1 22.4 42.8 31.8 45.5
+                               C25.5 47 18.6 45.4 13.5 40.7
+                               C7.8 35.5 5.5 27.5 7.5 19.9
+                               C9.5 12.3 15.3 6.4 22.8 4.1
+                               C25.8 3.2 28.9 3.1 31.8 3.8
+                               C34.5 4.4 34.6 5.7 31.8 6.5Z"
+                            fill="currentColor"/>
+
+                        <circle
+                            cx="34"
+                            cy="13"
+                            r="2"
+                            fill="currentColor"/>
+
+                    </svg>
+                </span>
+
+                <div class="hero-brand-text">
+
+                    <span class="hero-brand-name">
+                        الرفيق
+                    </span>
+
                     <span class="hero-brand-caption">
                         رفيقك إلى الطمأنينة
                     </span>
+
                 </div>
 
             </div>
 
+
+            <!-- زر تنبيه نظيف بدون جرس -->
             <button
                 class="icon-button"
                 type="button"
-                aria-label="الإشعارات">
-                🔔
+                aria-label="الإعدادات"
+                data-navigate="settings">
+
+                <svg viewBox="0 0 24 24"
+                     width="23"
+                     height="23"
+                     fill="none"
+                     aria-hidden="true">
+
+                    <path
+                        d="M12 15.5
+                           A3.5 3.5 0 1 0 12 8.5
+                           A3.5 3.5 0 0 0 12 15.5Z"
+                        stroke="currentColor"
+                        stroke-width="1.8"/>
+
+                    <path
+                        d="M19.4 15
+                           L21 16
+                           L19 19.5
+                           L17.2 18.7
+                           C16.6 19.1 16 19.4 15.3 19.6
+                           L14.9 21.5
+                           H10.9
+                           L10.5 19.6
+                           C9.8 19.4 9.2 19.1 8.6 18.7
+                           L6.8 19.5
+                           L4.8 16
+                           L6.4 15
+                           C6.3 14.3 6.3 13.7 6.4 13
+                           L4.8 12
+                           L6.8 8.5
+                           L8.6 9.3
+                           C9.2 8.9 9.8 8.6 10.5 8.4
+                           L10.9 6.5
+                           H14.9
+                           L15.3 8.4
+                           C16 8.6 16.6 8.9 17.2 9.3
+                           L19 8.5
+                           L21 12
+                           L19.4 13
+                           C19.5 13.7 19.5 14.3 19.4 15Z"
+                        stroke="currentColor"
+                        stroke-width="1.4"
+                        stroke-linejoin="round"/>
+
+                </svg>
+
             </button>
 
         </div>
 
+
+        <!-- ==================================================
+             الترحيب
+        =================================================== -->
 
         <div class="hero-content">
 
@@ -71,11 +154,43 @@
 
         <div class="info-item">
 
-            <span class="info-icon">📍</span>
+            <span class="info-icon" aria-hidden="true">
+
+                <!-- Pin -->
+                <svg viewBox="0 0 24 24"
+                     width="25"
+                     height="25"
+                     fill="none">
+
+                    <path
+                        d="M12 21
+                           C12 21 19 14.5 19 9
+                           A7 7 0 1 0 5 9
+                           C5 14.5 12 21 12 21Z"
+                        stroke="currentColor"
+                        stroke-width="1.7"/>
+
+                    <circle
+                        cx="12"
+                        cy="9"
+                        r="2.5"
+                        stroke="currentColor"
+                        stroke-width="1.7"/>
+
+                </svg>
+
+            </span>
 
             <div>
-                <span class="info-label">الموقع</span>
-                <strong>الجزائر</strong>
+
+                <span class="info-label">
+                    الموقع
+                </span>
+
+                <strong id="home-location">
+                    الجزائر
+                </strong>
+
             </div>
 
         </div>
@@ -86,11 +201,40 @@
 
         <div class="info-item">
 
-            <span class="info-icon">🌙</span>
+            <span class="info-icon" aria-hidden="true">
+
+                <!-- هلال -->
+                <svg viewBox="0 0 24 24"
+                     width="25"
+                     height="25"
+                     fill="none">
+
+                    <path
+                        d="M16.8 4.2
+                           C13.3 5.1 10.8 8.3 10.8 12
+                           C10.8 15.7 13.3 18.9 16.8 19.8
+                           C15.5 20.2 14.1 20.4 12.7 20
+                           C8.2 18.9 5.2 14.4 6.3 10
+                           C7.3 5.6 11.8 2.8 16.2 3.8
+                           C16.4 3.9 16.6 4 16.8 4.2Z"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        fill="currentColor"/>
+
+                </svg>
+
+            </span>
 
             <div>
-                <span class="info-label">التاريخ الهجري</span>
-                <strong>اليوم</strong>
+
+                <span class="info-label">
+                    التاريخ الهجري
+                </span>
+
+                <strong id="home-hijri-date">
+                    جارٍ التحميل...
+                </strong>
+
             </div>
 
         </div>
@@ -99,7 +243,7 @@
 
 
     <!-- ======================================================
-         NEXT PRAYER
+         الصلاة القادمة
     ======================================================= -->
 
     <section class="prayer-hero card-premium">
@@ -115,13 +259,71 @@
                 </span>
 
                 <h2 id="home-next-prayer">
-                    الصلاة
+                    جارٍ الحساب...
                 </h2>
 
             </div>
 
-            <div class="prayer-symbol">
-                🕌
+
+            <div class="prayer-symbol"
+                 aria-hidden="true">
+
+                <!-- مسجد SVG -->
+                <svg viewBox="0 0 64 64"
+                     width="52"
+                     height="52"
+                     fill="none">
+
+                    <path
+                        d="M8 54H56"
+                        stroke="currentColor"
+                        stroke-width="3"
+                        stroke-linecap="round"/>
+
+                    <path
+                        d="M13 54V31
+                           C13 28 16 26 20 26
+                           H44
+                           C48 26 51 28 51 31
+                           V54"
+                        stroke="currentColor"
+                        stroke-width="2.5"/>
+
+                    <path
+                        d="M20 26
+                           C22 20 27 17 32 17
+                           C37 17 42 20 44 26"
+                        stroke="currentColor"
+                        stroke-width="2.5"/>
+
+                    <path
+                        d="M32 17V9"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"/>
+
+                    <path
+                        d="M29 9H35"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"/>
+
+                    <path
+                        d="M27 54V42
+                           C27 38 29 35 32 35
+                           C35 35 37 38 37 42
+                           V54"
+                        stroke="currentColor"
+                        stroke-width="2.5"/>
+
+                    <path
+                        d="M8 54V36
+                           M56 54V36"
+                        stroke="currentColor"
+                        stroke-width="2.5"/>
+
+                </svg>
+
             </div>
 
         </div>
@@ -129,14 +331,20 @@
 
         <div class="prayer-main">
 
-            <div class="prayer-time-large"
-                 id="home-next-prayer-time">
+            <div
+                class="prayer-time-large"
+                id="home-next-prayer-time">
+
                 --:--
+
             </div>
+
 
             <div class="prayer-countdown">
 
-                <span>متبقي على الصلاة</span>
+                <span>
+                    متبقي على الصلاة
+                </span>
 
                 <strong id="home-prayer-countdown">
                     --:--
@@ -169,7 +377,7 @@
 
 
     <!-- ======================================================
-         QUICK ACTIONS
+         الوصول السريع
     ======================================================= -->
 
     <section class="section-block">
@@ -177,11 +385,15 @@
         <div class="section-heading">
 
             <div>
+
                 <span class="section-kicker">
                     الوصول السريع
                 </span>
 
-                <h2>ماذا تريد اليوم؟</h2>
+                <h2>
+                    ماذا تريد اليوم؟
+                </h2>
+
             </div>
 
         </div>
@@ -189,18 +401,57 @@
 
         <div class="quick-grid">
 
+
+            <!-- القرآن -->
+
             <article
                 class="quick-card quick-card-quran"
                 data-navigate="quran"
                 tabindex="0">
 
                 <div class="quick-icon">
-                    📖
+
+                    <svg viewBox="0 0 48 48"
+                         width="36"
+                         height="36"
+                         fill="none">
+
+                        <path
+                            d="M8 9
+                               C15 7 20 8 24 11
+                               V40
+                               C20 37 15 36 8 38
+                               Z"
+                            stroke="currentColor"
+                            stroke-width="2"/>
+
+                        <path
+                            d="M40 9
+                               C33 7 28 8 24 11
+                               V40
+                               C28 37 33 36 40 38
+                               Z"
+                            stroke="currentColor"
+                            stroke-width="2"/>
+
+                        <path
+                            d="M13 15H20
+                               M13 20H20
+                               M28 15H35
+                               M28 20H35"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"/>
+
+                    </svg>
+
                 </div>
 
                 <div class="quick-content">
 
-                    <h3>القرآن الكريم</h3>
+                    <h3>
+                        القرآن الكريم
+                    </h3>
 
                     <p>
                         اقرأ وتدبر كلام الله
@@ -208,10 +459,14 @@
 
                 </div>
 
-                <span class="quick-arrow">←</span>
+                <span class="quick-arrow">
+                    ←
+                </span>
 
             </article>
 
+
+            <!-- الأذكار -->
 
             <article
                 class="quick-card quick-card-azkar"
@@ -219,12 +474,41 @@
                 tabindex="0">
 
                 <div class="quick-icon">
-                    🤲
+
+                    <svg viewBox="0 0 48 48"
+                         width="36"
+                         height="36"
+                         fill="none">
+
+                        <path
+                            d="M14 27
+                               C10 24 9 19 11 15
+                               C13 12 17 13 18 17
+                               L20 22
+                               V12
+                               C20 9 24 9 25 12
+                               L26 20
+                               V10
+                               C26 7 30 7 30 10
+                               L31 21
+                               V13
+                               C31 10 35 10 35 13
+                               L35 26
+                               C35 33 30 38 23 38
+                               C18 38 15 34 14 27Z"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linejoin="round"/>
+
+                    </svg>
+
                 </div>
 
                 <div class="quick-content">
 
-                    <h3>الأذكار</h3>
+                    <h3>
+                        الأذكار
+                    </h3>
 
                     <p>
                         حصّن يومك بالذكر
@@ -232,10 +516,14 @@
 
                 </div>
 
-                <span class="quick-arrow">←</span>
+                <span class="quick-arrow">
+                    ←
+                </span>
 
             </article>
 
+
+            <!-- القبلة -->
 
             <article
                 class="quick-card quick-card-qibla"
@@ -243,12 +531,42 @@
                 tabindex="0">
 
                 <div class="quick-icon">
-                    🧭
+
+                    <svg viewBox="0 0 48 48"
+                         width="36"
+                         height="36"
+                         fill="none">
+
+                        <circle
+                            cx="24"
+                            cy="24"
+                            r="17"
+                            stroke="currentColor"
+                            stroke-width="2"/>
+
+                        <path
+                            d="M30 13L26 25L14 30L18 18Z"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linejoin="round"/>
+
+                        <path
+                            d="M24 7V11
+                               M24 37V41
+                               M7 24H11
+                               M37 24H41"
+                            stroke="currentColor"
+                            stroke-width="1.5"/>
+
+                    </svg>
+
                 </div>
 
                 <div class="quick-content">
 
-                    <h3>القبلة</h3>
+                    <h3>
+                        القبلة
+                    </h3>
 
                     <p>
                         اعرف اتجاه القبلة
@@ -256,10 +574,14 @@
 
                 </div>
 
-                <span class="quick-arrow">←</span>
+                <span class="quick-arrow">
+                    ←
+                </span>
 
             </article>
 
+
+            <!-- الأربعون النووية -->
 
             <article
                 class="quick-card quick-card-nawawi"
@@ -267,12 +589,43 @@
                 tabindex="0">
 
                 <div class="quick-icon">
-                    📚
+
+                    <svg viewBox="0 0 48 48"
+                         width="36"
+                         height="36"
+                         fill="none">
+
+                        <path
+                            d="M10 8H31
+                               C35 8 38 11 38 15
+                               V40H17
+                               C13 40 10 37 10 33Z"
+                            stroke="currentColor"
+                            stroke-width="2"/>
+
+                        <path
+                            d="M17 40V15
+                               C17 11 20 8 24 8"
+                            stroke="currentColor"
+                            stroke-width="2"/>
+
+                        <path
+                            d="M23 18H33
+                               M23 23H33
+                               M23 28H30"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"/>
+
+                    </svg>
+
                 </div>
 
                 <div class="quick-content">
 
-                    <h3>الأربعون النووية</h3>
+                    <h3>
+                        الأربعون النووية
+                    </h3>
 
                     <p>
                         حديث اليوم
@@ -280,7 +633,9 @@
 
                 </div>
 
-                <span class="quick-arrow">←</span>
+                <span class="quick-arrow">
+                    ←
+                </span>
 
             </article>
 
@@ -290,7 +645,7 @@
 
 
     <!-- ======================================================
-         VERSE OF THE DAY
+         آية اليوم
     ======================================================= -->
 
     <section class="verse-card card-premium">
@@ -299,7 +654,9 @@
 
             <div class="verse-label">
 
-                <span class="verse-icon">✦</span>
+                <span class="verse-icon">
+                    ﴿
+                </span>
 
                 <span>
                     آية اليوم
@@ -308,41 +665,50 @@
             </div>
 
             <span class="verse-decoration">
-                ﴿ ﴾
+                ﴾
             </span>
 
         </div>
 
 
-        <blockquote>
+        <!-- سيتم ملؤها من بيانات القرآن لاحقًا -->
 
-            وَاذْكُر رَّبَّكَ إِذَا نَسِيتَ
-
+        <blockquote id="home-verse">
+            جارٍ تحميل الآية...
         </blockquote>
 
 
-        <p class="verse-reference">
-            سورة الكهف · 24
+        <p
+            class="verse-reference"
+            id="home-verse-reference">
+
+            --
+
         </p>
 
 
         <div class="verse-actions">
 
             <button type="button">
-                ♡
-                <span>حفظ</span>
+
+                حفظ
+
             </button>
 
+
             <button type="button">
-                ↗
-                <span>مشاركة</span>
+
+                مشاركة
+
             </button>
+
 
             <button
                 type="button"
                 data-navigate="quran">
-                📖
-                <span>القراءة</span>
+
+                القراءة
+
             </button>
 
         </div>
@@ -351,7 +717,7 @@
 
 
     <!-- ======================================================
-         KHATMA PROGRESS
+         الورد اليومي
     ======================================================= -->
 
     <section class="progress-card card-premium">
@@ -364,12 +730,18 @@
                     وردك اليومي
                 </span>
 
-                <h2>الختمة القرآنية</h2>
+                <h2>
+                    الختمة القرآنية
+                </h2>
 
             </div>
 
-            <div class="progress-number">
-                35%
+            <div
+                class="progress-number"
+                id="home-quran-progress">
+
+                0%
+
             </div>
 
         </div>
@@ -379,7 +751,9 @@
 
             <div
                 class="progress-value"
-                style="width:35%;">
+                id="home-quran-progress-bar"
+                style="width:0%;">
+
             </div>
 
         </div>
@@ -387,8 +761,8 @@
 
         <div class="progress-footer">
 
-            <span>
-                الصفحة 210 من 604
+            <span id="home-quran-progress-text">
+                لم تبدأ القراءة بعد
             </span>
 
             <button
@@ -407,14 +781,44 @@
 
 
     <!-- ======================================================
-         DAILY DHIKR
+         ذكر اليوم
     ======================================================= -->
 
     <section class="dhikr-card">
 
         <div class="dhikr-icon">
-            🤲
+
+            <svg viewBox="0 0 48 48"
+                 width="40"
+                 height="40"
+                 fill="none">
+
+                <circle
+                    cx="24"
+                    cy="24"
+                    r="16"
+                    stroke="currentColor"
+                    stroke-width="2"/>
+
+                <circle
+                    cx="24"
+                    cy="24"
+                    r="3"
+                    fill="currentColor"/>
+
+                <path
+                    d="M24 8V12
+                       M24 36V40
+                       M8 24H12
+                       M36 24H40"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                    stroke-linecap="round"/>
+
+            </svg>
+
         </div>
+
 
         <div class="dhikr-content">
 
@@ -422,15 +826,16 @@
                 ذكر اليوم
             </span>
 
-            <p>
-                سُبْحَانَ اللهِ وَبِحَمْدِهِ
+            <p id="home-dhikr">
+                جارٍ تحميل الذكر...
             </p>
 
-            <small>
-                مائة مرة في اليوم
+            <small id="home-dhikr-count">
+                الذكر اليومي
             </small>
 
         </div>
+
 
         <button
             type="button"
@@ -445,7 +850,7 @@
 
 
     <!-- ======================================================
-         ALL SERVICES
+         الخدمات
     ======================================================= -->
 
     <section class="section-block services-section">
@@ -458,7 +863,9 @@
                     الرفيق
                 </span>
 
-                <h2>كل ما تحتاجه</h2>
+                <h2>
+                    كل ما تحتاجه
+                </h2>
 
             </div>
 
@@ -468,6 +875,7 @@
                 data-navigate="settings">
 
                 المزيد
+
             </button>
 
         </div>
@@ -475,14 +883,21 @@
 
         <div class="services-grid">
 
+
             <article
                 class="service-item"
                 data-navigate="quran"
                 tabindex="0">
 
-                <span>📖</span>
-                <strong>القرآن</strong>
-                <small>قراءة وتدبر</small>
+                <span aria-hidden="true">قرآن</span>
+
+                <strong>
+                    القرآن
+                </strong>
+
+                <small>
+                    قراءة وتدبر
+                </small>
 
             </article>
 
@@ -492,9 +907,15 @@
                 data-navigate="prayer"
                 tabindex="0">
 
-                <span>🕌</span>
-                <strong>الصلاة</strong>
-                <small>المواقيت</small>
+                <span aria-hidden="true">صلاة</span>
+
+                <strong>
+                    الصلاة
+                </strong>
+
+                <small>
+                    المواقيت
+                </small>
 
             </article>
 
@@ -504,9 +925,15 @@
                 data-navigate="azkar"
                 tabindex="0">
 
-                <span>🤲</span>
-                <strong>الأذكار</strong>
-                <small>حصن المسلم</small>
+                <span aria-hidden="true">ذكر</span>
+
+                <strong>
+                    الأذكار
+                </strong>
+
+                <small>
+                    حصن المسلم
+                </small>
 
             </article>
 
@@ -516,9 +943,15 @@
                 data-navigate="qibla"
                 tabindex="0">
 
-                <span>🧭</span>
-                <strong>القبلة</strong>
-                <small>الاتجاه</small>
+                <span aria-hidden="true">قبلة</span>
+
+                <strong>
+                    القبلة
+                </strong>
+
+                <small>
+                    الاتجاه
+                </small>
 
             </article>
 
@@ -528,9 +961,15 @@
                 data-navigate="nawawi"
                 tabindex="0">
 
-                <span>📚</span>
-                <strong>النووية</strong>
-                <small>الأحاديث</small>
+                <span aria-hidden="true">حديث</span>
+
+                <strong>
+                    النووية
+                </strong>
+
+                <small>
+                    الأحاديث
+                </small>
 
             </article>
 
@@ -540,9 +979,15 @@
                 data-navigate="settings"
                 tabindex="0">
 
-                <span>⚙️</span>
-                <strong>الإعدادات</strong>
-                <small>التخصيص</small>
+                <span aria-hidden="true">ضبط</span>
+
+                <strong>
+                    الإعدادات
+                </strong>
+
+                <small>
+                    التخصيص
+                </small>
 
             </article>
 
@@ -557,8 +1002,12 @@
 
     <footer class="home-footer">
 
-        <div class="footer-mark">
+        <div
+            class="footer-mark"
+            aria-hidden="true">
+
             ☾
+
         </div>
 
         <p>
@@ -566,7 +1015,7 @@
         </p>
 
         <span>
-            الإصدار 2.0
+            الإصدار 3.0
         </span>
 
     </footer>
