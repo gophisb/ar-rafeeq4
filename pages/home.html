@@ -1,75 +1,574 @@
 <!-- ==========================================================
-     الرفيق | الصفحة الرئيسية
+     الرفيق | الصفحة الرئيسية Premium
      الملف: pages/home.html
-     الإصدار: 1.0.0
+     الإصدار: 2.0.0
 
      المسؤولية:
-     - واجهة الصفحة الرئيسية فقط.
-     - لا يحتوي على منطق برمجي.
-     - لا يحتوي على بيانات ثابتة كبيرة.
+     - واجهة الصفحة الرئيسية.
+     - لا يحتوي على JavaScript.
+     - متوافق مع Router الحالي.
+     - جميع data-navigate متوافقة مع CONFIG.PAGES.
 ========================================================== -->
 
 <section class="page page-home" id="home-page">
 
-    <!-- عنوان الصفحة -->
-    <header class="page-header">
-        <h1 class="page-title">الرفيق</h1>
-        <p class="page-subtitle">
-            تطبيق إسلامي متكامل
-        </p>
-    </header>
+    <!-- ======================================================
+         HERO
+    ======================================================= -->
 
-    <!-- بطاقات الخدمات -->
-    <section class="home-grid">
+    <section class="hero-section">
 
-        <article class="feature-card"
-                 data-navigate="quran"
-                 tabindex="0">
-            <div class="feature-icon">📖</div>
-            <h2>القرآن الكريم</h2>
-            <p>قراءة واستماع وتفسير.</p>
-        </article>
+        <div class="hero-top">
 
-        <article class="feature-card"
-                 data-navigate="prayer"
-                 tabindex="0">
-            <div class="feature-icon">🕌</div>
-            <h2>مواقيت الصلاة</h2>
-            <p>أوقات الصلاة والتنبيهات.</p>
-        </article>
+            <div class="hero-brand">
 
-        <article class="feature-card"
-                 data-navigate="azkar"
-                 tabindex="0">
-            <div class="feature-icon">🤲</div>
-            <h2>الأذكار</h2>
-            <p>أذكار الصباح والمساء وغيرها.</p>
-        </article>
+                <span class="hero-brand-mark">☾</span>
 
-        <article class="feature-card"
-                 data-navigate="qibla"
-                 tabindex="0">
-            <div class="feature-icon">🧭</div>
-            <h2>اتجاه القبلة</h2>
-            <p>تحديد القبلة بدقة.</p>
-        </article>
+                <div>
+                    <span class="hero-brand-name">الرفيق</span>
+                    <span class="hero-brand-caption">
+                        رفيقك إلى الطمأنينة
+                    </span>
+                </div>
 
-        <article class="feature-card"
-                 data-navigate="nawawi"
-                 tabindex="0">
-            <div class="feature-icon">📚</div>
-            <h2>الأربعون النووية</h2>
-            <p>قراءة وحفظ الأحاديث.</p>
-        </article>
+            </div>
 
-        <article class="feature-card"
-                 data-navigate="settings"
-                 tabindex="0">
-            <div class="feature-icon">⚙️</div>
-            <h2>الإعدادات</h2>
-            <p>تخصيص التطبيق.</p>
-        </article>
+            <button
+                class="icon-button"
+                type="button"
+                aria-label="الإشعارات">
+                🔔
+            </button>
+
+        </div>
+
+
+        <div class="hero-content">
+
+            <span class="hero-greeting">
+                السلام عليكم ورحمة الله وبركاته
+            </span>
+
+            <h1>
+                أهلاً بك في
+                <strong>الرفيق</strong>
+            </h1>
+
+            <p>
+                اجعل يومك عامرًا بالقرآن والذكر والصلاة.
+            </p>
+
+        </div>
 
     </section>
+
+
+    <!-- ======================================================
+         LOCATION / DATE
+    ======================================================= -->
+
+    <section class="info-strip">
+
+        <div class="info-item">
+
+            <span class="info-icon">📍</span>
+
+            <div>
+                <span class="info-label">الموقع</span>
+                <strong>الجزائر</strong>
+            </div>
+
+        </div>
+
+
+        <div class="info-divider"></div>
+
+
+        <div class="info-item">
+
+            <span class="info-icon">🌙</span>
+
+            <div>
+                <span class="info-label">التاريخ الهجري</span>
+                <strong>اليوم</strong>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================================
+         NEXT PRAYER
+    ======================================================= -->
+
+    <section class="prayer-hero card-premium">
+
+        <div class="prayer-glow"></div>
+
+        <div class="prayer-header">
+
+            <div>
+
+                <span class="eyebrow">
+                    الصلاة القادمة
+                </span>
+
+                <h2 id="home-next-prayer">
+                    الصلاة
+                </h2>
+
+            </div>
+
+            <div class="prayer-symbol">
+                🕌
+            </div>
+
+        </div>
+
+
+        <div class="prayer-main">
+
+            <div class="prayer-time-large"
+                 id="home-next-prayer-time">
+                --:--
+            </div>
+
+            <div class="prayer-countdown">
+
+                <span>متبقي على الصلاة</span>
+
+                <strong id="home-prayer-countdown">
+                    --:--
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <div class="prayer-footer">
+
+            <span>
+                مواقيت الصلاة
+            </span>
+
+            <button
+                type="button"
+                class="text-button"
+                data-navigate="prayer">
+
+                عرض جميع الأوقات
+                <span>←</span>
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================================
+         QUICK ACTIONS
+    ======================================================= -->
+
+    <section class="section-block">
+
+        <div class="section-heading">
+
+            <div>
+                <span class="section-kicker">
+                    الوصول السريع
+                </span>
+
+                <h2>ماذا تريد اليوم؟</h2>
+            </div>
+
+        </div>
+
+
+        <div class="quick-grid">
+
+            <article
+                class="quick-card quick-card-quran"
+                data-navigate="quran"
+                tabindex="0">
+
+                <div class="quick-icon">
+                    📖
+                </div>
+
+                <div class="quick-content">
+
+                    <h3>القرآن الكريم</h3>
+
+                    <p>
+                        اقرأ وتدبر كلام الله
+                    </p>
+
+                </div>
+
+                <span class="quick-arrow">←</span>
+
+            </article>
+
+
+            <article
+                class="quick-card quick-card-azkar"
+                data-navigate="azkar"
+                tabindex="0">
+
+                <div class="quick-icon">
+                    🤲
+                </div>
+
+                <div class="quick-content">
+
+                    <h3>الأذكار</h3>
+
+                    <p>
+                        حصّن يومك بالذكر
+                    </p>
+
+                </div>
+
+                <span class="quick-arrow">←</span>
+
+            </article>
+
+
+            <article
+                class="quick-card quick-card-qibla"
+                data-navigate="qibla"
+                tabindex="0">
+
+                <div class="quick-icon">
+                    🧭
+                </div>
+
+                <div class="quick-content">
+
+                    <h3>القبلة</h3>
+
+                    <p>
+                        اعرف اتجاه القبلة
+                    </p>
+
+                </div>
+
+                <span class="quick-arrow">←</span>
+
+            </article>
+
+
+            <article
+                class="quick-card quick-card-nawawi"
+                data-navigate="nawawi"
+                tabindex="0">
+
+                <div class="quick-icon">
+                    📚
+                </div>
+
+                <div class="quick-content">
+
+                    <h3>الأربعون النووية</h3>
+
+                    <p>
+                        حديث اليوم
+                    </p>
+
+                </div>
+
+                <span class="quick-arrow">←</span>
+
+            </article>
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================================
+         VERSE OF THE DAY
+    ======================================================= -->
+
+    <section class="verse-card card-premium">
+
+        <div class="verse-top">
+
+            <div class="verse-label">
+
+                <span class="verse-icon">✦</span>
+
+                <span>
+                    آية اليوم
+                </span>
+
+            </div>
+
+            <span class="verse-decoration">
+                ﴿ ﴾
+            </span>
+
+        </div>
+
+
+        <blockquote>
+
+            وَاذْكُر رَّبَّكَ إِذَا نَسِيتَ
+
+        </blockquote>
+
+
+        <p class="verse-reference">
+            سورة الكهف · 24
+        </p>
+
+
+        <div class="verse-actions">
+
+            <button type="button">
+                ♡
+                <span>حفظ</span>
+            </button>
+
+            <button type="button">
+                ↗
+                <span>مشاركة</span>
+            </button>
+
+            <button
+                type="button"
+                data-navigate="quran">
+                📖
+                <span>القراءة</span>
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================================
+         KHATMA PROGRESS
+    ======================================================= -->
+
+    <section class="progress-card card-premium">
+
+        <div class="progress-header">
+
+            <div>
+
+                <span class="section-kicker">
+                    وردك اليومي
+                </span>
+
+                <h2>الختمة القرآنية</h2>
+
+            </div>
+
+            <div class="progress-number">
+                35%
+            </div>
+
+        </div>
+
+
+        <div class="progress-track">
+
+            <div
+                class="progress-value"
+                style="width:35%;">
+            </div>
+
+        </div>
+
+
+        <div class="progress-footer">
+
+            <span>
+                الصفحة 210 من 604
+            </span>
+
+            <button
+                type="button"
+                class="text-button"
+                data-navigate="quran">
+
+                متابعة القراءة
+                <span>←</span>
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================================
+         DAILY DHIKR
+    ======================================================= -->
+
+    <section class="dhikr-card">
+
+        <div class="dhikr-icon">
+            🤲
+        </div>
+
+        <div class="dhikr-content">
+
+            <span class="section-kicker">
+                ذكر اليوم
+            </span>
+
+            <p>
+                سُبْحَانَ اللهِ وَبِحَمْدِهِ
+            </p>
+
+            <small>
+                مائة مرة في اليوم
+            </small>
+
+        </div>
+
+        <button
+            type="button"
+            class="dhikr-action"
+            data-navigate="azkar">
+
+            ابدأ
+
+        </button>
+
+    </section>
+
+
+    <!-- ======================================================
+         ALL SERVICES
+    ======================================================= -->
+
+    <section class="section-block services-section">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-kicker">
+                    الرفيق
+                </span>
+
+                <h2>كل ما تحتاجه</h2>
+
+            </div>
+
+            <button
+                type="button"
+                class="small-link"
+                data-navigate="settings">
+
+                المزيد
+            </button>
+
+        </div>
+
+
+        <div class="services-grid">
+
+            <article
+                class="service-item"
+                data-navigate="quran"
+                tabindex="0">
+
+                <span>📖</span>
+                <strong>القرآن</strong>
+                <small>قراءة وتدبر</small>
+
+            </article>
+
+
+            <article
+                class="service-item"
+                data-navigate="prayer"
+                tabindex="0">
+
+                <span>🕌</span>
+                <strong>الصلاة</strong>
+                <small>المواقيت</small>
+
+            </article>
+
+
+            <article
+                class="service-item"
+                data-navigate="azkar"
+                tabindex="0">
+
+                <span>🤲</span>
+                <strong>الأذكار</strong>
+                <small>حصن المسلم</small>
+
+            </article>
+
+
+            <article
+                class="service-item"
+                data-navigate="qibla"
+                tabindex="0">
+
+                <span>🧭</span>
+                <strong>القبلة</strong>
+                <small>الاتجاه</small>
+
+            </article>
+
+
+            <article
+                class="service-item"
+                data-navigate="nawawi"
+                tabindex="0">
+
+                <span>📚</span>
+                <strong>النووية</strong>
+                <small>الأحاديث</small>
+
+            </article>
+
+
+            <article
+                class="service-item"
+                data-navigate="settings"
+                tabindex="0">
+
+                <span>⚙️</span>
+                <strong>الإعدادات</strong>
+                <small>التخصيص</small>
+
+            </article>
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================================
+         FOOTER
+    ======================================================= -->
+
+    <footer class="home-footer">
+
+        <div class="footer-mark">
+            ☾
+        </div>
+
+        <p>
+            الرفيق · رفيقك في طريق الخير
+        </p>
+
+        <span>
+            الإصدار 2.0
+        </span>
+
+    </footer>
 
 </section>
