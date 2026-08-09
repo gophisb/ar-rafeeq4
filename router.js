@@ -73,6 +73,14 @@ const Router = (() => {
         ],
 
         [
+            CONFIG.PAGES.TAFSIR,
+            {
+                file: "pages/tafsir.html",
+                title: "التفسير"
+            }
+        ],
+
+        [
             CONFIG.PAGES.AZKAR,
             {
                 file: "pages/azkar.html",
