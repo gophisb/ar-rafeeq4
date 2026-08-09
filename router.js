@@ -1,23 +1,58 @@
 /* ==========================================================
    الرفيق | router.js
-   الإصدار: 2.0.0
+   الإصدار: 3.0.0
 
    المسؤولية:
-   - إدارة التنقل.
+   - إدارة التنقل داخل التطبيق.
    - تحميل الصفحات ديناميكيًا.
-   - إدارة History / Hash.
+   - إدارة Hash / History.
    - تحديث الصفحة النشطة.
+   - دعم GitHub Pages.
+   - دعم الروابط الداخلية data-navigate.
+   - دعم lifecycle للصفحات.
+   - حماية التطبيق من التنقلات المكررة.
+   - إدارة Loader والأخطاء.
    - لا يحتوي على بيانات دينية.
-   ========================================================== */
+========================================================== */
 
 "use strict";
 
 
+/* ==========================================================
+   Router
+========================================================== */
+
 const Router = (() => {
 
     /* ========================================================
-       المسارات
-       ======================================================== */
+       معلومات الإصدار
+    ======================================================== */
+
+    const VERSION = "3.0.0";
+
+
+    /* ========================================================
+       الحالة الداخلية
+    ======================================================== */
+
+    let initialized = false;
+
+    let navigating = false;
+
+    let currentPage = null;
+
+    let currentRoute = null;
+
+    let mainContent = null;
+
+    let bottomNavigation = null;
+
+    let abortController = null;
+
+
+    /* ========================================================
+       تعريف المسارات
+    ======================================================== */
 
     const routes = new Map([
 
@@ -81,32 +116,83 @@ const Router = (() => {
 
 
     /* ========================================================
-       الحالة
-       ======================================================== */
+       التحقق من CONFIG
+    ======================================================== */
 
-    let initialized = false;
+    function validateDependencies() {
 
-    let currentPage = null;
+        if (
+            typeof CONFIG === "undefined"
+        ) {
+
+            console.error(
+                "الرفيق: CONFIG غير متاح. تأكد من تحميل config.js قبل router.js."
+            );
+
+            return false;
+        }
+
+
+        return true;
+
+    }
 
 
     /* ========================================================
-       العناصر
-       ======================================================== */
+       استخراج الصفحة من Hash
+    ======================================================== */
 
-    let mainContent = null;
+    function getHashPage() {
 
-    let bottomNavigation = null;
+        const hash =
+            window.location.hash
+                .replace(/^#/, "")
+                .trim();
+
+
+        if (
+            hash &&
+            routes.has(hash)
+        ) {
+
+            return hash;
+
+        }
+
+
+        return null;
+
+    }
+
+
+    /* ========================================================
+       الحصول على الصفحة الافتراضية
+    ======================================================== */
+
+    function getDefaultPage() {
+
+        return CONFIG.PAGES.HOME;
+
+    }
 
 
     /* ========================================================
        تهيئة Router
-       ======================================================== */
+    ======================================================== */
 
     function init() {
 
-        /* منع التهيئة المكررة */
         if (initialized) {
+
             return;
+
+        }
+
+
+        if (!validateDependencies()) {
+
+            return;
+
         }
 
 
@@ -125,107 +211,141 @@ const Router = (() => {
         if (!mainContent) {
 
             console.error(
-                "الرفيق: #main-content غير موجود."
+                "الرفيق: العنصر #main-content غير موجود."
             );
 
             return;
+
         }
 
 
-        /* إنشاء شريط التنقل */
         renderBottomNavigation();
 
-
-        /* ربط الأحداث */
         bindEvents();
 
 
-        /* قراءة الصفحة من الرابط */
-        const hash =
-            window.location.hash
-                .replace("#", "")
-                .trim();
-
-
-        if (hash && routes.has(hash)) {
-
-            navigate(hash, false);
-
-        } else {
-
-            navigate(
-                CONFIG.PAGES.HOME,
-                false
-            );
-
-        }
+        const initialPage =
+            getHashPage() ||
+            getDefaultPage();
 
 
         initialized = true;
+
+
+        navigate(
+            initialPage,
+            {
+                history: false,
+                replace: true,
+                force: true
+            }
+        );
+
+
+        console.log(
+            `Router v${VERSION} initialized`
+        );
 
     }
 
 
     /* ========================================================
        إنشاء Bottom Navigation
-       ======================================================== */
+    ======================================================== */
 
     function renderBottomNavigation() {
 
         if (!bottomNavigation) {
+
             return;
+
         }
 
 
         bottomNavigation.innerHTML = `
 
             <a
-                href="#home"
-                data-page="home"
+                href="#${CONFIG.PAGES.HOME}"
+                data-page="${CONFIG.PAGES.HOME}"
                 aria-label="الرئيسية"
             >
-                <span class="nav-icon">⌂</span>
-                <span>الرئيسية</span>
+                <span
+                    class="nav-icon"
+                    aria-hidden="true">
+                    ⌂
+                </span>
+
+                <span>
+                    الرئيسية
+                </span>
             </a>
 
 
             <a
-                href="#quran"
-                data-page="quran"
+                href="#${CONFIG.PAGES.QURAN}"
+                data-page="${CONFIG.PAGES.QURAN}"
                 aria-label="القرآن الكريم"
             >
-                <span class="nav-icon">📖</span>
-                <span>القرآن</span>
+                <span
+                    class="nav-icon"
+                    aria-hidden="true">
+                    📖
+                </span>
+
+                <span>
+                    القرآن
+                </span>
             </a>
 
 
             <a
-                href="#prayer"
-                data-page="prayer"
+                href="#${CONFIG.PAGES.PRAYER}"
+                data-page="${CONFIG.PAGES.PRAYER}"
                 aria-label="مواقيت الصلاة"
             >
-                <span class="nav-icon">🕌</span>
-                <span>الصلاة</span>
+                <span
+                    class="nav-icon"
+                    aria-hidden="true">
+                    🕌
+                </span>
+
+                <span>
+                    الصلاة
+                </span>
             </a>
 
 
             <a
-                href="#azkar"
-                data-page="azkar"
+                href="#${CONFIG.PAGES.AZKAR}"
+                data-page="${CONFIG.PAGES.AZKAR}"
                 aria-label="الأذكار"
             >
-                <span class="nav-icon">🤲</span>
-                <span>الأذكار</span>
+                <span
+                    class="nav-icon"
+                    aria-hidden="true">
+                    🤲
+                </span>
+
+                <span>
+                    الأذكار
+                </span>
             </a>
 
 
             <a
-                href="#settings"
-                data-page="settings"
+                href="#${CONFIG.PAGES.SETTINGS}"
+                data-page="${CONFIG.PAGES.SETTINGS}"
                 aria-label="الإعدادات"
             >
-                <span class="nav-icon">⚙</span>
-                <span>الإعدادات</span>
+                <span
+                    class="nav-icon"
+                    aria-hidden="true">
+                    ⚙
+                </span>
+
+                <span>
+                    الإعدادات
+                </span>
             </a>
 
         `;
@@ -234,13 +354,258 @@ const Router = (() => {
 
 
     /* ========================================================
+       ربط الأحداث
+    ======================================================== */
+
+    function bindEvents() {
+
+
+        /* ----------------------------------------------------
+           Bottom Navigation
+        ---------------------------------------------------- */
+
+        if (bottomNavigation) {
+
+            bottomNavigation.addEventListener(
+                "click",
+                handleNavigationClick
+            );
+
+        }
+
+
+        /* ----------------------------------------------------
+           روابط داخل المحتوى
+        ---------------------------------------------------- */
+
+        if (mainContent) {
+
+            mainContent.addEventListener(
+                "click",
+                handleNavigationClick
+            );
+
+            mainContent.addEventListener(
+                "keydown",
+                handleKeyboardNavigation
+            );
+
+        }
+
+
+        /* ----------------------------------------------------
+           Hash
+        ---------------------------------------------------- */
+
+        window.addEventListener(
+            "hashchange",
+            handleHashChange
+        );
+
+
+        /* ----------------------------------------------------
+           History
+        ---------------------------------------------------- */
+
+        window.addEventListener(
+            "popstate",
+            handlePopState
+        );
+
+    }
+
+
+    /* ========================================================
+       معالجة الضغط على روابط التنقل
+    ======================================================== */
+
+    function handleNavigationClick(event) {
+
+        const target =
+            event.target.closest(
+                "[data-navigate], [data-page]"
+            );
+
+
+        if (!target) {
+
+            return;
+
+        }
+
+
+        const page =
+            target.dataset.navigate ||
+            target.dataset.page;
+
+
+        if (
+            !page ||
+            !routes.has(page)
+        ) {
+
+            return;
+
+        }
+
+
+        event.preventDefault();
+
+
+        navigate(page);
+
+    }
+
+
+    /* ========================================================
+       دعم لوحة المفاتيح
+    ======================================================== */
+
+    function handleKeyboardNavigation(event) {
+
+        if (
+            event.key !== "Enter" &&
+            event.key !== " "
+        ) {
+
+            return;
+
+        }
+
+
+        const target =
+            event.target.closest(
+                "[data-navigate]"
+            );
+
+
+        if (!target) {
+
+            return;
+
+        }
+
+
+        const page =
+            target.dataset.navigate;
+
+
+        if (
+            !page ||
+            !routes.has(page)
+        ) {
+
+            return;
+
+        }
+
+
+        event.preventDefault();
+
+        navigate(page);
+
+    }
+
+
+    /* ========================================================
+       Hash Change
+    ======================================================== */
+
+    function handleHashChange() {
+
+        const page =
+            getHashPage();
+
+
+        if (page) {
+
+            navigate(
+                page,
+                {
+                    history: false
+                }
+            );
+
+            return;
+
+        }
+
+
+        navigate(
+            getDefaultPage(),
+            {
+                history: false,
+                replace: true
+            }
+        );
+
+    }
+
+
+    /* ========================================================
+       Pop State
+    ======================================================== */
+
+    function handlePopState(event) {
+
+        const page =
+            event.state &&
+            event.state.page
+                ? event.state.page
+                : getHashPage();
+
+
+        if (
+            page &&
+            routes.has(page)
+        ) {
+
+            navigate(
+                page,
+                {
+                    history: false
+                }
+            );
+
+            return;
+
+        }
+
+
+        navigate(
+            getDefaultPage(),
+            {
+                history: false,
+                replace: true
+            }
+        );
+
+    }
+
+
+    /* ========================================================
        التنقل
-       ======================================================== */
+    ======================================================== */
 
     async function navigate(
         pageName,
-        addToHistory = true
+        options = {}
     ) {
+
+        const {
+
+            history = true,
+
+            replace = false,
+
+            force = false
+
+        } = options;
+
+
+        /* ----------------------------------------------------
+           التحقق من المسار
+        ---------------------------------------------------- */
 
         const route =
             routes.get(pageName);
@@ -252,8 +617,39 @@ const Router = (() => {
                 `الرفيق: المسار غير موجود: ${pageName}`
             );
 
-            return;
+            return false;
+
         }
+
+
+        /* ----------------------------------------------------
+           منع إعادة تحميل الصفحة نفسها
+        ---------------------------------------------------- */
+
+        if (
+            !force &&
+            currentPage === pageName &&
+            mainContent &&
+            mainContent.children.length > 0
+        ) {
+
+            return true;
+
+        }
+
+
+        /* ----------------------------------------------------
+           منع التنقل المتزامن
+        ---------------------------------------------------- */
+
+        if (navigating) {
+
+            return false;
+
+        }
+
+
+        navigating = true;
 
 
         try {
@@ -261,16 +657,51 @@ const Router = (() => {
             showLoader();
 
 
+            /* ----------------------------------------------
+               إلغاء طلب سابق
+            ---------------------------------------------- */
+
+            if (abortController) {
+
+                abortController.abort();
+
+            }
+
+
+            abortController =
+                new AbortController();
+
+
+            /* ----------------------------------------------
+               تحميل الصفحة
+            ---------------------------------------------- */
+
             const html =
                 await fetchPage(
-                    route.file
+                    route.file,
+                    abortController.signal
                 );
 
 
             if (!mainContent) {
-                return;
+
+                throw new Error(
+                    "#main-content غير موجود"
+                );
+
             }
 
+
+            /* ----------------------------------------------
+               تنظيف الصفحة السابقة
+            ---------------------------------------------- */
+
+            destroyCurrentPage();
+
+
+            /* ----------------------------------------------
+               إدخال الصفحة الجديدة
+            ---------------------------------------------- */
 
             mainContent.innerHTML =
                 html;
@@ -280,38 +711,75 @@ const Router = (() => {
                 pageName;
 
 
-            /* تحديث العنوان */
-            document.title =
-                `${route.title} | ${CONFIG.APP_NAME}`;
+            currentRoute =
+                route;
 
 
-            /* تحديث التنقل */
+            /* ----------------------------------------------
+               تحديث العنوان
+            ---------------------------------------------- */
+
+            updateDocumentTitle(
+                route.title
+            );
+
+
+            /* ----------------------------------------------
+               تحديث Navigation
+            ---------------------------------------------- */
+
             updateActiveNavigation(
                 pageName
             );
 
 
-            /* History */
-            if (addToHistory) {
+            /* ----------------------------------------------
+               تحديث Hash / History
+            ---------------------------------------------- */
 
-                window.history.pushState(
-                    {
-                        page: pageName
-                    },
-                    "",
-                    `#${pageName}`
+            if (history) {
+
+                updateHistory(
+                    pageName,
+                    replace
                 );
 
             }
 
 
+            /* ----------------------------------------------
+               تشغيل Lifecycle الصفحة
+            ---------------------------------------------- */
+
+            await initializeCurrentPage(
+                pageName
+            );
+
+
             hideLoader();
 
 
+            return true;
+
         } catch (error) {
 
+
+            /* ----------------------------------------------
+               تجاهل Abort
+            ---------------------------------------------- */
+
+            if (
+                error &&
+                error.name === "AbortError"
+            ) {
+
+                return false;
+
+            }
+
+
             console.error(
-                "الرفيق: فشل تحميل الصفحة",
+                "الرفيق: فشل تحميل الصفحة.",
                 error
             );
 
@@ -320,8 +788,15 @@ const Router = (() => {
 
 
             showError(
-                "تعذر تحميل الصفحة"
+                "تعذر تحميل الصفحة. حاول مرة أخرى."
             );
+
+
+            return false;
+
+        } finally {
+
+            navigating = false;
 
         }
 
@@ -330,20 +805,28 @@ const Router = (() => {
 
     /* ========================================================
        تحميل الصفحة
-       ======================================================== */
+    ======================================================== */
 
-    async function fetchPage(file) {
+    async function fetchPage(
+        file,
+        signal
+    ) {
 
         const response =
-            await fetch(file, {
-                cache: "no-cache"
-            });
+            await fetch(
+                file,
+                {
+                    method: "GET",
+                    cache: "no-cache",
+                    signal
+                }
+            );
 
 
         if (!response.ok) {
 
             throw new Error(
-                `HTTP ${response.status}`
+                `HTTP ${response.status}: ${file}`
             );
 
         }
@@ -355,157 +838,78 @@ const Router = (() => {
 
 
     /* ========================================================
-       الأحداث
-       ======================================================== */
+       تحديث History
+    ======================================================== */
 
-    function bindEvents() {
+    function updateHistory(
+        pageName,
+        replace = false
+    ) {
 
-
-        /* Bottom Navigation */
-
-        if (bottomNavigation) {
-
-            bottomNavigation.addEventListener(
-                "click",
-                event => {
-
-                    const link =
-                        event.target.closest(
-                            "a[data-page]"
-                        );
+        const url =
+            `#${pageName}`;
 
 
-                    if (!link) {
-                        return;
-                    }
+        const state = {
+
+            page: pageName
+
+        };
 
 
-                    event.preventDefault();
+        if (replace) {
 
+            window.history.replaceState(
+                state,
+                "",
+                url
+            );
 
-                    const page =
-                        link.dataset.page;
+        } else {
 
-
-                    if (page) {
-
-                        navigate(page);
-
-                    }
-
-                }
+            window.history.pushState(
+                state,
+                "",
+                url
             );
 
         }
-
-
-        /* روابط الصفحات الداخلية */
-
-        if (mainContent) {
-
-            mainContent.addEventListener(
-                "click",
-                event => {
-
-                    const target =
-                        event.target.closest(
-                            "[data-navigate]"
-                        );
-
-
-                    if (!target) {
-                        return;
-                    }
-
-
-                    const page =
-                        target.dataset.navigate;
-
-
-                    if (
-                        page &&
-                        routes.has(page)
-                    ) {
-
-                        event.preventDefault();
-
-                        navigate(page);
-
-                    }
-
-                }
-            );
-
-        }
-
-
-        /* زر الرجوع */
-
-        window.addEventListener(
-            "popstate",
-            event => {
-
-                if (
-                    event.state &&
-                    event.state.page
-                ) {
-
-                    navigate(
-                        event.state.page,
-                        false
-                    );
-
-                } else {
-
-                    const hash =
-                        window.location.hash
-                            .replace("#", "")
-                            .trim();
-
-
-                    if (
-                        hash &&
-                        routes.has(hash)
-                    ) {
-
-                        navigate(
-                            hash,
-                            false
-                        );
-
-                    } else {
-
-                        navigate(
-                            CONFIG.PAGES.HOME,
-                            false
-                        );
-
-                    }
-
-                }
-
-            }
-        );
 
     }
 
 
     /* ========================================================
-       تحديث التنقل النشط
-       ======================================================== */
+       تحديث عنوان الصفحة
+    ======================================================== */
+
+    function updateDocumentTitle(
+        title
+    ) {
+
+        document.title =
+            `${title} | ${CONFIG.APP_NAME}`;
+
+    }
+
+
+    /* ========================================================
+       تحديث Navigation النشط
+    ======================================================== */
 
     function updateActiveNavigation(
         pageName
     ) {
 
         if (!bottomNavigation) {
+
             return;
+
         }
 
 
         const links =
             bottomNavigation.querySelectorAll(
-                "a[data-page]"
+                "[data-page]"
             );
 
 
@@ -542,8 +946,122 @@ const Router = (() => {
 
 
     /* ========================================================
+       Lifecycle الصفحة الحالية
+    ======================================================== */
+
+    async function initializeCurrentPage(
+        pageName
+    ) {
+
+        /*
+         * يمكن لكل صفحة لاحقًا تعريف:
+         *
+         * window.RafeeqPages = {
+         *
+         *     prayer() {},
+         *     quran() {},
+         *     azkar() {}
+         *
+         * };
+         */
+
+
+        if (
+            window.RafeeqPages &&
+            typeof
+            window.RafeeqPages[pageName] ===
+            "function"
+        ) {
+
+            try {
+
+                await window.RafeeqPages[
+                    pageName
+                ]();
+
+            } catch (error) {
+
+                console.error(
+                    `الرفيق: فشل تهيئة الصفحة ${pageName}`,
+                    error
+                );
+
+            }
+
+        }
+
+
+        /* ----------------------------------------------
+           حدث عام بعد تحميل الصفحة
+        ---------------------------------------------- */
+
+        document.dispatchEvent(
+
+            new CustomEvent(
+                "rafeeq:page-loaded",
+                {
+                    detail: {
+                        page: pageName,
+                        route: currentRoute
+                    }
+                }
+            )
+
+        );
+
+    }
+
+
+    /* ========================================================
+       تنظيف الصفحة الحالية
+    ======================================================== */
+
+    function destroyCurrentPage() {
+
+        const previousPage =
+            currentPage;
+
+
+        if (
+            previousPage &&
+            window.RafeeqPages &&
+            typeof
+            window.RafeeqPages[
+                `${previousPage}:destroy`
+            ] ===
+            "function"
+        ) {
+
+            try {
+
+                window.RafeeqPages[
+                    `${previousPage}:destroy`
+                ]();
+
+            } catch (error) {
+
+                console.error(
+                    `الرفيق: خطأ أثناء تنظيف الصفحة ${previousPage}`,
+                    error
+                );
+
+            }
+
+        }
+
+
+        if (mainContent) {
+
+            mainContent.innerHTML = "";
+
+        }
+
+    }
+
+
+    /* ========================================================
        Loader
-       ======================================================== */
+    ======================================================== */
 
     function showLoader() {
 
@@ -554,12 +1072,27 @@ const Router = (() => {
 
 
         if (!loader) {
+
             return;
+
         }
 
 
-        loader.innerHTML =
-            '<div class="loader" aria-label="جار التحميل"></div>';
+        loader.setAttribute(
+            "aria-busy",
+            "true"
+        );
+
+
+        loader.innerHTML = `
+
+            <div
+                class="loader"
+                role="status"
+                aria-label="جار التحميل">
+            </div>
+
+        `;
 
 
         loader.style.display =
@@ -577,8 +1110,16 @@ const Router = (() => {
 
 
         if (!loader) {
+
             return;
+
         }
+
+
+        loader.setAttribute(
+            "aria-busy",
+            "false"
+        );
 
 
         loader.style.display =
@@ -593,9 +1134,11 @@ const Router = (() => {
 
     /* ========================================================
        رسالة الخطأ
-       ======================================================== */
+    ======================================================== */
 
-    function showError(message) {
+    function showError(
+        message
+    ) {
 
         const toastRoot =
             document.getElementById(
@@ -604,7 +1147,9 @@ const Router = (() => {
 
 
         if (!toastRoot) {
+
             return;
+
         }
 
 
@@ -618,6 +1163,12 @@ const Router = (() => {
             "toast";
 
 
+        toast.setAttribute(
+            "role",
+            "alert"
+        );
+
+
         toast.textContent =
             message;
 
@@ -627,18 +1178,21 @@ const Router = (() => {
         );
 
 
-        setTimeout(() => {
+        window.setTimeout(
+            () => {
 
-            toast.remove();
+                toast.remove();
 
-        }, 3500);
+            },
+            4000
+        );
 
     }
 
 
     /* ========================================================
        الصفحة الحالية
-       ======================================================== */
+    ======================================================== */
 
     function getCurrentPage() {
 
@@ -648,8 +1202,45 @@ const Router = (() => {
 
 
     /* ========================================================
-       التحقق من التهيئة
-       ======================================================== */
+       المسار الحالي
+    ======================================================== */
+
+    function getCurrentRoute() {
+
+        return currentRoute;
+
+    }
+
+
+    /* ========================================================
+       الحصول على المسارات
+    ======================================================== */
+
+    function getRoutes() {
+
+        return new Map(routes);
+
+    }
+
+
+    /* ========================================================
+       التحقق من وجود مسار
+    ======================================================== */
+
+    function hasRoute(
+        pageName
+    ) {
+
+        return routes.has(
+            pageName
+        );
+
+    }
+
+
+    /* ========================================================
+       حالة Router
+    ======================================================== */
 
     function isInitialized() {
 
@@ -658,20 +1249,133 @@ const Router = (() => {
     }
 
 
+    function isNavigating() {
+
+        return navigating;
+
+    }
+
+
+    /* ========================================================
+       تدمير Router
+    ======================================================== */
+
+    function destroy() {
+
+        if (!initialized) {
+
+            return;
+
+        }
+
+
+        if (bottomNavigation) {
+
+            bottomNavigation.removeEventListener(
+                "click",
+                handleNavigationClick
+            );
+
+        }
+
+
+        if (mainContent) {
+
+            mainContent.removeEventListener(
+                "click",
+                handleNavigationClick
+            );
+
+
+            mainContent.removeEventListener(
+                "keydown",
+                handleKeyboardNavigation
+            );
+
+        }
+
+
+        window.removeEventListener(
+            "hashchange",
+            handleHashChange
+        );
+
+
+        window.removeEventListener(
+            "popstate",
+            handlePopState
+        );
+
+
+        if (abortController) {
+
+            abortController.abort();
+
+            abortController = null;
+
+        }
+
+
+        destroyCurrentPage();
+
+
+        initialized = false;
+
+        navigating = false;
+
+        currentPage = null;
+
+        currentRoute = null;
+
+        mainContent = null;
+
+        bottomNavigation = null;
+
+    }
+
+
     /* ========================================================
        الواجهة العامة
-       ======================================================== */
+    ======================================================== */
 
     return Object.freeze({
+
+        VERSION,
 
         init,
 
         navigate,
 
+        destroy,
+
         getCurrentPage,
 
-        isInitialized
+        getCurrentRoute,
+
+        getRoutes,
+
+        hasRoute,
+
+        isInitialized,
+
+        isNavigating
 
     });
 
 })();
+
+
+/* ==========================================================
+   تصدير Router
+========================================================== */
+
+window.Router = Router;
+
+
+/* ==========================================================
+   رسالة التطوير
+========================================================== */
+
+console.log(
+    `Rafeeq Router v${Router.VERSION} ready`
+);
