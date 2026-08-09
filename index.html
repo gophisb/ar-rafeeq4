@@ -4,7 +4,8 @@
 <head>
 
     <!-- ======================================================
-         المعلومات الأساسية
+         الرفيق | Al-Rafeeq
+         التطبيق الإسلامي المتكامل
     ======================================================= -->
 
     <meta charset="UTF-8">
@@ -19,13 +20,28 @@
     <meta name="description"
           content="الرفيق - تطبيق إسلامي متكامل للقرآن الكريم، التفسير، الأذكار، مواقيت الصلاة، القبلة، والأربعين النووية.">
 
+    <meta name="application-name"
+          content="الرفيق">
+
     <meta name="theme-color"
           content="#0B1220">
 
     <meta name="color-scheme"
           content="dark light">
 
-    <meta name="application-name"
+    <meta name="format-detection"
+          content="telephone=no">
+
+    <meta name="mobile-web-app-capable"
+          content="yes">
+
+    <meta name="apple-mobile-web-app-capable"
+          content="yes">
+
+    <meta name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent">
+
+    <meta name="apple-mobile-web-app-title"
           content="الرفيق">
 
 
@@ -54,17 +70,37 @@
 
     <!-- ======================================================
          JavaScript
-         الترتيب:
-         1. config.js
-         2. router.js
-         3. app.js
+         
+         الترتيب مهم:
+         
+         1. config.js           ← الإعدادات والثوابت
+         2. prayer.js           ← محرك مواقيت الصلاة
+         3. locations.js        ← بيانات المدن والمواقع
+         4. location-manager.js ← إدارة الموقع الجغرافي
+         5. router.js           ← نظام التوجيه والصفحات
+         6. app.js              ← منسق التطبيق الرئيسي
+         
+         جميع الملفات تستخدم defer.
+         المتصفح يحافظ على ترتيب التنفيذ.
     ======================================================= -->
 
-    <script src="config.js" defer></script>
+    <script src="config.js"
+            defer></script>
 
-    <script src="router.js" defer></script>
+    <script src="prayer.js"
+            defer></script>
 
-    <script src="app.js" defer></script>
+    <script src="locations.js"
+            defer></script>
+
+    <script src="js/location-manager.js"
+            defer></script>
+
+    <script src="router.js"
+            defer></script>
+
+    <script src="app.js"
+            defer></script>
 
 </head>
 
@@ -94,7 +130,8 @@
              Header
         =================================================== -->
 
-        <header id="app-header">
+        <header id="app-header"
+                role="banner">
         </header>
 
 
@@ -102,7 +139,8 @@
              Main Content
         =================================================== -->
 
-        <main id="main-content">
+        <main id="main-content"
+              tabindex="-1">
         </main>
 
 
@@ -147,11 +185,14 @@
              Offline Banner
         =================================================== -->
 
-        <div id="offline-banner">
+        <div id="offline-banner"
+             role="status"
+             aria-live="polite">
         </div>
 
 
     </div>
+
 
 </body>
 
