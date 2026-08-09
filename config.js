@@ -5,24 +5,33 @@
    المسؤولية:
    - الإعدادات المركزية للتطبيق.
    - معلومات التطبيق.
-   - اللغة والاتجاه والثيم.
-   - التخزين المحلي.
+   - اللغة والاتجاه.
+   - إعدادات الواجهة.
+   - مفاتيح التخزين المحلي.
    - مسارات الصفحات.
-   - إعدادات الموقع والولايات.
+   - إعدادات PWA و Offline.
+   - إعدادات الموقع.
    - إعدادات مواقيت الصلاة.
    - إعدادات الأذان.
-   - إعدادات PWA و Offline.
-   - لا يحتوي على المحتوى الديني نفسه.
-========================================================== */
+
+   مبدأ معماري:
+   هذا الملف يحتوي على الإعدادات فقط.
+   لا يحتوي على القرآن أو الأحاديث أو الأذكار
+   أو التفسير أو أي محتوى ديني.
+   ========================================================== */
 
 "use strict";
 
 
+/* ==========================================================
+   CONFIG
+   ========================================================== */
+
 const CONFIG = Object.freeze({
 
-    /* ======================================================
+    /* ========================================================
        معلومات التطبيق
-    ====================================================== */
+       ======================================================== */
 
     APP_NAME: "الرفيق",
 
@@ -36,52 +45,41 @@ const CONFIG = Object.freeze({
         "فريق الرفيق",
 
 
-    /* ======================================================
+    /* ========================================================
        اللغة والاتجاه
-    ====================================================== */
+       ======================================================== */
 
-    LANG: "ar",
+    LANG:
+        "ar",
 
-    DIR: "rtl",
-
-
-    /* ======================================================
-       الثيم
-    ====================================================== */
-
-    DEFAULT_THEME: "dark",
-
-    THEMES: Object.freeze({
-
-        DARK: "dark",
-
-        LIGHT: "light",
-
-        AUTO: "auto"
-
-    }),
+    DIR:
+        "rtl",
 
 
-    /* ======================================================
+    /* ========================================================
        إعدادات الواجهة
-    ====================================================== */
+       ======================================================== */
 
     UI: Object.freeze({
 
-        MAX_APP_WIDTH: 480,
+        DEFAULT_THEME:
+            "dark",
 
-        BORDER_RADIUS: 22,
+        MAX_APP_WIDTH:
+            480,
 
-        MOBILE_FIRST: true,
+        BORDER_RADIUS:
+            22,
 
-        REDUCED_MOTION_SUPPORT: true
+        DEFAULT_FONT_SIZE:
+            "medium"
 
     }),
 
 
-    /* ======================================================
+    /* ========================================================
        التخزين المحلي
-    ====================================================== */
+       ======================================================== */
 
     STORAGE_KEYS: Object.freeze({
 
@@ -97,39 +95,18 @@ const CONFIG = Object.freeze({
         LOCATION:
             "ar_rafeeq_location",
 
-        LOCATION_MODE:
-            "ar_rafeeq_location_mode",
-
-        SELECTED_WILAYA:
-            "ar_rafeeq_selected_wilaya",
-
         PRAYER_SETTINGS:
             "ar_rafeeq_prayer_settings",
 
-        PRAYER_ADJUSTMENTS:
-            "ar_rafeeq_prayer_adjustments",
-
-        ADHAN_SETTINGS:
-            "ar_rafeeq_adhan_settings",
-
-        QURAN_PROGRESS:
-            "ar_rafeeq_quran_progress",
-
-        QURAN_BOOKMARKS:
-            "ar_rafeeq_quran_bookmarks",
-
-        AZKAR_PROGRESS:
-            "ar_rafeeq_azkar_progress",
-
-        NAWAWI_PROGRESS:
-            "ar_rafeeq_nawawi_progress"
+        APP_SETTINGS:
+            "ar_rafeeq_app_settings"
 
     }),
 
 
-    /* ======================================================
-       صفحات التطبيق
-    ====================================================== */
+    /* ========================================================
+       مسارات التطبيق
+       ======================================================== */
 
     PAGES: Object.freeze({
 
@@ -148,9 +125,6 @@ const CONFIG = Object.freeze({
         PRAYER:
             "prayer",
 
-        ADHAN:
-            "adhan",
-
         QIBLA:
             "qibla",
 
@@ -163,37 +137,43 @@ const CONFIG = Object.freeze({
     }),
 
 
-    /* ======================================================
-       الموقع والجزائر
-    ====================================================== */
+    /* ========================================================
+       مسارات الملفات
+       ======================================================== */
+
+    PATHS: Object.freeze({
+
+        PAGES:
+            "pages/",
+
+        JS:
+            "js/",
+
+        ASSETS:
+            "assets/",
+
+        DATA:
+            "data/"
+
+    }),
+
+
+    /* ========================================================
+       الموقع الجغرافي
+       ======================================================== */
 
     LOCATION: Object.freeze({
 
-        COUNTRY_CODE:
-            "DZ",
-
-        COUNTRY_NAME:
+        DEFAULT_COUNTRY:
             "الجزائر",
-
-        WILAYAS_COUNT:
-            69,
-
-        DEFAULT_WILAYA_CODE:
-            "16",
 
         DEFAULT_TIMEZONE:
             1,
 
+        USE_MANUAL_LOCATION:
+            true,
+
         USE_GPS:
-            true,
-
-        USE_GPS_FIRST:
-            true,
-
-        ALLOW_MANUAL_WILAYA:
-            true,
-
-        GPS_HIGH_ACCURACY:
             true,
 
         GPS_TIMEOUT:
@@ -205,20 +185,14 @@ const CONFIG = Object.freeze({
     }),
 
 
-    /* ======================================================
+    /* ========================================================
        مواقيت الصلاة
-    ====================================================== */
+       ======================================================== */
 
     PRAYER: Object.freeze({
 
-        ENABLED:
-            true,
-
-        OFFLINE:
-            true,
-
-        CALCULATION_MODE:
-            "astronomical",
+        CALCULATION_METHOD:
+            "local",
 
         FAJR_ANGLE:
             18,
@@ -238,79 +212,55 @@ const CONFIG = Object.freeze({
         TEMPERATURE:
             10,
 
-        ROUNDING:
-            "nearest-minute",
-
-        SHOW_SUNRISE:
-            true,
-
-        SHOW_SUNSET:
-            true,
-
-        SHOW_NEXT_PRAYER:
-            true,
-
-        SHOW_COUNTDOWN:
-            true,
-
         ADJUSTMENTS: Object.freeze({
 
-            fajr: 0,
+            fajr:
+                0,
 
-            sunrise: 0,
+            sunrise:
+                0,
 
-            dhuhr: 0,
+            dhuhr:
+                0,
 
-            asr: 0,
+            asr:
+                0,
 
-            maghrib: 0,
+            maghrib:
+                0,
 
-            isha: 0
+            isha:
+                0
 
         })
 
     }),
 
 
-    /* ======================================================
-       الأذان
-    ====================================================== */
+    /* ========================================================
+       الأذان والتنبيهات
+       ======================================================== */
 
     ADHAN: Object.freeze({
 
         ENABLED:
-            true,
+            false,
 
-        AUDIO:
-            true,
+        NOTIFICATION_ENABLED:
+            false,
 
-        NOTIFICATIONS:
-            true,
+        AUDIO_ENABLED:
+            false,
 
-        VIBRATION:
-            true,
-
-        FAJR:
-            true,
-
-        DHUHR:
-            true,
-
-        ASR:
-            true,
-
-        MAGHRIB:
-            true,
-
-        ISHA:
-            true
+        MINUTES_BEFORE:
+            0
 
     }),
 
 
-    /* ======================================================
-       PWA / Offline
-    ====================================================== */
+    /* ========================================================
+       PWA
+       ======================================================== */
 
     PWA: Object.freeze({
 
@@ -321,48 +271,30 @@ const CONFIG = Object.freeze({
             true,
 
         SERVICE_WORKER:
-            "sw.js",
+            true,
 
-        MANIFEST:
-            "manifest.json"
+        UPDATE_NOTIFICATION:
+            true
 
     }),
 
 
-    /* ======================================================
+    /* ========================================================
        الميزات
-    ====================================================== */
+       ======================================================== */
 
     FEATURES: Object.freeze({
-
-        PWA:
-            true,
-
-        OFFLINE_SUPPORT:
-            true,
-
-        PRAYER_TIMES:
-            true,
-
-        ADHAN:
-            true,
-
-        PRAYER_NOTIFICATIONS:
-            true,
-
-        GPS:
-            true,
-
-        WILAYAS_69:
-            true,
 
         QURAN:
             true,
 
-        TAFSIR_SAADI:
+        TAFSIR:
             true,
 
         AZKAR:
+            true,
+
+        PRAYER:
             true,
 
         QIBLA:
@@ -371,11 +303,17 @@ const CONFIG = Object.freeze({
         NAWAWI:
             true,
 
-        DARK_MODE_TOGGLE:
+        SETTINGS:
+            true,
+
+        DARK_MODE:
             true,
 
         AUDIO_PLAYER:
-            true
+            false,
+
+        PRAYER_NOTIFICATIONS:
+            false
 
     })
 
@@ -383,36 +321,97 @@ const CONFIG = Object.freeze({
 
 
 /* ==========================================================
-   فحص سلامة الإعدادات
-========================================================== */
+   التحقق من الإعدادات الأساسية
+   ========================================================== */
 
-if (
-    CONFIG.LOCATION.WILAYAS_COUNT !== 69
-) {
+function validateConfig() {
 
-    console.error(
-        "الرفيق: خطأ في عدد الولايات. يجب أن يكون 69."
-    );
+    if (!CONFIG.APP_NAME) {
 
-}
+        throw new Error(
+            "CONFIG: APP_NAME غير محدد."
+        );
+
+    }
 
 
-if (
-    CONFIG.LANG !== "ar" ||
-    CONFIG.DIR !== "rtl"
-) {
+    if (!CONFIG.LANG) {
 
-    console.warn(
-        "الرفيق: تحقق من إعداد اللغة والاتجاه."
-    );
+        throw new Error(
+            "CONFIG: LANG غير محدد."
+        );
+
+    }
+
+
+    if (!CONFIG.DIR) {
+
+        throw new Error(
+            "CONFIG: DIR غير محدد."
+        );
+
+    }
+
+
+    if (
+        CONFIG.PRAYER.FAJR_ANGLE <= 0 ||
+        CONFIG.PRAYER.FAJR_ANGLE >= 90
+    ) {
+
+        throw new Error(
+            "CONFIG: زاوية الفجر غير صحيحة."
+        );
+
+    }
+
+
+    if (
+        CONFIG.PRAYER.ISHA_ANGLE <= 0 ||
+        CONFIG.PRAYER.ISHA_ANGLE >= 90
+    ) {
+
+        throw new Error(
+            "CONFIG: زاوية العشاء غير صحيحة."
+        );
+
+    }
+
+
+    if (
+        CONFIG.LOCATION.DEFAULT_TIMEZONE < -12 ||
+        CONFIG.LOCATION.DEFAULT_TIMEZONE > 14
+    ) {
+
+        throw new Error(
+            "CONFIG: المنطقة الزمنية غير صحيحة."
+        );
+
+    }
+
+
+    return true;
 
 }
 
 
 /* ==========================================================
-   معلومات التطوير
-========================================================== */
+   تنفيذ التحقق
+   ========================================================== */
+
+validateConfig();
+
+
+/* ==========================================================
+   التصدير العام
+   ========================================================== */
+
+window.CONFIG = CONFIG;
+
+
+/* ==========================================================
+   رسالة التطوير
+   ========================================================== */
 
 console.log(
-    `الرفيق | CONFIG v${CONFIG.VERSION} loaded`
+    `الرفيق | CONFIG v${CONFIG.VERSION} ready`
 );
