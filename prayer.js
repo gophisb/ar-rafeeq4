@@ -1,85 +1,113 @@
 /* ==========================================================
    الرفيق | prayer.js
-   الإصدار: 1.0.0
+   الإصدار: 2.0.0
 
-   محرك مواقيت الصلاة
+   محرك مواقيت الصلاة الفلكي
    ----------------------------------------------------------
    المسؤولية:
-   - حساب مواقيت الصلاة فلكيًا.
-   - لا يعتمد على API.
-   - يعمل Offline.
-   - يدعم الإحداثيات الجغرافية.
-   - يدعم الولاية المختارة أو GPS.
+   - حساب المواقيت فلكيًا بدون API.
+   - العمل Offline.
+   - دعم إحداثيات GPS.
+   - دعم موقع الولاية المرجعي.
+   - حساب الفجر والشروق والظهر والعصر والمغرب والعشاء.
    - تحديد الصلاة القادمة.
    - العد التنازلي.
-   - قابل للتطوير وربطه بقاعدة الولايات.
-   - لا يحتوي على بيانات دينية.
-   ========================================================== */
+   - دعم الارتفاع عن سطح البحر.
+   - قابل للتطوير والمقارنة مع الرزنامة الرسمية.
+
+   لا يحتوي على:
+   - القرآن.
+   - الأحاديث.
+   - الأذكار.
+   - التفسير.
+   - أي محتوى ديني.
+
+   التوافق:
+   - config.js
+   - locations.js
+========================================================== */
 
 "use strict";
 
 
 /* ==========================================================
    PrayerEngine
-   ========================================================== */
+========================================================== */
 
 const PrayerEngine = (() => {
 
+
     /* ======================================================
-       الثوابت
+       معلومات الإصدار
     ====================================================== */
 
-    const VERSION = "1.0.0";
+    const VERSION = "2.0.0";
+
+
+    /* ======================================================
+       الإعدادات الافتراضية
+    ====================================================== */
 
     const DEFAULT_SETTINGS = Object.freeze({
 
         /*
-         * إعداد الجزائر الافتراضي
+         * إعداد الجزائر الافتراضي.
          *
-         * Fajr  = 18°
-         * Isha  = 17°
+         * الفجر:
+         * 18°
          *
-         * يمكن تغييرهما لاحقًا من الإعدادات.
+         * العشاء:
+         * 17°
          */
 
         fajrAngle: 18,
 
         ishaAngle: 17,
 
+
         /*
-         * العصر:
+         * عامل العصر:
+         *
          * 1 = ظل الشيء مثله
          * 2 = ظل الشيء مثليه
-         *
-         * الافتراضي:
-         * مالكي / شافعي / حنبلي
          */
 
         asrFactor: 1,
 
+
         /*
-         * تصحيح احتياطي اختياري بالدقائق.
-         * يبقى 0 حتى نقارن مع الرزنامة الرسمية.
+         * التصحيحات بالدقائق.
          */
 
-        adjustments: {
+        adjustments: Object.freeze({
+
             fajr: 0,
+
             sunrise: 0,
+
             dhuhr: 0,
+
             asr: 0,
+
             maghrib: 0,
+
             isha: 0
-        },
+
+        }),
+
 
         /*
-         * ارتفاع الموقع بالمتر.
+         * الارتفاع عن سطح البحر.
          */
 
         elevation: 0,
 
+
         /*
-         * الضغط ودرجة الحرارة
-         * للاستخدام المستقبلي في تحسين refraction.
+         * الضغط ودرجة الحرارة.
+         *
+         * محفوظان للتطوير المستقبلي
+         * الخاص بالانكسار الجوي.
          */
 
         pressure: 1010,
@@ -96,10 +124,15 @@ const PrayerEngine = (() => {
     const PRAYER_NAMES = Object.freeze({
 
         fajr: "الفجر",
+
         sunrise: "الشروق",
+
         dhuhr: "الظهر",
+
         asr: "العصر",
+
         maghrib: "المغرب",
+
         isha: "العشاء"
 
     });
@@ -112,10 +145,15 @@ const PrayerEngine = (() => {
     const PRAYER_ORDER = Object.freeze([
 
         "fajr",
+
         "sunrise",
+
         "dhuhr",
+
         "asr",
+
         "maghrib",
+
         "isha"
 
     ]);
@@ -141,56 +179,107 @@ const PrayerEngine = (() => {
 
     function sin(degrees) {
 
-        return Math.sin(degToRad(degrees));
+        return Math.sin(
+            degToRad(degrees)
+        );
 
     }
 
 
     function cos(degrees) {
 
-        return Math.cos(degToRad(degrees));
+        return Math.cos(
+            degToRad(degrees)
+        );
 
     }
 
 
     function tan(degrees) {
 
-        return Math.tan(degToRad(degrees));
-
-    }
-
-
-    function acos(value) {
-
-        return radToDeg(Math.acos(value));
+        return Math.tan(
+            degToRad(degrees)
+        );
 
     }
 
 
     function asin(value) {
 
-        return radToDeg(Math.asin(value));
+        return radToDeg(
+            Math.asin(value)
+        );
 
     }
 
 
-    function atan2(y, x) {
+    function acos(value) {
 
-        return radToDeg(Math.atan2(y, x));
+        return radToDeg(
+            Math.acos(value)
+        );
+
+    }
+
+
+    function atan(degrees) {
+
+        return radToDeg(
+            Math.atan(
+                degToRad(degrees)
+            )
+        );
+
+    }
+
+
+    function acot(value) {
+
+        return radToDeg(
+            Math.atan2(
+                1,
+                value
+            )
+        );
 
     }
 
 
     /* ======================================================
-       تطبيع الزاوية
-       ====================================================== */
+       تطبيع الزوايا
+    ====================================================== */
 
     function normalizeDegrees(value) {
 
         value %= 360;
 
         if (value < 0) {
+
             value += 360;
+
+        }
+
+        return value;
+
+    }
+
+
+    /**
+     * تطبيع الزاوية إلى:
+     *
+     * -180 ... +180
+     *
+     * مهم جدًا لـ Equation of Time.
+     */
+    function normalizeSignedDegrees(value) {
+
+        value =
+            normalizeDegrees(value);
+
+        if (value > 180) {
+
+            value -= 360;
+
         }
 
         return value;
@@ -200,30 +289,63 @@ const PrayerEngine = (() => {
 
     /* ======================================================
        Julian Day
-       ====================================================== */
+    ====================================================== */
 
-    function julian(year, month, day) {
+    function julian(
+        year,
+        month,
+        day
+    ) {
 
         if (month <= 2) {
 
             year -= 1;
+
             month += 12;
 
         }
 
-        const A = Math.floor(year / 100);
+
+        const A =
+            Math.floor(
+                year / 100
+            );
+
 
         const B =
             2 -
             A +
-            Math.floor(A / 4);
+            Math.floor(
+                A / 4
+            );
+
 
         return (
-            Math.floor(365.25 * (year + 4716)) +
-            Math.floor(30.6001 * (month + 1)) +
-            day +
-            B -
+
+            Math.floor(
+                365.25 *
+                (year + 4716)
+            )
+
+            +
+
+            Math.floor(
+                30.6001 *
+                (month + 1)
+            )
+
+            +
+
+            day
+
+            +
+
+            B
+
+            -
+
             1524.5
+
         );
 
     }
@@ -235,53 +357,146 @@ const PrayerEngine = (() => {
 
     function solarPosition(jd) {
 
+        /*
+         * عدد الأيام منذ J2000.0
+         */
+
         const D =
             jd -
             2451545.0;
 
-        const g =
-            normalizeDegrees(
-                357.529 +
-                0.98560028 * D
-            );
 
-        const q =
+        /*
+         * متوسط طول الشمس.
+         */
+
+        const meanLongitude =
             normalizeDegrees(
+
                 280.459 +
                 0.98564736 * D
+
             );
 
-        const L =
+
+        /*
+         * متوسط anomaly.
+         */
+
+        const meanAnomaly =
             normalizeDegrees(
-                q +
-                1.915 * sin(g) +
-                0.020 * sin(2 * g)
+
+                357.529 +
+                0.98560028 * D
+
             );
 
-        const e =
+
+        /*
+         * ميل دائرة البروج.
+         */
+
+        const obliquity =
+
             23.439 -
+
             0.00000036 * D;
 
-        const RA =
-            atan2(
-                cos(e) * sin(L),
-                cos(L)
-            ) / 15;
 
-        const declination =
-            asin(
-                sin(e) * sin(L)
+        /*
+         * الطول الظاهري للشمس.
+         */
+
+        const solarLongitude =
+
+            normalizeDegrees(
+
+                meanLongitude
+
+                +
+
+                1.915 *
+                sin(meanAnomaly)
+
+                +
+
+                0.020 *
+                sin(
+                    2 *
+                    meanAnomaly
+                )
+
             );
 
+
+        /*
+         * Right Ascension.
+         */
+
+        let rightAscension =
+
+            atan2Degrees(
+                cos(obliquity) *
+                sin(solarLongitude),
+
+                cos(solarLongitude)
+            );
+
+
+        rightAscension =
+            normalizeDegrees(
+                rightAscension
+            );
+
+
+        /*
+         * الميل الشمسي.
+         */
+
+        const declination =
+
+            asin(
+
+                sin(obliquity) *
+                sin(solarLongitude)
+
+            );
+
+
+        /*
+         * Equation of Time.
+         *
+         * يجب عدم استخدام normalize 0..360
+         * مباشرة هنا.
+         */
+
+        const deltaLongitude =
+
+            normalizeSignedDegrees(
+
+                meanLongitude -
+                rightAscension
+
+            );
+
+
         const equationOfTime =
-            q / 15 -
-            normalizeDegrees(RA * 15) / 15;
+
+            4 *
+            deltaLongitude;
+
 
         return {
 
             declination,
 
-            equationOfTime
+            equationOfTime,
+
+            meanLongitude,
+
+            solarLongitude,
+
+            rightAscension
 
         };
 
@@ -289,12 +504,28 @@ const PrayerEngine = (() => {
 
 
     /* ======================================================
-       ارتفاع الشمس
-       ====================================================== */
+       atan2 بالدرجات
+    ====================================================== */
 
-    function sunAngleTime(
+    function atan2Degrees(
+        y,
+        x
+    ) {
 
-        angle,
+        return radToDeg(
+            Math.atan2(y, x)
+        );
+
+    }
+
+
+    /* ======================================================
+       زاوية ساعة الشمس
+    ====================================================== */
+
+    function hourAngleForAltitude(
+
+        altitude,
 
         declination,
 
@@ -303,57 +534,192 @@ const PrayerEngine = (() => {
     ) {
 
         const numerator =
-            -sin(angle) -
+
+            sin(altitude)
+
+            -
+
             sin(latitude) *
             sin(declination);
 
+
         const denominator =
+
             cos(latitude) *
             cos(declination);
 
-        const value =
-            numerator /
-            denominator;
 
-        if (value < -1 || value > 1) {
+        if (
+            denominator === 0
+        ) {
 
             return null;
 
         }
 
-        return acos(value) / 15;
+
+        const value =
+
+            numerator /
+            denominator;
+
+
+        /*
+         * السماح بهامش صغير
+         * بسبب أخطاء التقريب.
+         */
+
+        if (
+            value < -1 ||
+            value > 1
+        ) {
+
+            return null;
+
+        }
+
+
+        return acos(value);
 
     }
 
 
     /* ======================================================
-       حساب العصر
-       ====================================================== */
+       وقت الشمس عند زاوية معينة
+    ====================================================== */
 
-    function asrTime(
+    function sunTime(
 
-        factor,
+        altitude,
+
         declination,
-        latitude
+
+        latitude,
+
+        noon,
+
+        direction
 
     ) {
 
-        const angle =
-            -atan2(
-                1,
+        const hourAngle =
+
+            hourAngleForAltitude(
+
+                altitude,
+
+                declination,
+
+                latitude
+
+            );
+
+
+        if (
+            hourAngle === null
+        ) {
+
+            return null;
+
+        }
+
+
+        const hours =
+            hourAngle / 15;
+
+
+        if (
+            direction === "before"
+        ) {
+
+            return (
+                noon -
+                hours * 60
+            );
+
+        }
+
+
+        return (
+            noon +
+            hours * 60
+        );
+
+    }
+
+
+    /* ======================================================
+       ارتفاع الشروق والغروب
+    ====================================================== */
+
+    const SUNRISE_ALTITUDE = -0.833;
+
+
+    /* ======================================================
+       حساب العصر
+    ====================================================== */
+
+    function calculateAsr(
+
+        factor,
+
+        declination,
+
+        latitude,
+
+        noon
+
+    ) {
+
+        if (
+            !Number.isFinite(factor) ||
+            factor <= 0
+        ) {
+
+            return null;
+
+        }
+
+
+        /*
+         * زاوية الشمس فوق الأفق للعصر.
+         *
+         * shadow factor:
+         *
+         * 1 = ظل الشيء مثله
+         * 2 = ظل الشيء مثليه
+         */
+
+        const solarAltitude =
+
+            acot(
+
                 factor +
+
                 tan(
+
                     Math.abs(
                         latitude -
                         declination
                     )
+
                 )
+
             );
 
-        return sunAngleTime(
-            angle,
+
+        return sunTime(
+
+            solarAltitude,
+
             declination,
-            latitude
+
+            latitude,
+
+            noon,
+
+            "after"
+
         );
 
     }
@@ -361,7 +727,7 @@ const PrayerEngine = (() => {
 
     /* ======================================================
        تحويل الوقت إلى دقائق
-       ====================================================== */
+    ====================================================== */
 
     function timeToMinutes(time) {
 
@@ -374,6 +740,7 @@ const PrayerEngine = (() => {
 
         }
 
+
         return time * 60;
 
     }
@@ -381,7 +748,7 @@ const PrayerEngine = (() => {
 
     /* ======================================================
        تطبيع الدقائق
-       ====================================================== */
+    ====================================================== */
 
     function normalizeMinutes(minutes) {
 
@@ -394,7 +761,9 @@ const PrayerEngine = (() => {
 
         }
 
+
         minutes %= 1440;
+
 
         if (minutes < 0) {
 
@@ -402,25 +771,31 @@ const PrayerEngine = (() => {
 
         }
 
+
         return minutes;
 
     }
 
 
     /* ======================================================
-       تقريب إلى أقرب دقيقة
-       ====================================================== */
+       التقريب
+    ====================================================== */
 
     function roundMinute(minutes) {
 
-        if (minutes === null) {
+        if (
+            minutes === null
+        ) {
 
             return null;
 
         }
 
+
         return Math.round(
-            normalizeMinutes(minutes)
+            normalizeMinutes(
+                minutes
+            )
         );
 
     }
@@ -428,26 +803,40 @@ const PrayerEngine = (() => {
 
     /* ======================================================
        تنسيق الوقت
-       ====================================================== */
+    ====================================================== */
 
     function formatTime(minutes) {
 
-        if (minutes === null) {
+        if (
+            minutes === null ||
+            !Number.isFinite(minutes)
+        ) {
 
             return "--:--";
 
         }
 
+
         minutes =
+
             Math.round(
-                normalizeMinutes(minutes)
+                normalizeMinutes(
+                    minutes
+                )
             );
 
+
         const hours =
-            Math.floor(minutes / 60);
+
+            Math.floor(
+                minutes / 60
+            );
+
 
         const mins =
+
             minutes % 60;
+
 
         return (
 
@@ -469,36 +858,48 @@ const PrayerEngine = (() => {
 
 
     /* ======================================================
-       إنشاء تاريخ اليوم
-       ====================================================== */
+       تطبيع التاريخ
+    ====================================================== */
 
     function normalizeDate(date) {
 
-        if (date instanceof Date) {
+        if (
+            date instanceof Date
+        ) {
 
             return new Date(
 
                 date.getFullYear(),
+
                 date.getMonth(),
+
                 date.getDate()
 
             );
 
         }
 
-        if (typeof date === "string") {
+
+        if (
+            typeof date === "string"
+        ) {
 
             const parsed =
                 new Date(date);
 
-            if (!Number.isNaN(
-                parsed.getTime()
-            )) {
+
+            if (
+                !Number.isNaN(
+                    parsed.getTime()
+                )
+            ) {
 
                 return new Date(
 
                     parsed.getFullYear(),
+
                     parsed.getMonth(),
+
                     parsed.getDate()
 
                 );
@@ -507,640 +908,18 @@ const PrayerEngine = (() => {
 
         }
 
+
+        const now =
+            new Date();
+
+
         return new Date(
 
-            new Date().getFullYear(),
-            new Date().getMonth(),
-            new Date().getDate()
+            now.getFullYear(),
 
-        );
+            now.getMonth(),
 
-    }
-
-
-    /* ======================================================
-       حساب مواقيت اليوم
-       ====================================================== */
-
-    function calculate(
-
-        date,
-        location,
-        customSettings = {}
-
-    ) {
-
-        const day =
-            normalizeDate(date);
-
-        /* ----------------------------------------------
-           التحقق من الموقع
-           ---------------------------------------------- */
-
-        if (!location) {
-
-            throw new Error(
-                "موقع الصلاة غير محدد"
-            );
-
-        }
-
-
-        const latitude =
-            Number(location.latitude);
-
-        const longitude =
-            Number(location.longitude);
-
-
-        if (
-            !Number.isFinite(latitude) ||
-            !Number.isFinite(longitude)
-        ) {
-
-            throw new Error(
-                "إحداثيات الموقع غير صحيحة"
-            );
-
-        }
-
-
-        if (
-            latitude < -90 ||
-            latitude > 90
-        ) {
-
-            throw new Error(
-                "خط العرض خارج النطاق"
-            );
-
-        }
-
-
-        if (
-            longitude < -180 ||
-            longitude > 180
-        ) {
-
-            throw new Error(
-                "خط الطول خارج النطاق"
-            );
-
-        }
-
-
-        /* ----------------------------------------------
-           دمج الإعدادات
-           ---------------------------------------------- */
-
-        const settings = {
-
-            ...DEFAULT_SETTINGS,
-
-            ...customSettings,
-
-            adjustments: {
-
-                ...DEFAULT_SETTINGS.adjustments,
-
-                ...(customSettings.adjustments || {})
-
-            }
-
-        };
-
-
-        /* ----------------------------------------------
-           Julian Day
-           ---------------------------------------------- */
-
-        const jd =
-            julian(
-
-                day.getFullYear(),
-
-                day.getMonth() + 1,
-
-                day.getDate()
-
-            );
-
-
-        /*
-         * حساب موقع الشمس حول الظهر.
-         */
-
-        const solar =
-            solarPosition(
-                jd + 0.5
-            );
-
-
-        const declination =
-            solar.declination;
-
-
-        const equationOfTime =
-            solar.equationOfTime;
-
-
-        /*
-         * تصحيح خط الطول.
-         *
-         * الجزائر:
-         * UTC+1
-         */
-
-        const timezone =
-            Number.isFinite(
-                Number(location.timezone)
-            )
-                ? Number(location.timezone)
-                : 1;
-
-
-        /*
-         * الظهر الشمسي بالدقائق المحلية.
-         */
-
-        const noon =
-            720 -
-            4 * longitude -
-            equationOfTime +
-            timezone * 60;
-
-
-        /* ----------------------------------------------
-           الشروق والغروب
-           ---------------------------------------------- */
-
-        const sunriseAngle =
-            sunAngleTime(
-                0.833,
-                declination,
-                latitude
-            );
-
-
-        const sunrise =
-            sunriseAngle === null
-                ? null
-                : noon - sunriseAngle * 60;
-
-
-        const sunset =
-            sunriseAngle === null
-                ? null
-                : noon + sunriseAngle * 60;
-
-
-        /* ----------------------------------------------
-           الفجر
-           ---------------------------------------------- */
-
-        const fajrAngle =
-            sunAngleTime(
-                settings.fajrAngle,
-                declination,
-                latitude
-            );
-
-
-        const fajr =
-            fajrAngle === null
-                ? null
-                : noon - fajrAngle * 60;
-
-
-        /* ----------------------------------------------
-           العشاء
-           ---------------------------------------------- */
-
-        const ishaAngle =
-            sunAngleTime(
-                settings.ishaAngle,
-                declination,
-                latitude
-            );
-
-
-        const isha =
-            ishaAngle === null
-                ? null
-                : noon + ishaAngle * 60;
-
-
-        /* ----------------------------------------------
-           العصر
-           ---------------------------------------------- */
-
-        const asrAngle =
-            asrTime(
-                settings.asrFactor,
-                declination,
-                latitude
-            );
-
-
-        const asr =
-            asrAngle === null
-                ? null
-                : noon + asrAngle * 60;
-
-
-        /* ----------------------------------------------
-           تجميع المواقيت
-           ---------------------------------------------- */
-
-        const raw = {
-
-            fajr,
-
-            sunrise,
-
-            dhuhr: noon,
-
-            asr,
-
-            maghrib: sunset,
-
-            isha
-
-        };
-
-
-        /* ----------------------------------------------
-           التصحيحات
-           ---------------------------------------------- */
-
-        Object.keys(raw).forEach(
-            prayer => {
-
-                if (
-                    raw[prayer] !== null
-                ) {
-
-                    raw[prayer] +=
-                        Number(
-                            settings
-                                .adjustments
-                                [prayer] || 0
-                        );
-
-                }
-
-            }
-        );
-
-
-        /* ----------------------------------------------
-           التقريب
-           ---------------------------------------------- */
-
-        const times = {};
-
-        Object.keys(raw).forEach(
-            prayer => {
-
-                times[prayer] =
-                    roundMinute(
-                        raw[prayer]
-                    );
-
-            }
-        );
-
-
-        /* ----------------------------------------------
-           النتيجة
-           ---------------------------------------------- */
-
-        return {
-
-            version: VERSION,
-
-            date: day,
-
-            location: {
-
-                latitude,
-
-                longitude,
-
-                name:
-                    location.name ||
-                    "الموقع الحالي",
-
-                timezone
-
-            },
-
-            settings,
-
-            raw,
-
-            minutes: times,
-
-            formatted: {
-
-                fajr:
-                    formatTime(times.fajr),
-
-                sunrise:
-                    formatTime(times.sunrise),
-
-                dhuhr:
-                    formatTime(times.dhuhr),
-
-                asr:
-                    formatTime(times.asr),
-
-                maghrib:
-                    formatTime(times.maghrib),
-
-                isha:
-                    formatTime(times.isha)
-
-            }
-
-        };
-
-    }
-
-
-    /* ======================================================
-       الحصول على الوقت الحالي بالدقائق
-       ====================================================== */
-
-    function currentMinutes() {
-
-        const now = new Date();
-
-        return (
-
-            now.getHours() * 60 +
-
-            now.getMinutes() +
-
-            now.getSeconds() / 60
-
-        );
-
-    }
-
-
-    /* ======================================================
-       الصلاة القادمة
-       ====================================================== */
-
-    function getNextPrayer(
-
-        prayerTimes,
-
-        nowMinutes =
-            currentMinutes()
-
-    ) {
-
-        if (
-            !prayerTimes ||
-            !prayerTimes.minutes
-        ) {
-
-            return null;
-
-        }
-
-
-        const available =
-            PRAYER_ORDER
-
-                .map(name => ({
-
-                    name,
-
-                    time:
-                        prayerTimes
-                            .minutes[name]
-
-                }))
-
-                .filter(item =>
-                    item.time !== null
-                );
-
-
-        /*
-         * الصلاة القادمة اليوم
-         */
-
-        for (
-            const prayer of available
-        ) {
-
-            if (
-                prayer.time >
-                nowMinutes
-            ) {
-
-                return {
-
-                    name: prayer.name,
-
-                    title:
-                        PRAYER_NAMES[
-                            prayer.name
-                        ],
-
-                    time:
-                        prayer.time,
-
-                    formatted:
-                        formatTime(
-                            prayer.time
-                        ),
-
-                    minutesRemaining:
-                        prayer.time -
-                        nowMinutes,
-
-                    tomorrow: false
-
-                };
-
-            }
-
-        }
-
-
-        /*
-         * إذا انتهت العشاء:
-         * الصلاة القادمة هي فجر الغد.
-         */
-
-        const fajr =
-            available.find(
-                prayer =>
-                    prayer.name === "fajr"
-            );
-
-
-        if (fajr) {
-
-            return {
-
-                name: "fajr",
-
-                title:
-                    PRAYER_NAMES.fajr,
-
-                time:
-                    fajr.time,
-
-                formatted:
-                    formatTime(
-                        fajr.time
-                    ),
-
-                minutesRemaining:
-                    (
-                        1440 -
-                        nowMinutes
-                    ) +
-                    fajr.time,
-
-                tomorrow: true
-
-            };
-
-        }
-
-
-        return null;
-
-    }
-
-
-    /* ======================================================
-       العد التنازلي
-       ====================================================== */
-
-    function formatCountdown(
-        minutes
-    ) {
-
-        if (
-            minutes === null ||
-            !Number.isFinite(minutes)
-        ) {
-
-            return "--:--";
-
-        }
-
-
-        const totalSeconds =
-            Math.max(
-                0,
-                Math.round(
-                    minutes * 60
-                )
-            );
-
-
-        const hours =
-            Math.floor(
-                totalSeconds / 3600
-            );
-
-
-        const mins =
-            Math.floor(
-                (totalSeconds % 3600) /
-                60
-            );
-
-
-        const seconds =
-            totalSeconds % 60;
-
-
-        if (hours > 0) {
-
-            return (
-
-                String(hours)
-                    .padStart(2, "0")
-
-                +
-
-                ":"
-
-                +
-
-                String(mins)
-                    .padStart(2, "0")
-
-                +
-
-                ":"
-
-                +
-
-                String(seconds)
-                    .padStart(2, "0")
-
-            );
-
-        }
-
-
-        return (
-
-            String(mins)
-                .padStart(2, "0")
-
-            +
-
-            ":"
-
-            +
-
-            String(seconds)
-                .padStart(2, "0")
-
-        );
-
-    }
-
-
-    /* ======================================================
-       حساب أوقات الغد
-       ====================================================== */
-
-    function calculateTomorrow(
-
-        date,
-        location,
-        settings
-
-    ) {
-
-        const tomorrow =
-            normalizeDate(date);
-
-        tomorrow.setDate(
-            tomorrow.getDate() + 1
-        );
-
-
-        return calculate(
-
-            tomorrow,
-
-            location,
-
-            settings
+            now.getDate()
 
         );
 
@@ -1149,7 +928,7 @@ const PrayerEngine = (() => {
 
     /* ======================================================
        التحقق من الموقع
-       ====================================================== */
+    ====================================================== */
 
     function validateLocation(
         location
@@ -1170,15 +949,27 @@ const PrayerEngine = (() => {
 
 
         const latitude =
-            Number(location.latitude);
+
+            Number(
+                location.latitude
+            );
+
 
         const longitude =
-            Number(location.longitude);
+
+            Number(
+                location.longitude
+            );
 
 
         if (
-            !Number.isFinite(latitude) ||
+
+            !Number.isFinite(latitude)
+
+            ||
+
             !Number.isFinite(longitude)
+
         ) {
 
             return {
@@ -1239,14 +1030,784 @@ const PrayerEngine = (() => {
 
 
     /* ======================================================
-       الحصول على الموقع عبر GPS
-       ====================================================== */
+       دمج الإعدادات
+    ====================================================== */
+
+    function mergeSettings(
+        customSettings = {}
+    ) {
+
+        return {
+
+            ...DEFAULT_SETTINGS,
+
+            ...customSettings,
+
+            adjustments: {
+
+                ...DEFAULT_SETTINGS.adjustments,
+
+                ...(customSettings.adjustments || {})
+
+            }
+
+        };
+
+    }
+
+
+    /* ======================================================
+       حساب مواقيت اليوم
+    ====================================================== */
+
+    function calculate(
+
+        date,
+
+        location,
+
+        customSettings = {}
+
+    ) {
+
+        const day =
+            normalizeDate(date);
+
+
+        /* --------------------------------------------------
+           التحقق من الموقع
+        -------------------------------------------------- */
+
+        const validation =
+            validateLocation(
+                location
+            );
+
+
+        if (
+            !validation.valid
+        ) {
+
+            throw new Error(
+                validation.reason
+            );
+
+        }
+
+
+        const latitude =
+
+            Number(
+                location.latitude
+            );
+
+
+        const longitude =
+
+            Number(
+                location.longitude
+            );
+
+
+        /* --------------------------------------------------
+           الإعدادات
+        -------------------------------------------------- */
+
+        const settings =
+            mergeSettings(
+                customSettings
+            );
+
+
+        /* --------------------------------------------------
+           المنطقة الزمنية
+        -------------------------------------------------- */
+
+        const timezone =
+
+            Number.isFinite(
+                Number(
+                    location.timezone
+                )
+            )
+
+                ?
+
+            Number(
+                location.timezone
+            )
+
+                :
+
+            1;
+
+
+        /* --------------------------------------------------
+           Julian Day
+        -------------------------------------------------- */
+
+        const jd =
+
+            julian(
+
+                day.getFullYear(),
+
+                day.getMonth() + 1,
+
+                day.getDate()
+
+            );
+
+
+        /*
+         * نستخدم منتصف اليوم تقريبًا
+         * لحساب موضع الشمس اليومي.
+         */
+
+        const solar =
+
+            solarPosition(
+                jd + 0.5
+            );
+
+
+        const declination =
+
+            solar.declination;
+
+
+        const equationOfTime =
+
+            solar.equationOfTime;
+
+
+        /* --------------------------------------------------
+           الظهر الشمسي
+        -------------------------------------------------- */
+
+        const noon =
+
+            720
+
+            -
+
+            4 * longitude
+
+            -
+
+            equationOfTime
+
+            +
+
+            timezone * 60;
+
+
+        /* --------------------------------------------------
+           الشروق
+        -------------------------------------------------- */
+
+        const sunrise =
+
+            sunTime(
+
+                SUNRISE_ALTITUDE,
+
+                declination,
+
+                latitude,
+
+                noon,
+
+                "before"
+
+            );
+
+
+        /* --------------------------------------------------
+           الغروب
+        -------------------------------------------------- */
+
+        const sunset =
+
+            sunTime(
+
+                SUNRISE_ALTITUDE,
+
+                declination,
+
+                latitude,
+
+                noon,
+
+                "after"
+
+            );
+
+
+        /* --------------------------------------------------
+           الفجر
+        -------------------------------------------------- */
+
+        const fajr =
+
+            sunTime(
+
+                -Math.abs(
+                    Number(
+                        settings.fajrAngle
+                    )
+                ),
+
+                declination,
+
+                latitude,
+
+                noon,
+
+                "before"
+
+            );
+
+
+        /* --------------------------------------------------
+           العشاء
+        -------------------------------------------------- */
+
+        const isha =
+
+            sunTime(
+
+                -Math.abs(
+                    Number(
+                        settings.ishaAngle
+                    )
+                ),
+
+                declination,
+
+                latitude,
+
+                noon,
+
+                "after"
+
+            );
+
+
+        /* --------------------------------------------------
+           العصر
+        -------------------------------------------------- */
+
+        const asr =
+
+            calculateAsr(
+
+                Number(
+                    settings.asrFactor
+                ),
+
+                declination,
+
+                latitude,
+
+                noon
+
+            );
+
+
+        /* --------------------------------------------------
+           التجميع
+        -------------------------------------------------- */
+
+        const raw = {
+
+            fajr,
+
+            sunrise,
+
+            dhuhr: noon,
+
+            asr,
+
+            maghrib: sunset,
+
+            isha
+
+        };
+
+
+        /* --------------------------------------------------
+           التصحيحات
+        -------------------------------------------------- */
+
+        Object.keys(raw).forEach(
+            prayer => {
+
+                if (
+                    raw[prayer] !== null
+                ) {
+
+                    const adjustment =
+
+                        Number(
+
+                            settings
+                                .adjustments
+                                [prayer]
+
+                            || 0
+
+                        );
+
+
+                    if (
+                        Number.isFinite(
+                            adjustment
+                        )
+                    ) {
+
+                        raw[prayer] +=
+                            adjustment;
+
+                    }
+
+                }
+
+            }
+        );
+
+
+        /* --------------------------------------------------
+           التقريب
+        -------------------------------------------------- */
+
+        const minutes = {};
+
+
+        Object.keys(raw).forEach(
+            prayer => {
+
+                minutes[prayer] =
+
+                    roundMinute(
+                        raw[prayer]
+                    );
+
+            }
+        );
+
+
+        /* --------------------------------------------------
+           التنسيق
+        -------------------------------------------------- */
+
+        const formatted = {};
+
+
+        Object.keys(minutes).forEach(
+            prayer => {
+
+                formatted[prayer] =
+
+                    formatTime(
+                        minutes[prayer]
+                    );
+
+            }
+        );
+
+
+        /* --------------------------------------------------
+           النتيجة
+        -------------------------------------------------- */
+
+        return {
+
+            version: VERSION,
+
+            date: day,
+
+            location: {
+
+                latitude,
+
+                longitude,
+
+                name:
+                    location.name ||
+                    "الموقع الحالي",
+
+                nameFr:
+                    location.nameFr ||
+                    null,
+
+                code:
+                    location.code ||
+                    null,
+
+                timezone
+
+            },
+
+            solar: {
+
+                declination,
+
+                equationOfTime,
+
+                solarNoon:
+                    noon
+
+            },
+
+            settings,
+
+            raw,
+
+            minutes,
+
+            formatted
+
+        };
+
+    }
+
+
+    /* ======================================================
+       الوقت الحالي
+    ====================================================== */
+
+    function currentMinutes() {
+
+        const now =
+            new Date();
+
+
+        return (
+
+            now.getHours() * 60
+
+            +
+
+            now.getMinutes()
+
+            +
+
+            now.getSeconds() / 60
+
+        );
+
+    }
+
+
+    /* ======================================================
+       الصلاة القادمة
+    ====================================================== */
+
+    function getNextPrayer(
+
+        prayerTimes,
+
+        nowMinutes =
+            currentMinutes()
+
+    ) {
+
+        if (
+
+            !prayerTimes
+
+            ||
+
+            !prayerTimes.minutes
+
+        ) {
+
+            return null;
+
+        }
+
+
+        const available =
+
+            PRAYER_ORDER
+
+                .map(name => ({
+
+                    name,
+
+                    time:
+                        prayerTimes
+                            .minutes[name]
+
+                }))
+
+                .filter(
+                    item =>
+                        item.time !== null
+                );
+
+
+        /* --------------------------------------------------
+           البحث عن الصلاة القادمة
+        -------------------------------------------------- */
+
+        for (
+            const prayer
+            of available
+        ) {
+
+            if (
+                prayer.time >
+                nowMinutes
+            ) {
+
+                return {
+
+                    name:
+                        prayer.name,
+
+                    title:
+                        PRAYER_NAMES[
+                            prayer.name
+                        ],
+
+                    time:
+                        prayer.time,
+
+                    formatted:
+                        formatTime(
+                            prayer.time
+                        ),
+
+                    minutesRemaining:
+                        prayer.time -
+                        nowMinutes,
+
+                    tomorrow: false
+
+                };
+
+            }
+
+        }
+
+
+        /* --------------------------------------------------
+           انتهت صلوات اليوم
+           → فجر الغد
+        -------------------------------------------------- */
+
+        const fajr =
+
+            available.find(
+                prayer =>
+                    prayer.name ===
+                    "fajr"
+            );
+
+
+        if (fajr) {
+
+            return {
+
+                name:
+                    "fajr",
+
+                title:
+                    PRAYER_NAMES.fajr,
+
+                time:
+                    fajr.time,
+
+                formatted:
+                    formatTime(
+                        fajr.time
+                    ),
+
+                minutesRemaining:
+
+                    (
+                        1440 -
+                        nowMinutes
+                    )
+
+                    +
+
+                    fajr.time,
+
+                tomorrow:
+                    true
+
+            };
+
+        }
+
+
+        return null;
+
+    }
+
+
+    /* ======================================================
+       العد التنازلي
+    ====================================================== */
+
+    function formatCountdown(
+        minutes
+    ) {
+
+        if (
+
+            minutes === null
+
+            ||
+
+            !Number.isFinite(minutes)
+
+        ) {
+
+            return "--:--";
+
+        }
+
+
+        const totalSeconds =
+
+            Math.max(
+
+                0,
+
+                Math.round(
+                    minutes * 60
+                )
+
+            );
+
+
+        const hours =
+
+            Math.floor(
+                totalSeconds / 3600
+            );
+
+
+        const mins =
+
+            Math.floor(
+
+                (
+                    totalSeconds %
+                    3600
+                ) / 60
+
+            );
+
+
+        const seconds =
+
+            totalSeconds % 60;
+
+
+        if (
+            hours > 0
+        ) {
+
+            return (
+
+                String(hours)
+                    .padStart(2, "0")
+
+                +
+
+                ":"
+
+                +
+
+                String(mins)
+                    .padStart(2, "0")
+
+                +
+
+                ":"
+
+                +
+
+                String(seconds)
+                    .padStart(2, "0")
+
+            );
+
+        }
+
+
+        return (
+
+            String(mins)
+                .padStart(2, "0")
+
+            +
+
+            ":"
+
+            +
+
+            String(seconds)
+                .padStart(2, "0")
+
+        );
+
+    }
+
+
+    /* ======================================================
+       حساب الغد
+    ====================================================== */
+
+    function calculateTomorrow(
+
+        date,
+
+        location,
+
+        settings
+
+    ) {
+
+        const tomorrow =
+            normalizeDate(date);
+
+
+        tomorrow.setDate(
+
+            tomorrow.getDate() + 1
+
+        );
+
+
+        return calculate(
+
+            tomorrow,
+
+            location,
+
+            settings
+
+        );
+
+    }
+
+
+    /* ======================================================
+       GPS
+    ====================================================== */
 
     function getGPSLocation(
         options = {}
     ) {
 
         return new Promise(
+
             (resolve, reject) => {
 
                 if (
@@ -1254,9 +1815,13 @@ const PrayerEngine = (() => {
                 ) {
 
                     reject(
+
                         new Error(
+
                             "GPS غير مدعوم في هذا الجهاز"
+
                         )
+
                     );
 
                     return;
@@ -1294,11 +1859,16 @@ const PrayerEngine = (() => {
                                 name:
                                     "الموقع الحالي",
 
-                                timezone: 1
+                                timezone:
+                                    1,
+
+                                source:
+                                    "gps"
 
                             });
 
                         },
+
 
                         error => {
 
@@ -1306,18 +1876,22 @@ const PrayerEngine = (() => {
 
                         },
 
+
                         {
 
                             enableHighAccuracy:
+
                                 options
                                     .enableHighAccuracy
                                     !== false,
 
                             timeout:
+
                                 options.timeout ||
                                 15000,
 
                             maximumAge:
+
                                 options.maximumAge ||
                                 300000
 
@@ -1326,6 +1900,7 @@ const PrayerEngine = (() => {
                     );
 
             }
+
         );
 
     }
@@ -1333,7 +1908,7 @@ const PrayerEngine = (() => {
 
     /* ======================================================
        الواجهة العامة
-       ====================================================== */
+    ====================================================== */
 
     return Object.freeze({
 
@@ -1366,15 +1941,18 @@ const PrayerEngine = (() => {
 
 /* ==========================================================
    التصدير العام
-   ========================================================== */
+========================================================== */
 
-window.PrayerEngine = PrayerEngine;
+window.PrayerEngine =
+    PrayerEngine;
 
 
 /* ==========================================================
    رسالة التطوير
-   ========================================================== */
+========================================================== */
 
 console.log(
+
     `PrayerEngine v${PrayerEngine.VERSION} ready`
+
 );
