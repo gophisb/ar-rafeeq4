@@ -1,33 +1,38 @@
 /* ==========================================================
    الرفيق | locations.js
-   الإصدار: 1.0.0
+   الإصدار: 1.1.0
 
    المسؤولية:
    - بيانات الولايات الجزائرية الـ 69.
-   - أسماء الولايات بالعربية والفرنسية.
-   - إحداثيات GPS لمقر كل ولاية.
+   - الأسماء العربية والفرنسية.
+   - إحداثيات المقر المرجعي لكل ولاية.
    - المنطقة الزمنية.
-   - توفير نقطة مرجعية لحساب مواقيت الصلاة.
+   - تحويل بيانات الولاية إلى Location متوافق مع PrayerEngine.
    - لا يحتوي على بيانات دينية.
-   
-   ملاحظة مهمة:
-   الإحداثيات هنا هي إحداثيات مقر الولاية/المدينة المرجعية.
-   عند توفر GPS الحقيقي للمستخدم يتم استخدامه أولًا،
-   لأنه أدق بكثير لحساب مواقيت الصلاة.
+
+   مبدأ الموقع:
+   - الولاية المختارة يدويًا هي الموقع المرجعي.
+   - GPS الحقيقي يمكن استخدامه كخيار أدق.
+   - لا يستبدل GPS الاختيار اليدوي تلقائيًا دون موافقة المستخدم.
 ========================================================== */
 
 "use strict";
 
 
 /* ==========================================================
-   بيانات الولايات
+   ثوابت الجزائر
+========================================================== */
+
+const ALGERIA_TIMEZONE = 1;
+
+
+/* ==========================================================
+   بيانات الولايات الجزائرية الـ 69
 ========================================================== */
 
 const ALGERIA_WILAYAS = Object.freeze([
 
-    /* ======================================================
-       01 — 10
-    ====================================================== */
+    /* 01 — 10 */
 
     {
         code: "01",
@@ -110,9 +115,7 @@ const ALGERIA_WILAYAS = Object.freeze([
     },
 
 
-    /* ======================================================
-       11 — 20
-    ====================================================== */
+    /* 11 — 20 */
 
     {
         code: "11",
@@ -195,9 +198,7 @@ const ALGERIA_WILAYAS = Object.freeze([
     },
 
 
-    /* ======================================================
-       21 — 30
-    ====================================================== */
+    /* 21 — 30 */
 
     {
         code: "21",
@@ -280,9 +281,7 @@ const ALGERIA_WILAYAS = Object.freeze([
     },
 
 
-    /* ======================================================
-       31 — 40
-    ====================================================== */
+    /* 31 — 40 */
 
     {
         code: "31",
@@ -365,9 +364,7 @@ const ALGERIA_WILAYAS = Object.freeze([
     },
 
 
-    /* ======================================================
-       41 — 50
-    ====================================================== */
+    /* 41 — 48 */
 
     {
         code: "41",
@@ -433,6 +430,9 @@ const ALGERIA_WILAYAS = Object.freeze([
         lng: 0.5559
     },
 
+
+    /* 49 — 58 */
+
     {
         code: "49",
         name: "تيميمون",
@@ -448,11 +448,6 @@ const ALGERIA_WILAYAS = Object.freeze([
         lat: 21.3289,
         lng: 0.9500
     },
-
-
-    /* ======================================================
-       51 — 58
-    ====================================================== */
 
     {
         code: "51",
@@ -519,10 +514,7 @@ const ALGERIA_WILAYAS = Object.freeze([
     },
 
 
-    /* ======================================================
-       59 — 69
-       الولايات الجديدة رسميًا
-    ====================================================== */
+    /* 59 — 69 */
 
     {
         code: "59",
@@ -616,118 +608,349 @@ const ALGERIA_WILAYAS = Object.freeze([
 
 
 /* ==========================================================
-   أدوات الوصول إلى البيانات
+   أدوات داخلية
+========================================================== */
+
+function normalizeCode(code) {
+
+    return String(code ?? "")
+        .trim()
+        .padStart(2, "0");
+
+}
+
+
+function normalizeName(value) {
+
+    return String(value ?? "")
+        .trim()
+        .replace(/\s+/g, " ")
+        .toLowerCase();
+
+}
+
+
+function isValidCoordinates(lat, lng) {
+
+    return (
+
+        Number.isFinite(Number(lat)) &&
+
+        Number.isFinite(Number(lng)) &&
+
+        Number(lat) >= -90 &&
+
+        Number(lat) <= 90 &&
+
+        Number(lng) >= -180 &&
+
+        Number(lng) <= 180
+
+    );
+
+}
+
+
+/* ==========================================================
+   تحويل الولاية إلى موقع PrayerEngine
+========================================================== */
+
+function toPrayerLocation(wilaya) {
+
+    if (!wilaya) {
+
+        return null;
+
+    }
+
+    return Object.freeze({
+
+        code:
+            wilaya.code,
+
+        name:
+            wilaya.name,
+
+        nameFr:
+            wilaya.nameFr,
+
+        latitude:
+            wilaya.lat,
+
+        longitude:
+            wilaya.lng,
+
+        timezone:
+            ALGERIA_TIMEZONE,
+
+        source:
+            "wilaya"
+
+    });
+
+}
+
+
+/* ==========================================================
+   واجهة Locations
 ========================================================== */
 
 const Locations = Object.freeze({
 
-    /**
-     * جميع الولايات
-     */
+    VERSION:
+        "1.1.0",
+
+
+    /* --------------------------------------------------------
+       جميع الولايات
+    -------------------------------------------------------- */
+
     all() {
+
         return ALGERIA_WILAYAS;
+
     },
 
 
-    /**
-     * عدد الولايات
-     */
+    /* --------------------------------------------------------
+       عدد الولايات
+    -------------------------------------------------------- */
+
     count() {
+
         return ALGERIA_WILAYAS.length;
+
     },
 
 
-    /**
-     * البحث بواسطة رقم الولاية
-     *
-     * مثال:
-     * Locations.getByCode("16")
-     */
+    /* --------------------------------------------------------
+       البحث بالكود
+    -------------------------------------------------------- */
+
     getByCode(code) {
 
-        const normalized = String(code).padStart(2, "0");
-
-        return ALGERIA_WILAYAS.find(
-            wilaya => wilaya.code === normalized
-        ) || null;
-    },
-
-
-    /**
-     * البحث بواسطة الاسم العربي
-     */
-    getByName(name) {
-
-        if (!name) {
-            return null;
-        }
-
-        const value = String(name).trim();
-
-        return ALGERIA_WILAYAS.find(
-            wilaya => wilaya.name === value
-        ) || null;
-    },
-
-
-    /**
-     * البحث بواسطة الاسم الفرنسي
-     */
-    getByFrenchName(name) {
-
-        if (!name) {
-            return null;
-        }
-
-        const value = String(name).trim().toLowerCase();
-
-        return ALGERIA_WILAYAS.find(
-            wilaya => wilaya.nameFr.toLowerCase() === value
-        ) || null;
-    },
-
-
-    /**
-     * التحقق من الإحداثيات
-     */
-    isValidCoordinates(lat, lng) {
+        const normalized =
+            normalizeCode(code);
 
         return (
-            Number.isFinite(lat) &&
-            Number.isFinite(lng) &&
-            lat >= -90 &&
-            lat <= 90 &&
-            lng >= -180 &&
-            lng <= 180
+            ALGERIA_WILAYAS.find(
+                wilaya =>
+                    wilaya.code === normalized
+            ) || null
         );
+
     },
 
 
-    /**
-     * إحداثيات الجزائر الافتراضية
-     */
+    /* --------------------------------------------------------
+       البحث بالاسم العربي
+    -------------------------------------------------------- */
+
+    getByName(name) {
+
+        const normalized =
+            normalizeName(name);
+
+        if (!normalized) {
+
+            return null;
+
+        }
+
+        return (
+            ALGERIA_WILAYAS.find(
+                wilaya =>
+                    normalizeName(
+                        wilaya.name
+                    ) === normalized
+            ) || null
+        );
+
+    },
+
+
+    /* --------------------------------------------------------
+       البحث بالاسم الفرنسي
+    -------------------------------------------------------- */
+
+    getByFrenchName(name) {
+
+        const normalized =
+            normalizeName(name);
+
+        if (!normalized) {
+
+            return null;
+
+        }
+
+        return (
+            ALGERIA_WILAYAS.find(
+                wilaya =>
+                    normalizeName(
+                        wilaya.nameFr
+                    ) === normalized
+            ) || null
+        );
+
+    },
+
+
+    /* --------------------------------------------------------
+       الولاية الافتراضية
+       الجزائر — 16
+    -------------------------------------------------------- */
+
     getDefault() {
 
         return this.getByCode("16");
+
+    },
+
+
+    /* --------------------------------------------------------
+       الموقع الافتراضي لـ PrayerEngine
+    -------------------------------------------------------- */
+
+    getDefaultPrayerLocation() {
+
+        return toPrayerLocation(
+            this.getDefault()
+        );
+
+    },
+
+
+    /* --------------------------------------------------------
+       تحويل أي ولاية إلى موقع PrayerEngine
+    -------------------------------------------------------- */
+
+    toPrayerLocation(wilaya) {
+
+        return toPrayerLocation(
+            wilaya
+        );
+
+    },
+
+
+    /* --------------------------------------------------------
+       التحقق من الإحداثيات
+    -------------------------------------------------------- */
+
+    isValidCoordinates,
+
+
+    /* --------------------------------------------------------
+       التحقق من بيانات ولاية كاملة
+    -------------------------------------------------------- */
+
+    isValid(wilaya) {
+
+        return (
+
+            !!wilaya &&
+
+            typeof wilaya.code === "string" &&
+
+            typeof wilaya.name === "string" &&
+
+            typeof wilaya.nameFr === "string" &&
+
+            isValidCoordinates(
+                wilaya.lat,
+                wilaya.lng
+            )
+
+        );
+
     }
 
 });
 
 
 /* ==========================================================
-   حماية إضافية
+   فحص قاعدة البيانات
 ========================================================== */
 
-if (ALGERIA_WILAYAS.length !== 69) {
+(function validateLocations() {
 
-    console.error(
-        "خطأ خطير: عدد الولايات يجب أن يكون 69."
-    );
+    /* عدد الولايات */
 
-} else {
+    if (
+        ALGERIA_WILAYAS.length !== 69
+    ) {
+
+        console.error(
+            "الرفيق: خطأ — قاعدة الولايات يجب أن تحتوي على 69 ولاية."
+        );
+
+        return;
+
+    }
+
+
+    /* منع تكرار الأكواد */
+
+    const codes =
+        new Set(
+            ALGERIA_WILAYAS.map(
+                wilaya => wilaya.code
+            )
+        );
+
+
+    if (
+        codes.size !== 69
+    ) {
+
+        console.error(
+            "الرفيق: توجد رموز ولايات مكررة."
+        );
+
+        return;
+
+    }
+
+
+    /* فحص البيانات */
+
+    const invalid =
+        ALGERIA_WILAYAS.filter(
+            wilaya =>
+                !Locations.isValid(
+                    wilaya
+                )
+        );
+
+
+    if (
+        invalid.length
+    ) {
+
+        console.error(
+            "الرفيق: توجد بيانات ولاية غير صحيحة.",
+            invalid
+        );
+
+        return;
+
+    }
+
 
     console.log(
-        "Locations loaded: 69 wilayas"
+        `Rafeeq Locations v${Locations.VERSION} ready — ${Locations.count()} wilayas`
     );
 
-}
+})();
+
+
+/* ==========================================================
+   التصدير العام
+========================================================== */
+
+window.ALGERIA_WILAYAS =
+    ALGERIA_WILAYAS;
+
+window.Locations =
+    Locations;
