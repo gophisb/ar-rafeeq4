@@ -711,9 +711,10 @@ const Router = (() => {
                إدخال الصفحة الجديدة
             ---------------------------------------------- */
 
-            mainContent.innerHTML =
+                        mainContent.innerHTML =
                 html;
 
+            await executePageScripts(mainContent);
 
             currentPage =
                 pageName;
@@ -842,6 +843,41 @@ const Router = (() => {
 
         return await response.text();
 
+    }
+
+
+    /* ========================================================
+       تشغيل سكربتات الصفحة المحملة ديناميكيًا
+    ======================================================== */
+
+    async function executePageScripts(container) {
+
+        const scripts = Array.from(
+            container.querySelectorAll("script")
+        );
+
+        for (const oldScript of scripts) {
+
+            const newScript = document.createElement("script");
+
+            for (const attribute of oldScript.attributes) {
+                newScript.setAttribute(
+                    attribute.name,
+                    attribute.value
+                );
+            }
+
+            if (oldScript.src) {
+                await new Promise((resolve, reject) => {
+                    newScript.onload = resolve;
+                    newScript.onerror = reject;
+                    oldScript.replaceWith(newScript);
+                });
+            } else {
+                newScript.textContent = oldScript.textContent;
+                oldScript.replaceWith(newScript);
+            }
+        }
     }
 
 
