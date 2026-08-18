@@ -8,7 +8,6 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lunr.js/2.3.9/lunr.min.js"></script>
 <style>
   .container{max-width:760px;margin:0 auto;padding:16px;}
   .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 0;}
@@ -225,12 +224,6 @@ const SURAH_LIST = [
 ];
 
 // ===== باقي الكود =====
-const surahSearchIndex = lunr(function () {
-  this.ref('n');
-  this.field('name');
-  SURAH_LIST.forEach(s => this.add(s));
-});
-
 function renderGrid(list){
   document.getElementById('surahGrid').innerHTML = list.map(s=>`
     <div class="surah-chip" data-n="${s.n}">
@@ -249,14 +242,11 @@ function renderGrid(list){
 document.getElementById('searchInput').addEventListener('input', e=>{
   const q = e.target.value.trim();
   if(!q){ renderGrid(SURAH_LIST); return; }
-  let results = [];
-  try{ results = surahSearchIndex.search(`${q}* ${q}~1`); }catch(err){ results = []; }
-  if(results.length){
-    const byN = Object.fromEntries(SURAH_LIST.map(s=>[String(s.n), s]));
-    renderGrid(results.map(r => byN[r.ref]));
-  } else {
-    renderGrid(SURAH_LIST.filter(s=>s.name.includes(q)));
-  }
+  const normalized = q.toLocaleLowerCase('ar');
+  renderGrid(SURAH_LIST.filter(s =>
+    s.name.toLocaleLowerCase('ar').includes(normalized) ||
+    String(s.n) === q
+  ));
 });
 
 let currentSurah = 1;
