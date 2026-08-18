@@ -871,11 +871,13 @@ const Router = (() => {
                 await new Promise((resolve, reject) => {
                     newScript.onload = resolve;
                     newScript.onerror = reject;
-                    oldScript.replaceWith(newScript);
+                    document.head.appendChild(newScript);
+                    oldScript.remove();
                 });
             } else {
                 newScript.textContent = oldScript.textContent;
-                oldScript.replaceWith(newScript);
+                document.head.appendChild(newScript);
+                oldScript.remove();
             }
         }
     }
