@@ -1,18 +1,11 @@
-<section class="page">
-
-    <header class="hero">
-        <h1>الإعدادات</h1>
-        <p>تخصيص تجربة استخدام الرفيق.</p>
-    </header>
-
-    <section class="card">
-        <h2>الإعدادات العامة</h2>
-
-        <p>
-            ستتضمن هذه الصفحة إعدادات اللغة،
-            والمظهر، وحجم الخط، والموقع،
-            والإعدادات الخاصة بالتطبيق.
-        </p>
-    </section>
-
+<section class="page settings-page" dir="rtl">
+  <header class="hero"><h1>الإعدادات</h1><p>خصص الرفيق بما يناسبك، وتبقى خياراتك محفوظة على جهازك.</p></header>
+  <section class="card settings-card">
+    <label for="themeSelect">المظهر</label><select id="themeSelect" class="input"><option value="dark">داكن</option><option value="light">فاتح</option></select>
+    <label for="fontSizeSelect">حجم الخط</label><select id="fontSizeSelect" class="input"><option value="small">صغير</option><option value="medium">متوسط</option><option value="large">كبير</option></select>
+    <label class="setting-check"><input id="notificationToggle" type="checkbox"> السماح بتنبيهات الصلاة عند توفر الصلاحية</label>
+    <button id="requestNotifications" class="btn primary" type="button">طلب إذن التنبيهات</button>
+    <p id="settingsStatus" class="muted" role="status"></p>
+  </section>
 </section>
+<script src="./pages/settings.js"></script>
