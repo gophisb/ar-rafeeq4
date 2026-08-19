@@ -3042,3 +3042,29 @@ ol {
     margin: 0;
     color: var(--text-muted);
 }
+
+/* إعدادات الرفيق: تحجيم اختياري يحافظ على الهوية الحالية */
+html[data-font-size="small"] { font-size: 15px; }
+html[data-font-size="medium"] { font-size: 16px; }
+html[data-font-size="large"] { font-size: 18px; }
+
+.qibla-compass {
+  position: relative;
+  width: min(72vw, 280px);
+  aspect-ratio: 1;
+  margin: 1.25rem auto;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(107,224,198,.12), rgba(7,25,35,.34));
+  box-shadow: inset 0 0 0 12px rgba(255,255,255,.03), 0 12px 30px rgba(0,0,0,.16);
+}
+.qibla-ring { position: absolute; inset: 12%; color: var(--text-muted, #a9c2c0); font-weight: 700; }
+.qibla-ring span { position: absolute; transform: translate(-50%,-50%); }
+.qibla-ring span:nth-child(1) { top: 0; left: 50%; }
+.qibla-ring span:nth-child(2) { top: 50%; left: 100%; }
+.qibla-ring span:nth-child(3) { top: 100%; left: 50%; }
+.qibla-ring span:nth-child(4) { top: 50%; left: 0; }
+.qibla-arrow { position: absolute; top: 50%; left: 50%; color: #6be0c6; font-size: 4rem; line-height: 1; transform-origin: 50% 50%; transition: transform .35s ease; text-shadow: 0 0 18px rgba(107,224,198,.45); }
+.qibla-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 5rem; height: 5rem; display: grid; place-items: center; border-radius: 50%; background: rgba(7,25,35,.82); color: var(--text, #fff); font-size: .8rem; text-align: center; }
+.qibla-bearing { text-align: center; color: #6be0c6; font-size: 1.25rem; font-weight: 700; }
+.settings-page label { display: block; margin: .8rem 0 .35rem; }

@@ -1,18 +1,46 @@
-<section class="page">
+<section class="page qibla-page">
+  <header class="hero">
+    <h1>القبلة</h1>
+    <p>اعرف اتجاه القبلة من موقعك الحالي.</p>
+  </header>
 
-    <header class="hero">
-        <h1>القبلة</h1>
-        <p>تحديد اتجاه القبلة بسهولة.</p>
-    </header>
+  <section class="card qibla-card" aria-labelledby="qiblaHeading">
+    <div class="card-heading">
+      <span class="badge" aria-hidden="true">🧭</span>
+      <div>
+        <h2 id="qiblaHeading">اتجاه القبلة</h2>
+        <p id="qiblaStatus" class="muted" role="status">جاري تحديد الموقع...</p>
+      </div>
+    </div>
+    <div class="qibla-compass" id="qiblaCompass" role="img" aria-label="بوصلة اتجاه القبلة">
+      <div class="qibla-ring" aria-hidden="true"><span>N</span><span>E</span><span>S</span><span>W</span></div>
+      <div class="qibla-arrow" id="qiblaArrow" aria-hidden="true">➤</div>
+      <div class="qibla-center" aria-hidden="true">الكعبة</div>
+    </div>
+    <p class="qibla-bearing" id="qiblaBearing">—</p>
+    <p class="muted">الزاوية محسوبة من الشمال الحقيقي، وليست بديلًا عن معايرة بوصلة الجهاز.</p>
+    <div class="button-row">
+      <button id="qiblaUseGps" class="btn primary" type="button">استخدام موقعي</button>
+      <button id="qiblaCalibrate" class="btn" type="button">تفعيل بوصلة الجهاز</button>
+    </div>
+    <p id="qiblaSensorStatus" class="muted" role="status">يمكنك استخدام الاتجاه المحسوب دون منح إذن المستشعر.</p>
+  </section>
 
-    <section class="card">
-        <h2>قريبًا</h2>
-
-        <p>
-            ستتضمن هذه الصفحة بوصلة القبلة،
-            مع طلب إذن استخدام مستشعرات الجهاز عند الحاجة،
-            ورسائل واضحة عند عدم توفر المستشعر.
-        </p>
-    </section>
-
+  <section class="card">
+    <h2>الموقع المستخدم</h2>
+    <p>الولاية: <strong data-location-name>—</strong> (<span data-location-source>—</span>)</p>
+    <p>الإحداثيات: <span data-location-lat>—</span>، <span data-location-lng>—</span></p>
+  </section>
+  <script src="./pages/qibla.js?v=2"></script>
+  <script>
+    setTimeout(function () {
+      if (typeof LocationManager === 'undefined') return;
+      var location = LocationManager.getCurrent();
+      if (!location) return;
+      document.querySelectorAll('[data-location-name]').forEach(function (node) { node.textContent = location.name; });
+      document.querySelectorAll('[data-location-source]').forEach(function (node) { node.textContent = location.source === 'gps' ? 'GPS' : 'الولاية'; });
+      document.querySelectorAll('[data-location-lat]').forEach(function (node) { node.textContent = Number(location.lat).toFixed(4); });
+      document.querySelectorAll('[data-location-lng]').forEach(function (node) { node.textContent = Number(location.lng).toFixed(4); });
+    }, 10);
+  </script>
 </section>

@@ -709,3 +709,7 @@ document.addEventListener(
 
     }
 );
+
+
+/* توافق الصفحات الديناميكية: إبقاء API نفسه متاحًا على window */
+window.LocationManager = LocationManager;

@@ -1,18 +1,12 @@
-<section class="page">
-
-    <header class="hero">
-        <h1>الأربعين النووية</h1>
-        <p>مجموعة مختارة من الأحاديث النبوية.</p>
-    </header>
-
-    <section class="card">
-        <h2>قريبًا</h2>
-
-        <p>
-            ستتضمن هذه الصفحة أحاديث الأربعين النووية،
-            مع عرض منظم وسهل القراءة،
-            وإمكانية البحث والوصول السريع إلى الأحاديث.
-        </p>
-    </section>
-
+<section class="page nawawi-page" dir="rtl">
+  <header class="hero">
+    <h1>الأربعون النووية</h1>
+    <p>متن الأحاديث مرتبة مع شرحها وفوائدها.</p>
+  </header>
+  <section class="card nawawi-toolbar">
+    <input id="nawawiSearch" class="input" type="search" placeholder="ابحث برقم الحديث أو نصه..." aria-label="البحث في الأحاديث">
+    <p id="nawawiStatus" class="muted" role="status">جاري تحميل الأحاديث...</p>
+  </section>
+  <section id="nawawiList" class="stack" aria-live="polite"></section>
 </section>
+<script src="./pages/nawawi.js"></script>

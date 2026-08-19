@@ -1,18 +1,51 @@
-<section class="page">
+<section class="page settings-page">
+  <header class="hero">
+    <h1>الإعدادات</h1>
+    <p>تخصيص تجربة استخدام الرفيق.</p>
+  </header>
 
-    <header class="hero">
-        <h1>الإعدادات</h1>
-        <p>تخصيص تجربة استخدام الرفيق.</p>
-    </header>
+  <section class="card">
+    <h2>المظهر</h2>
+    <label for="settingsTheme">نمط الواجهة</label>
+    <select id="settingsTheme" class="input" aria-label="نمط الواجهة">
+      <option value="dark">داكن</option>
+      <option value="light">فاتح</option>
+      <option value="auto">حسب الجهاز</option>
+    </select>
+    <label for="settingsFontSize">حجم الخط</label>
+    <select id="settingsFontSize" class="input" aria-label="حجم الخط">
+      <option value="small">صغير</option>
+      <option value="medium">متوسط</option>
+      <option value="large">كبير</option>
+    </select>
+    <p id="settingsAppearanceStatus" class="muted" role="status"></p>
+  </section>
 
-    <section class="card">
-        <h2>الإعدادات العامة</h2>
+  <section class="card">
+    <h2>الموقع ومواقيت الصلاة</h2>
+    <label for="settingsWilaya">الولاية</label>
+    <select id="settingsWilaya" class="input" aria-label="اختيار الولاية"></select>
+    <div class="button-row">
+      <button id="settingsUseWilaya" class="btn primary" type="button">حفظ الولاية</button>
+      <button id="settingsUseGps" class="btn" type="button">استخدام GPS</button>
+    </div>
+    <p id="settingsLocationStatus" class="muted" role="status"></p>
+  </section>
 
-        <p>
-            ستتضمن هذه الصفحة إعدادات اللغة،
-            والمظهر، وحجم الخط، والموقع،
-            والإعدادات الخاصة بالتطبيق.
-        </p>
-    </section>
+  <section class="card">
+    <h2>التنبيهات</h2>
+    <p class="muted">ملف الأذان المحلي مضاف إلى التطبيق. لن يبدأ التشغيل التلقائي إلا بعد تفعيله منك، ويمكن تجربة الصوت من صفحة الصلاة.</p>
+    <label><input id="settingsAdhanEnabled" type="checkbox"> تشغيل الأذان عند دخول وقت الصلاة</label>
+    <p id="settingsAdhanStatus" class="muted" role="status"></p>
+    <button id="settingsNotification" class="btn" type="button">فحص دعم إشعارات الجهاز</button>
+    <p id="settingsNotificationStatus" class="muted" role="status"></p>
+  </section>
 
+  <section class="card">
+    <h2>حالة التطبيق</h2>
+    <p>النسخة: <strong>3.0</strong></p>
+    <p>البيانات الدينية: <strong>محلية</strong></p>
+    <p>العمل دون اتصال: <strong id="settingsOfflineState">جارٍ الفحص...</strong></p>
+  </section>
+  <script src="./pages/settings.js"></script>
 </section>

@@ -1,19 +1,19 @@
-<section class="page">
+<section class="page azkar-page" dir="rtl">
+  <header class="hero">
+    <h1>الأذكار</h1>
+    <p>أذكار الصباح والمساء من الكتاب والسنة.</p>
+  </header>
 
-    <header class="hero">
-        <h1>الأذكار</h1>
-        <p>أذكار المسلم اليومية.</p>
-    </header>
+  <section class="card azkar-toolbar" aria-label="أدوات الأذكار">
+    <div class="segmented" role="tablist" aria-label="نوع الأذكار">
+      <button class="btn primary azkar-filter active" data-filter="all" role="tab">كل الأذكار</button>
+      <button class="btn azkar-filter" data-filter="morning" role="tab">الصباح</button>
+      <button class="btn azkar-filter" data-filter="evening" role="tab">المساء</button>
+    </div>
+    <input id="azkarSearch" class="input" type="search" placeholder="ابحث في الأذكار..." aria-label="البحث في الأذكار">
+    <p id="azkarStatus" class="muted" role="status">جاري تحميل الأذكار...</p>
+  </section>
 
-    <section class="card">
-        <h2>قريبًا</h2>
-
-        <p>
-            ستتضمن هذه الصفحة أذكار الصباح والمساء،
-            وأذكار النوم والاستيقاظ،
-            وأذكار الصلاة،
-            مع إمكانية البحث والعمل دون اتصال بالإنترنت.
-        </p>
-    </section>
-
+  <section id="azkarList" class="stack" aria-live="polite"></section>
 </section>
+<script src="./pages/azkar.js"></script>
