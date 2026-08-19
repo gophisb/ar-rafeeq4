@@ -244,13 +244,13 @@ const CONFIG = Object.freeze({
     ADHAN: Object.freeze({
 
         ENABLED:
-            false,
+            true,
 
         NOTIFICATION_ENABLED:
             false,
 
         AUDIO_ENABLED:
-            false,
+            true,
 
         MINUTES_BEFORE:
             0
@@ -310,7 +310,7 @@ const CONFIG = Object.freeze({
             true,
 
         AUDIO_PLAYER:
-            false,
+            true,
 
         PRAYER_NOTIFICATIONS:
             false

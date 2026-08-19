@@ -314,7 +314,7 @@ const Router = (() => {
                 <span
                     class="nav-icon"
                     aria-hidden="true">
-                    🕌
+                    <img src="assets/icons/icon-192.png" width="24" height="24" alt="">
                 </span>
 
                 <span>

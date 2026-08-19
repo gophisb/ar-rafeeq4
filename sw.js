@@ -1,8 +1,8 @@
-const CACHE_NAME = 'rafeeq4-core-v3';
+const CACHE_NAME = 'rafeeq4-core-v6';
 const APP_SHELL = [
   './', './index.html', './styles.css', './variables.css', './config.js', './prayer.js', './locations.js', './router.js', './app.js',
   './js/location-manager.js', './js/page-modules.js', './pages/home.html', './pages/quran.html', './pages/quran.js', './pages/quran-local.json', './pages/tafsir.html', './pages/tafsir.js', './pages/tafsir-saadi-local.json',
-  './pages/azkar.html', './pages/azkar.js', './pages/azkar-data.json', './pages/nawawi.html', './pages/nawawi.js', './pages/nawawi-data.json', './pages/prayer.html', './pages/prayer.js', './pages/qibla.html', './pages/qibla.js', './pages/settings.html', './pages/settings.js', './manifest.json', './assets/icons/icon.svg', './assets/audio/adhan.mp3'
+  './pages/azkar.html', './pages/azkar.js', './pages/azkar-data.json', './pages/nawawi.html', './pages/nawawi.js', './pages/nawawi-data.json', './pages/prayer.html', './pages/prayer.js', './pages/qibla.html', './pages/qibla.js', './pages/settings.html', './pages/settings.js', './manifest.json', './assets/icons/icon.svg', './assets/icons/icon-192.png', './assets/icons/icon-512.png', './assets/icons/apple-touch-icon.png', './assets/icons/kaaba.svg', './assets/audio/adhan.mp3'
 ];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));

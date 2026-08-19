@@ -3065,6 +3065,11 @@ html[data-font-size="large"] { font-size: 18px; }
 .qibla-ring span:nth-child(3) { top: 100%; left: 50%; }
 .qibla-ring span:nth-child(4) { top: 50%; left: 0; }
 .qibla-arrow { position: absolute; top: 50%; left: 50%; color: #6be0c6; font-size: 4rem; line-height: 1; transform-origin: 50% 50%; transition: transform .35s ease; text-shadow: 0 0 18px rgba(107,224,198,.45); }
-.qibla-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 5rem; height: 5rem; display: grid; place-items: center; border-radius: 50%; background: rgba(7,25,35,.82); color: var(--text, #fff); font-size: .8rem; text-align: center; }
+.qibla-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 5rem; height: 5rem; display: grid; place-items: center; border-radius: 50%; background: rgba(7,25,35,.82); color: var(--text, #fff); font-size: .8rem; text-align: center; overflow: hidden; }
+.qibla-center img { display: block; width: 3.2rem; height: 3.2rem; object-fit: contain; filter: drop-shadow(0 2px 5px rgba(0,0,0,.35)); }
 .qibla-bearing { text-align: center; color: #6be0c6; font-size: 1.25rem; font-weight: 700; }
 .settings-page label { display: block; margin: .8rem 0 .35rem; }
+
+/* أيقونة الرفيق الموحدة للصلاة والتنقل */
+.prayer-symbol-image { display: block; width: 52px; height: 52px; object-fit: contain; border-radius: 12px; }
+.nav-icon img { display: block; width: 24px; height: 24px; object-fit: contain; border-radius: 6px; }

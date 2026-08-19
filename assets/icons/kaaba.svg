@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">الكعبة المشرفة</title>
+  <desc id="desc">رمز مبسط للكعبة المشرفة</desc>
+  <defs>
+    <linearGradient id="cloth" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#20252a"/>
+      <stop offset="1" stop-color="#050607"/>
+    </linearGradient>
+  </defs>
+  <path d="M18 36 64 17l46 19v56l-46 19-46-19z" fill="url(#cloth)" stroke="#d8b65a" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M18 36h92v13H18z" fill="#d8b65a"/>
+  <path d="m64 17 46 19-46 19-46-19z" fill="#30363b" stroke="#d8b65a" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M53 67h22v33H53z" fill="#d8b65a" stroke="#8d6b24" stroke-width="2"/>
+  <circle cx="64" cy="76" r="2" fill="#3d2a0a"/>
+  <path d="M28 62h72M28 88h72" stroke="#c89f3d" stroke-width="2" opacity=".8"/>
+</svg>

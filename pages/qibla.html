@@ -15,9 +15,12 @@
     <div class="qibla-compass" id="qiblaCompass" role="img" aria-label="بوصلة اتجاه القبلة">
       <div class="qibla-ring" aria-hidden="true"><span>N</span><span>E</span><span>S</span><span>W</span></div>
       <div class="qibla-arrow" id="qiblaArrow" aria-hidden="true">➤</div>
-      <div class="qibla-center" aria-hidden="true">الكعبة</div>
+      <div class="qibla-center"><img src="assets/icons/kaaba.svg" alt="الكعبة المشرفة" width="44" height="44"></div>
     </div>
     <p class="qibla-bearing" id="qiblaBearing">—</p>
+    <p id="qiblaHeadingValue" class="muted">اتجاه الهاتف: غير متاح</p>
+    <p id="qiblaDifference" class="muted">الفرق بين الهاتف والقبلة: غير متاح</p>
+    <p id="qiblaCalibration" class="muted" role="status">المعايرة: غير مفعّلة</p>
     <p class="muted">الزاوية محسوبة من الشمال الحقيقي، وليست بديلًا عن معايرة بوصلة الجهاز.</p>
     <div class="button-row">
       <button id="qiblaUseGps" class="btn primary" type="button">استخدام موقعي</button>
@@ -31,16 +34,5 @@
     <p>الولاية: <strong data-location-name>—</strong> (<span data-location-source>—</span>)</p>
     <p>الإحداثيات: <span data-location-lat>—</span>، <span data-location-lng>—</span></p>
   </section>
-  <script src="./pages/qibla.js?v=2"></script>
-  <script>
-    setTimeout(function () {
-      if (typeof LocationManager === 'undefined') return;
-      var location = LocationManager.getCurrent();
-      if (!location) return;
-      document.querySelectorAll('[data-location-name]').forEach(function (node) { node.textContent = location.name; });
-      document.querySelectorAll('[data-location-source]').forEach(function (node) { node.textContent = location.source === 'gps' ? 'GPS' : 'الولاية'; });
-      document.querySelectorAll('[data-location-lat]').forEach(function (node) { node.textContent = Number(location.lat).toFixed(4); });
-      document.querySelectorAll('[data-location-lng]').forEach(function (node) { node.textContent = Number(location.lng).toFixed(4); });
-    }, 10);
-  </script>
+  <script src="./pages/qibla.js"></script>
 </section>
