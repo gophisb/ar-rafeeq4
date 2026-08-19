@@ -15,11 +15,12 @@
     <div class="qibla-compass" id="qiblaCompass" role="img" aria-label="بوصلة اتجاه القبلة">
       <div class="qibla-ring" aria-hidden="true"><span>N</span><span>E</span><span>S</span><span>W</span></div>
       <div class="qibla-arrow" id="qiblaArrow" aria-hidden="true">➤</div>
-      <div class="qibla-center"><img src="assets/icons/kaaba.svg" alt="الكعبة المشرفة" width="44" height="44"></div>
+      <div class="qibla-center" id="qiblaCenter" aria-live="polite"><img id="qiblaKaaba" src="assets/icons/kaaba.svg" alt="الكعبة المشرفة" width="44" height="44" hidden><span id="qiblaCenterHint">وجّه الهاتف نحو القبلة</span></div>
     </div>
     <p class="qibla-bearing" id="qiblaBearing">—</p>
     <p id="qiblaHeadingValue" class="muted">اتجاه الهاتف: غير متاح</p>
     <p id="qiblaDifference" class="muted">الفرق بين الهاتف والقبلة: غير متاح</p>
+    <p id="qiblaAlignmentStatus" class="qibla-alignment-status muted" role="status" aria-live="polite">صورة الكعبة تظهر عند اكتشاف اتجاه القبلة.</p>
     <p id="qiblaCalibration" class="muted" role="status">المعايرة: غير مفعّلة</p>
     <p class="muted">الزاوية محسوبة من الشمال الحقيقي، وليست بديلًا عن معايرة بوصلة الجهاز.</p>
     <div class="button-row">
