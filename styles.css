@@ -3073,3 +3073,12 @@ html[data-font-size="large"] { font-size: 18px; }
 /* أيقونة الرفيق الموحدة للصلاة والتنقل */
 .prayer-symbol-image { display: block; width: 52px; height: 52px; object-fit: contain; border-radius: 12px; }
 .nav-icon img { display: block; width: 24px; height: 24px; object-fit: contain; border-radius: 6px; }
+
+/* أيقونات الأقسام الرئيسية */
+.service-item > .service-icon { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 12px; overflow: hidden; }
+.service-item > .service-icon img { display: block; width: 48px; height: 48px; object-fit: contain; }
+
+/* تنسيق أيقونات عناوين الأقسام */
+.page-title-with-icon { display: inline-flex; align-items: center; gap: .65rem; }
+.page-title-with-icon img, .icon-badge img, .page-brand-icon { display: block; object-fit: contain; }
+.icon-badge { display: inline-grid; place-items: center; padding: .2rem; overflow: hidden; }

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+<title id="title">الأذكار</title><desc id="desc">سبحة ذهبية على خلفية خضراء</desc>
+<defs><radialGradient id="bg"><stop stop-color="#15956e"/><stop offset="1" stop-color="#063c31"/></radialGradient><linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe58a"/><stop offset="1" stop-color="#b77918"/></linearGradient></defs>
+<rect width="512" height="512" rx="48" fill="url(#bg)"/>
+<path d="M256 114c91 0 157 61 157 142 0 73-56 129-132 129-73 0-131-52-131-119 0-54 36-96 88-106" fill="none" stroke="#f7d66f" stroke-width="22" stroke-linecap="round"/>
+<g fill="url(#gold)" stroke="#f7d66f" stroke-width="5">
+<circle cx="256" cy="114" r="25"/><circle cx="333" cy="134" r="25"/><circle cx="389" cy="191" r="25"/><circle cx="410" cy="267" r="25"/><circle cx="386" cy="335" r="25"/><circle cx="331" cy="380" r="25"/><circle cx="258" cy="396" r="25"/><circle cx="188" cy="376" r="25"/><circle cx="157" cy="319" r="25"/><circle cx="151" cy="257" r="25"/>
+</g>
+<path d="M154 235c-10-31 4-67 34-82" fill="none" stroke="#ffe58a" stroke-width="14" stroke-linecap="round"/>
+<path d="M185 153l-18-31" stroke="#f7d66f" stroke-width="11" stroke-linecap="round"/><circle cx="162" cy="114" r="16" fill="url(#gold)"/>
+</svg>

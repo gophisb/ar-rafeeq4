@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+<title id="title">القبلة</title><desc id="desc">بوصلة ذهبية تشير إلى الكعبة</desc>
+<defs><radialGradient id="bg"><stop stop-color="#15956e"/><stop offset="1" stop-color="#063c31"/></radialGradient><linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe58a"/><stop offset="1" stop-color="#b77918"/></linearGradient></defs>
+<rect width="512" height="512" rx="48" fill="url(#bg)"/>
+<circle cx="256" cy="256" r="151" fill="#0a4d3d" stroke="#f7d66f" stroke-width="11"/>
+<circle cx="256" cy="256" r="119" fill="none" stroke="#b77918" stroke-width="5"/>
+<path d="M256 113v37M256 362v37M113 256h37M362 256h37" stroke="#ffe58a" stroke-width="12" stroke-linecap="round"/>
+<path d="m256 137 35 119-35 119-35-119z" fill="url(#gold)" stroke="#ffe58a" stroke-width="6" stroke-linejoin="round"/>
+<path d="m256 137 35 119-35-35z" fill="#fff0ad" opacity=".8"/>
+<rect x="226" y="221" width="60" height="55" rx="4" fill="#11181a" stroke="#f7d66f" stroke-width="5"/>
+<path d="M226 235h60" stroke="#f7d66f" stroke-width="7"/><path d="M256 221v55" stroke="#b77918" stroke-width="5"/>
+<text x="256" y="91" text-anchor="middle" font-family="Arial,sans-serif" font-size="34" font-weight="700" fill="#ffe58a">QIBLA</text>
+</svg>
