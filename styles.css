@@ -3230,3 +3230,107 @@ html[data-font-size="large"] { font-size: 18px; }
 .ramadan-countdown strong { color: var(--gold-light, #f1d28a); font-size: 1.15rem; direction: ltr; }
 .ramadan-note { margin: 12px 0 0; color: var(--text-muted); font-size: .78rem; line-height: 1.7; }
 @media (max-width: 560px) { .ramadan-times { grid-template-columns: 1fr; } }
+
+/* إصلاح إغلاق الأذكار: بطاقات الصفحة الطويلة أفقية ومقروءة على الهاتف */
+.azkar-page .dhikr-card {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: right;
+    direction: rtl;
+}
+
+.azkar-page .dhikr-card .card-heading,
+.azkar-page .dhikr-card .dhikr-meta,
+.azkar-page .dhikr-card .dhikr-actions {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+}
+
+.azkar-page .dhikr-card .card-heading {
+    justify-content: flex-start;
+}
+
+.azkar-page .dhikr-card .arabic-text {
+    display: block;
+    width: 100%;
+    margin: 16px 0;
+    direction: rtl;
+    writing-mode: horizontal-tb;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    line-height: 2.05;
+    text-align: right;
+}
+
+.azkar-page .dhikr-card .dhikr-meta {
+    justify-content: space-between;
+    color: var(--text-muted);
+    line-height: 1.8;
+}
+
+.azkar-page .dhikr-card .dhikr-actions {
+    justify-content: flex-start;
+    margin-top: 12px;
+}
+
+.azkar-page .dhikr-card details {
+    display: block;
+    width: 100%;
+    margin-top: 12px;
+}
+
+@media (max-width: 600px) {
+    .azkar-page .dhikr-card .dhikr-meta {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+
+    .azkar-page .dhikr-card .dhikr-actions .btn {
+        flex: 0 0 auto;
+        white-space: nowrap;
+    }
+}
+
+/* إصلاح مباشر لقائمة الأذكار: إلغاء تخطيط flex العمودي الموروث */
+.azkar-page #azkarList > .dhikr-card {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch !important;
+    width: 100%;
+    min-width: 0;
+    gap: 12px;
+    direction: rtl;
+}
+
+.azkar-page #azkarList > .dhikr-card > * {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.azkar-page #azkarList > .dhikr-card .arabic-text {
+    display: block !important;
+    white-space: normal !important;
+    writing-mode: horizontal-tb !important;
+    direction: rtl;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    line-height: 2;
+    text-align: right;
+}
+
+.azkar-page #azkarList > .dhikr-card .dhikr-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}

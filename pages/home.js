@@ -13,6 +13,8 @@
   let ramadanTimes = null;
   let ramadanDateKey = '';
   const verseRequestKey = 'rafeeq.quran.openVerse.v1';
+  const quranProgressKey = 'rafeeq.quran.progress.v1';
+  const quranTotalAyahs = 6236;
 
   function dateKey(date) {
     return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
@@ -21,6 +23,20 @@
   function setText(id, value) {
     const el = document.getElementById(id);
     if (el) el.textContent = value;
+  }
+
+  function renderQuranProgress() {
+    let readAyahs = 0;
+    try {
+      const stored = JSON.parse(localStorage.getItem(quranProgressKey) || '0');
+      readAyahs = Array.isArray(stored) ? stored.length : Number(stored) || 0;
+      readAyahs = Math.max(0, Math.min(quranTotalAyahs, readAyahs));
+    } catch (_) {}
+    const percent = Math.round((readAyahs / quranTotalAyahs) * 100);
+    setText('home-quran-progress', `${percent}%`);
+    setText('home-quran-progress-text', readAyahs ? `تمت قراءة ${readAyahs} من ${quranTotalAyahs} آية` : 'لم تبدأ القراءة بعد');
+    const bar = document.getElementById('home-quran-progress-bar');
+    if (bar) bar.style.width = `${percent}%`;
   }
 
   function formatClock(date) {
@@ -225,6 +241,7 @@
   }
 
   function destroy() {
+    document.removeEventListener('rafeeq:quranProgressChanged', renderQuranProgress);
     window.clearTimeout(timer);
     timer = null;
     dailyTimes = null;
@@ -239,6 +256,8 @@
     loadDailyVerse();
     loadDailyDhikr();
     bindVerseReading();
+    renderQuranProgress();
+    document.addEventListener('rafeeq:quranProgressChanged', renderQuranProgress);
     if (location) {
       setText('home-location', location.source === 'gps' ? 'موقعك عبر GPS' : (location.name || '—'));
     }

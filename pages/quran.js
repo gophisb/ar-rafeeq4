@@ -146,7 +146,20 @@ document.getElementById('searchInput').addEventListener('input', e=>{
 let currentSurah = 1;
 const cache = {};
 const openVerseKey = 'rafeeq.quran.openVerse.v1';
+const quranProgressKey = 'rafeeq.quran.progress.v1';
 let pendingVerse = null;
+let readAyahs = new Set();
+try { readAyahs = new Set(JSON.parse(localStorage.getItem(quranProgressKey) || '[]')); } catch (_) { readAyahs = new Set(); }
+
+function saveQuranProgress() {
+  try { localStorage.setItem(quranProgressKey, JSON.stringify([...readAyahs])); } catch (_) {}
+  document.dispatchEvent(new CustomEvent('rafeeq:quranProgressChanged'));
+}
+
+function markSurahAsRead(surahNumber, ayahs) {
+  ayahs.forEach(ayah => readAyahs.add(`${surahNumber}:${ayah.numberInSurah}`));
+  saveQuranProgress();
+}
 try { pendingVerse = JSON.parse(localStorage.getItem(openVerseKey) || 'null'); } catch (_) { pendingVerse = null; }
 localStorage.removeItem(openVerseKey);
 
@@ -254,6 +267,8 @@ function renderAyahs(ayahs){
       ` : ''}
     </div>
   `).join('');
+
+  markSurahAsRead(currentSurah, ayahs);
 
   document.querySelectorAll('.tafsir-toggle').forEach(btn=>{
     btn.addEventListener('click', ()=>{
