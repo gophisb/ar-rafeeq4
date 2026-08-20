@@ -14,8 +14,12 @@
   function visibleItems() {
     const q = search.value.trim().toLocaleLowerCase('ar');
     return data.filter(item => {
-      const type = String(item.type || '').toLowerCase();
-      const matchesFilter = filter === 'all' || (filter === 'morning' && /صباح/.test(type)) || (filter === 'evening' && /مساء/.test(type));
+      const type = item.type;
+      const typeText = String(type ?? '').toLocaleLowerCase('ar');
+      // البيانات المحلية تستخدم: 0 = صباح ومساء، 1 = صباح، 2 = مساء.
+      const matchesFilter = filter === 'all'
+        || (filter === 'morning' && (type === 0 || type === 1 || /صباح/.test(typeText)))
+        || (filter === 'evening' && (type === 0 || type === 2 || /مساء/.test(typeText)));
       const matchesSearch = !q || `${item.text} ${item.source} ${item.benefit}`.toLocaleLowerCase('ar').includes(q);
       return matchesFilter && matchesSearch;
     });

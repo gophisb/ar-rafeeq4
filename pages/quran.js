@@ -145,6 +145,10 @@ document.getElementById('searchInput').addEventListener('input', e=>{
 
 let currentSurah = 1;
 const cache = {};
+const openVerseKey = 'rafeeq.quran.openVerse.v1';
+let pendingVerse = null;
+try { pendingVerse = JSON.parse(localStorage.getItem(openVerseKey) || 'null'); } catch (_) { pendingVerse = null; }
+localStorage.removeItem(openVerseKey);
 
 function openSurah(n){
   currentSurah = n;
@@ -217,12 +221,27 @@ function loadSurah(n){
     cache[n] = ayahs;
     renderAyahs(ayahs);
     document.getElementById('status').hidden = true;
+    if (pendingVerse && Number(pendingVerse.surah) === n) {
+      const target = document.querySelectorAll('.ayah-block')[Number(pendingVerse.ayah) - 1];
+      if (target) {
+        target.id = `ayah-${pendingVerse.ayah}`;
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        target.classList.add('ayah-highlight');
+        window.setTimeout(() => target.classList.remove('ayah-highlight'), 2200);
+      }
+      pendingVerse = null;
+    }
   }).catch(()=>{
     document.getElementById('status').textContent =
       'تعذّر تحميل ملفات القرآن أو تفسير السعدي المحلية.';
   });
 }
 
+function openPendingVerse() {
+  if (!pendingVerse || !Number.isFinite(Number(pendingVerse.surah))) return;
+  const surah = Math.min(Math.max(Number(pendingVerse.surah), 1), 114);
+  openSurah(surah);
+}
 
 function renderAyahs(ayahs){
   document.getElementById('status').hidden = true;
@@ -246,5 +265,6 @@ function renderAyahs(ayahs){
 }
 
 renderGrid(SURAH_LIST);
+openPendingVerse();
 })();
 

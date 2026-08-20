@@ -36,12 +36,17 @@
   function dateKey(date) { return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`; }
   function updateAdhanStatus(text) { if (adhanStatus) adhanStatus.textContent = text; }
   function playAdhan(reason) {
-    if (!audio) return;
+    if (!audio) {
+      updateAdhanStatus('ملف الأذان المحلي غير موجود في هذه النسخة.');
+      return;
+    }
     if (!adhanEnabled && reason !== 'test') {
       updateAdhanStatus('الأذان محفوظ محليًا، لكن التشغيل التلقائي متوقف من الإعدادات.');
       return;
     }
+    audio.volume = 0.9;
     audio.currentTime = 0;
+    audio.load();
     const result = audio.play();
     if (result && typeof result.catch === 'function') {
       result.then(() => updateAdhanStatus('يُشغّل الأذان المحلي الآن.')).catch(() => updateAdhanStatus('رفض المتصفح التشغيل التلقائي؛ اضغط «تجربة الأذان» للسماح بالصوت.'));
@@ -49,6 +54,7 @@
       updateAdhanStatus('يُشغّل الأذان المحلي الآن.');
     }
   }
+  if (audio) audio.addEventListener('error', () => updateAdhanStatus('تعذر قراءة ملف الأذان المحلي؛ تحقق من وجود adhan.mp3.'));
   function formatLocationStatus(next, source) {
     if (source === 'gps' || next.source === 'gps') {
       return `تم تحديد الموقع عبر GPS: ${next.lat.toFixed(4)}، ${next.lng.toFixed(4)}. المواقيت محسوبة من إحداثيات هاتفك.`;
