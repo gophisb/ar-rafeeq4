@@ -10,6 +10,8 @@
   let dailyVerse = null;
   let versePromise = null;
   let dhikrPromise = null;
+  let ramadanTimes = null;
+  let ramadanDateKey = '';
   const verseRequestKey = 'rafeeq.quran.openVerse.v1';
 
   function dateKey(date) {
@@ -61,10 +63,88 @@
     return dailyTimes;
   }
 
+  function getHijriParts(date) {
+    try {
+      const parts = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn', { day: 'numeric', month: 'numeric', year: 'numeric' }).formatToParts(date);
+      return Object.fromEntries(parts.filter(part => part.type !== 'literal').map(part => [part.type, Number(part.value)]));
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function isRamadan(date) {
+    return getHijriParts(date)?.month === 9;
+  }
+
+  function formatDuration(milliseconds) {
+    const total = Math.max(0, Math.floor(milliseconds / 1000));
+    const hours = Math.floor(total / 3600);
+    const minutes = Math.floor((total % 3600) / 60);
+    const seconds = total % 60;
+    return [hours, minutes, seconds].map(value => String(value).padStart(2, '0')).join(':');
+  }
+
+  function dateAtMinutes(baseDate, minutes) {
+    const target = new Date(baseDate);
+    target.setHours(0, 0, 0, 0);
+    target.setMinutes(Math.round(minutes));
+    return target;
+  }
+
+  function updateRamadan(now, times) {
+    const card = document.getElementById('ramadan-card');
+    if (!card) return;
+    if (!isRamadan(now) || !times?.minutes) {
+      card.hidden = true;
+      ramadanTimes = null;
+      ramadanDateKey = '';
+      return;
+    }
+    card.hidden = false;
+    const key = dateKey(now);
+    if (!ramadanTimes || ramadanDateKey !== key) {
+      const imsakOffset = 10;
+      const todayImsak = Number(times.minutes.fajr) - imsakOffset;
+      const todayIftar = Number(times.minutes.maghrib);
+      const tomorrow = PrayerEngine.calculateTomorrow(now, location, PrayerEngine.DEFAULT_SETTINGS);
+      const tomorrowImsak = Number(tomorrow?.minutes?.fajr) - imsakOffset;
+      ramadanTimes = { todayImsak, todayIftar, tomorrowImsak };
+      ramadanDateKey = key;
+    }
+    const imsak = dateAtMinutes(now, ramadanTimes.todayImsak);
+    const iftar = dateAtMinutes(now, ramadanTimes.todayIftar);
+    const nowMinutes = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+    let target = iftar;
+    let label = 'متبقي على الإفطار';
+    if (nowMinutes < ramadanTimes.todayImsak) {
+      target = imsak;
+      label = 'متبقي على الإمساك';
+    } else if (nowMinutes >= ramadanTimes.todayIftar) {
+      target = dateAtMinutes(now, ramadanTimes.tomorrowImsak);
+      target.setDate(target.getDate() + 1);
+      label = 'متبقي على الإمساك';
+    }
+    setText('ramadan-suhoor-time', formatTimeFromMinutes(ramadanTimes.todayImsak));
+    setText('ramadan-iftar-time', formatTimeFromMinutes(ramadanTimes.todayIftar));
+    setText('ramadan-countdown-label', label);
+    setText('ramadan-countdown', formatDuration(target.getTime() - now.getTime()));
+    const hijri = getHijriParts(now);
+    setText('ramadan-day-label', `اليوم ${hijri?.day || '—'} من رمضان — حسب ${location.source === 'gps' ? 'موقع GPS' : (location.name || 'الولاية')}`);
+  }
+
+  function formatTimeFromMinutes(minutes) {
+    if (!Number.isFinite(minutes)) return '--:--';
+    const normalized = ((minutes % 1440) + 1440) % 1440;
+    const hours = Math.floor(normalized / 60);
+    const mins = Math.round(normalized % 60);
+    return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+  }
+
   function render(now) {
     setText('home-current-time', formatClock(now));
     setText('home-hijri-date', formatHijri(now));
     const times = calculate(now);
+    updateRamadan(now, times);
     if (!times || !window.PrayerEngine) {
       setText('home-next-prayer', 'تعذر الحساب');
       setText('home-next-prayer-time', '--:--');
@@ -149,6 +229,8 @@
     timer = null;
     dailyTimes = null;
     calculationDateKey = '';
+    ramadanTimes = null;
+    ramadanDateKey = '';
   }
 
   function initialize() {

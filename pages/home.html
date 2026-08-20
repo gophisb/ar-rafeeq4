@@ -145,9 +145,36 @@
 
     </section>
 
+    <!-- تظهر هذه البطاقة داخل رمضان الهجري فقط -->
+    <section class="ramadan-card card-premium" id="ramadan-card" hidden aria-labelledby="ramadan-title">
+        <div class="ramadan-header">
+            <div>
+                <span class="section-kicker">رمضان المبارك</span>
+                <h2 id="ramadan-title">مواقيت الصيام</h2>
+                <p id="ramadan-day-label">السحور والإفطار حسب موقعك الحالي</p>
+            </div>
+            <span class="ramadan-crescent" aria-hidden="true">☾</span>
+        </div>
+        <div class="ramadan-times">
+            <div class="ramadan-time-box">
+                <span>الإمساك / نهاية السحور</span>
+                <strong id="ramadan-suhoor-time">--:--</strong>
+            </div>
+            <div class="ramadan-time-box">
+                <span>الإفطار</span>
+                <strong id="ramadan-iftar-time">--:--</strong>
+            </div>
+        </div>
+        <div class="ramadan-countdown" aria-live="polite">
+            <span id="ramadan-countdown-label">العد التنازلي</span>
+            <strong id="ramadan-countdown">--:--:--</strong>
+        </div>
+        <p class="ramadan-note">تُحسب المواقيت محليًا من الولاية أو GPS المختار، ولا تعتمد على خدمة خارجية.</p>
+    </section>
+
 
     <!-- ======================================================
-         LOCATION / DATE
+         QUICK ACCESS / DATE
     ======================================================= -->
 
     <section class="info-strip">

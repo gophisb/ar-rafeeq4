@@ -3213,3 +3213,20 @@ html[data-font-size="large"] { font-size: 18px; }
     height: 36px;
     object-fit: contain;
 }
+
+
+/* رمضان: البطاقة لا تظهر إلا بعد إزالة hidden من منطق الصفحة الرئيسية */
+.ramadan-card[hidden] { display: none !important; }
+.ramadan-card { margin: 20px 0; padding: 20px; border-radius: var(--radius-xl, 28px); }
+.ramadan-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.ramadan-header h2 { margin: 4px 0; color: var(--text); }
+.ramadan-header p { margin: 0; color: var(--text-muted); font-size: .9rem; }
+.ramadan-crescent { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 18px; color: var(--gold-light, #f1d28a); background: rgba(216,180,106,.12); font-size: 2rem; }
+.ramadan-times { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 18px 0 12px; }
+.ramadan-time-box { display: flex; flex-direction: column; gap: 7px; padding: 14px; border: 1px solid var(--border); border-radius: 18px; background: rgba(255,255,255,.045); }
+.ramadan-time-box span, .ramadan-countdown-label { color: var(--text-muted); font-size: .84rem; }
+.ramadan-time-box strong { color: var(--primary-bright); font-size: 1.55rem; letter-spacing: .03em; }
+.ramadan-countdown { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border-radius: 16px; background: rgba(94,234,212,.08); }
+.ramadan-countdown strong { color: var(--gold-light, #f1d28a); font-size: 1.15rem; direction: ltr; }
+.ramadan-note { margin: 12px 0 0; color: var(--text-muted); font-size: .78rem; line-height: 1.7; }
+@media (max-width: 560px) { .ramadan-times { grid-template-columns: 1fr; } }
