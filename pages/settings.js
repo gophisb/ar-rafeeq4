@@ -67,18 +67,26 @@
 
     if (adhan) {
       adhan.checked = localStorage.getItem(ADHAN_KEY) === 'true';
-      if (adhanStatus) adhanStatus.textContent = adhan.checked ? 'الأذان مفعّل وسيُشغّل عند دخول الوقت أثناء بقاء التطبيق مفتوحًا.' : 'الأذان متوقف.';
-      adhan.onchange = () => {
+      if (adhanStatus) adhanStatus.textContent = adhan.checked ? 'الأذان مفعّل وسيُجدول Native عند أوقات الصلاة.' : 'الأذان متوقف.';
+      adhan.onchange = async () => {
         localStorage.setItem(ADHAN_KEY, String(adhan.checked));
-        if (adhanStatus) adhanStatus.textContent = adhan.checked ? 'تم تفعيل الأذان المحلي.' : 'تم إيقاف الأذان المحلي.';
+        if (adhanStatus) adhanStatus.textContent = adhan.checked ? 'تم تفعيل الأذان المحلي وجدولة التنبيهات.' : 'تم إيقاف الأذان المحلي.';
+        if (window.RafeeqNativeNotifications) {
+          window.RafeeqNativeNotifications.refresh();
+          if (adhan.checked) await window.RafeeqNativeNotifications.requestPermission();
+        }
+        document.dispatchEvent(new CustomEvent('rafeeq:adhanChanged', { detail: { enabled: adhan.checked } }));
       };
     }
 
-    if (notify) notify.onclick = () => {
-      if (!('Notification' in window)) {
+    if (notify) notify.onclick = async () => {
+      if (window.RafeeqNativeNotifications) {
+        const status = await window.RafeeqNativeNotifications.requestPermission();
+        setStatus('settingsNotificationStatus', status?.display === 'granted' ? 'تم السماح بإشعارات Android المحلية.' : 'لم يتم السماح بإشعارات Android المحلية.');
+      } else if (!('Notification' in window)) {
         setStatus('settingsNotificationStatus', 'الإشعارات غير مدعومة في هذا المتصفح.');
       } else {
-        setStatus('settingsNotificationStatus', `دعم الإشعارات متاح. الحالة الحالية: ${Notification.permission}. لم يتم طلب إذن جديد تلقائيًا.`);
+        setStatus('settingsNotificationStatus', `دعم الإشعارات متاح. الحالة الحالية: ${Notification.permission}.`);
       }
     };
 

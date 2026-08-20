@@ -86,6 +86,9 @@
         dailyTimes = PrayerEngine.calculate(now, location, PrayerEngine.DEFAULT_SETTINGS);
         calculationDateKey = keyNow;
         renderTimes();
+        if (window.RafeeqNativeNotifications) {
+          window.RafeeqNativeNotifications.schedule(location, dailyTimes).catch(error => console.warn('Native prayer schedule failed', error));
+        }
       } catch (error) {
         dailyTimes = null;
         calculationDateKey = '';
@@ -188,6 +191,10 @@
       });
     };
     if (testAdhan) testAdhan.onclick = () => playAdhan('test');
+    if (window.RafeeqNativeNotifications) {
+      window.RafeeqNativeNotifications.refresh();
+      window.RafeeqNativeNotifications.schedule(location, dailyTimes, true).catch(error => console.warn('Native prayer schedule refresh failed', error));
+    }
     locationListener = event => {
       if (event.detail) setLocation(event.detail, event.detail.source);
     };
