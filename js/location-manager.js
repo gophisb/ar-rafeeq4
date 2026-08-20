@@ -204,13 +204,8 @@ const LocationManager = (() => {
                             ? currentLocation.code
                             : DEFAULT_WILAYA_CODE,
 
-                        name: currentLocation
-                            ? currentLocation.name
-                            : "موقعك الحالي",
-
-                        nameFr: currentLocation
-                            ? currentLocation.nameFr
-                            : "Current location",
+                        name: "موقع GPS الحالي",
+                        nameFr: "Current GPS location",
 
                         lat,
                         lng,
@@ -510,9 +505,9 @@ const LocationManager = (() => {
          * قائمة الولايات إن وجدت
          */
 
-        const selector =
-            document.querySelector(
-                "#wilaya-select"
+const selector =
+                document.querySelector(
+                "#wilaya-select, #wilayaSelect"
             );
 
 

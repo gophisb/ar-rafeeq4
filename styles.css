@@ -403,6 +403,115 @@ button {
     cursor: pointer;
 }
 
+/* عناصر الإدخال والأزرار الموحدة: تمنع ألوان المتصفح البيضاء مع النص الفاتح */
+.btn,
+.input,
+select.input,
+textarea.input,
+button.input {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1px solid var(--border-bright);
+    border-radius: var(--radius-sm);
+    background: var(--surface-solid);
+    color: var(--text);
+    min-height: 2.75rem;
+    padding: .65rem .9rem;
+    line-height: 1.35;
+    text-align: center;
+    transition: background var(--transition), border-color var(--transition), color var(--transition), box-shadow var(--transition), transform var(--transition);
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.btn:hover,
+.btn:focus-visible,
+.input:focus-visible,
+select.input:focus-visible,
+textarea.input:focus-visible {
+    outline: none;
+    border-color: var(--border-primary);
+    box-shadow: 0 0 0 3px rgba(32, 201, 151, .16);
+}
+
+.btn:active {
+    transform: scale(.97);
+}
+
+.btn.primary,
+.btn.primary:hover,
+.btn.primary:focus-visible {
+    background: linear-gradient(135deg, rgba(32, 201, 151, .32), rgba(10, 112, 99, .62));
+    color: #f7fffd;
+    border-color: rgba(94, 234, 212, .42);
+}
+
+.input,
+select.input,
+textarea.input {
+    width: 100%;
+    text-align: right;
+    direction: rtl;
+}
+
+.input::placeholder {
+    color: var(--text-muted);
+    opacity: 1;
+}
+
+select.input option {
+    background: var(--surface-solid);
+    color: var(--text);
+}
+
+select.input option:disabled {
+    color: var(--text-muted);
+}
+
+.segmented {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .55rem;
+    margin-bottom: .8rem;
+}
+
+.segmented .btn {
+    flex: 1 1 8rem;
+}
+
+.segmented .azkar-filter.active,
+.segmented .azkar-filter.primary {
+    background: rgba(32, 201, 151, .23);
+    color: var(--primary-bright);
+    border-color: var(--border-primary);
+}
+
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .65rem;
+    align-items: center;
+    margin-top: .8rem;
+}
+
+.button-row .btn {
+    flex: 1 1 10rem;
+}
+
+.field-help {
+    margin: .55rem 0 0;
+    color: var(--text-muted);
+    font-size: .88rem;
+    line-height: 1.65;
+}
+
 a {
     color: inherit;
     text-decoration: none;

@@ -30,6 +30,17 @@
   }
 
   function resolveLocation() {
+    if (window.LocationManager) {
+      const current = LocationManager.getCurrent() || LocationManager.init();
+      if (current) {
+        return {
+          ...current,
+          latitude: Number(current.latitude ?? current.lat),
+          longitude: Number(current.longitude ?? current.lng),
+          timezone: Number(current.timezone ?? 1)
+        };
+      }
+    }
     if (!window.Locations || typeof Locations.toPrayerLocation !== 'function') return null;
     const saved = localStorage.getItem(prayerKey) || '16';
     const wilaya = Locations.getByCode(saved) || Locations.getDefault();
@@ -88,6 +99,9 @@
   function initialize() {
     destroy();
     location = resolveLocation();
+    if (location) {
+      setText('home-location', location.source === 'gps' ? 'موقعك عبر GPS' : (location.name || '—'));
+    }
     if (location && window.PrayerEngine) refresh();
     else {
       setText('home-current-time', formatClock(new Date()));

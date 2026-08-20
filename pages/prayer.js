@@ -1,4 +1,4 @@
-(function () {
+(() => {
   'use strict';
 
   const select = document.getElementById('wilayaSelect');
@@ -11,7 +11,6 @@
   const audio = document.getElementById('adhanAudio');
   const testAdhan = document.getElementById('testAdhan');
   const adhanStatus = document.getElementById('adhanStatus');
-  const key = 'rafeeq.prayer.manualWilaya.v1';
   const adhanKey = 'rafeeq.adhan.enabled.v1';
   const names = { fajr: 'الفجر', sunrise: 'الشروق', dhuhr: 'الظهر', asr: 'العصر', maghrib: 'المغرب', isha: 'العشاء' };
   let location = null;
@@ -20,7 +19,18 @@
   let timer = null;
   let initialized = false;
   let lastAnnounced = '';
+  let locationListener = null;
   let adhanEnabled = localStorage.getItem(adhanKey) === 'true';
+
+  function normalizeLocation(next) {
+    if (!next) return null;
+    return {
+      ...next,
+      latitude: Number(next.latitude ?? next.lat),
+      longitude: Number(next.longitude ?? next.lng),
+      timezone: Number(next.timezone ?? 1)
+    };
+  }
 
   function escapeHtml(v) { return String(v || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c])); }
   function dateKey(date) { return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`; }
@@ -39,12 +49,27 @@
       updateAdhanStatus('يُشغّل الأذان المحلي الآن.');
     }
   }
-  function setLocation(next, source) {
+  function formatLocationStatus(next, source) {
+    if (source === 'gps' || next.source === 'gps') {
+      return `تم تحديد الموقع عبر GPS: ${next.lat.toFixed(4)}، ${next.lng.toFixed(4)}. المواقيت محسوبة من إحداثيات هاتفك.`;
+    }
+    return `تم اعتماد ولاية ${next.name} (${next.code}). المواقيت محسوبة من إحداثيات الولاية.`;
+  }
+  function setSelectForLocation(next) {
+    if (!select) return;
+    select.value = next && next.source !== 'gps' ? next.code : '';
+  }
+  function setLocation(next, source = next?.source || 'wilaya') {
     if (!next) return;
-    location = next;
+    location = normalizeLocation(next);
+    if (!Number.isFinite(location.latitude) || !Number.isFinite(location.longitude)) {
+      if (locationStatus) locationStatus.textContent = 'إحداثيات الموقع غير صالحة؛ اختر ولاية أو أعد محاولة GPS.';
+      return;
+    }
     dailyTimes = null;
     calculationDateKey = '';
-    locationStatus.textContent = source === 'gps' ? `تم استخدام GPS: ${next.name || 'الموقع الحالي'}` : `الموقع اليدوي ثابت: ${next.name}`;
+    setSelectForLocation(next);
+    if (locationStatus) locationStatus.textContent = formatLocationStatus(next, source);
     calculateDay(new Date());
   }
   function calculateDay(now) {
@@ -58,14 +83,14 @@
       } catch (error) {
         dailyTimes = null;
         calculationDateKey = '';
-        locationStatus.textContent = 'تعذر حساب المواقيت لهذا الموقع.';
+        if (locationStatus) locationStatus.textContent = 'تعذر حساب المواقيت لهذا الموقع.';
         console.error('Prayer calculation failed', error);
       }
     }
     return dailyTimes;
   }
   function renderTimes() {
-    if (!dailyTimes) return;
+    if (!dailyTimes || !list) return;
     list.innerHTML = Object.keys(names).map(name => `<article class="card prayer-time-row"><span>${names[name]}</span><strong>${escapeHtml(dailyTimes.formatted[name])}</strong></article>`).join('');
   }
   function maybeAnnounce(times, now) {
@@ -81,9 +106,8 @@
     });
   }
   function tick() {
-    if (!location || !window.PrayerEngine) return;
+    if (!location || !window.PrayerEngine || !currentTime) return;
     const now = new Date();
-    if (!currentTime) return;
     currentTime.textContent = now.toLocaleTimeString('ar-DZ', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
     const times = calculateDay(now);
     if (!times) return;
@@ -109,43 +133,59 @@
     window.clearTimeout(timer);
     timer = window.setTimeout(refresh, 1000);
   }
-  function destroy() {
-    window.clearTimeout(timer);
-    timer = null;
-    initialized = false;
-  }
-  function initialize() {
-    if (initialized) return;
-    initialized = true;
-    if (!window.Locations || !window.PrayerEngine) {
-      locationStatus.textContent = 'محرك الصلاة غير متاح.';
-      return;
-    }
-    select.innerHTML = '';
+  function populateWilayas(current) {
+    if (!select || !window.Locations) return;
+    select.innerHTML = '<option value="" disabled>اختر ولاية جزائرية يدويًا</option>';
     Locations.all().forEach(w => {
       const option = document.createElement('option');
       option.value = w.code;
       option.textContent = `${w.code} — ${w.name}`;
       select.appendChild(option);
     });
-    const saved = localStorage.getItem(key) || '16';
-    select.value = saved;
-    setLocation(Locations.toPrayerLocation(Locations.getByCode(saved) || Locations.getDefault()), 'manual');
+    setSelectForLocation(current);
+  }
+  function destroy() {
+    window.clearTimeout(timer);
+    timer = null;
+    if (locationListener) {
+      document.removeEventListener('rafeeq:locationChanged', locationListener);
+      locationListener = null;
+    }
+    initialized = false;
+  }
+  function initialize() {
+    if (initialized) return;
+    initialized = true;
+    if (!window.Locations || !window.PrayerEngine || !window.LocationManager) {
+      if (locationStatus) locationStatus.textContent = 'خدمات الموقع أو محرك الصلاة غير متاحة.';
+      return;
+    }
+    const current = LocationManager.getCurrent() || LocationManager.init();
+    populateWilayas(current);
+    setLocation(current, current.source);
     updateAdhanStatus(adhanEnabled ? 'التشغيل التلقائي مفعّل من الإعدادات.' : 'التشغيل متوقف حتى تفعّله من الإعدادات.');
     document.getElementById('useWilaya').onclick = () => {
-      const w = Locations.getByCode(select.value);
-      if (!w) return;
-      localStorage.setItem(key, w.code);
-      setLocation(Locations.toPrayerLocation(w), 'manual');
+      const wilaya = Locations.getByCode(select?.value);
+      if (!wilaya) {
+        if (locationStatus) locationStatus.textContent = 'اختر ولاية من القائمة أولًا، ثم اضغط «اعتماد الولاية المختارة».';
+        return;
+      }
+      LocationManager.setWilaya(wilaya.code);
+      const selected = LocationManager.getCurrent() || Locations.toPrayerLocation(wilaya);
+      setLocation(selected, 'wilaya');
       refresh();
     };
     document.getElementById('useGps').onclick = () => {
-      locationStatus.textContent = 'جاري طلب إذن GPS...';
-      PrayerEngine.getGPSLocation({ timeout: 15000 }).then(gps => setLocation(gps, 'gps')).catch(() => {
-        locationStatus.textContent = 'تعذر استخدام GPS؛ بقي الاختيار اليدوي محفوظًا.';
+      if (locationStatus) locationStatus.textContent = 'جاري طلب إذن GPS... وافق على الوصول إلى موقعك ليتم الحساب تلقائيًا.';
+      LocationManager.requestGPS().then(gps => setLocation(gps, 'gps')).catch(error => {
+        if (locationStatus) locationStatus.textContent = error?.code === 1 ? 'لم تسمح بالوصول إلى GPS؛ اختر ولاية يدويًا من القائمة.' : 'تعذر استخدام GPS؛ اختر ولاية يدويًا من القائمة وحاول مرة أخرى.';
       });
     };
     if (testAdhan) testAdhan.onclick = () => playAdhan('test');
+    locationListener = event => {
+      if (event.detail) setLocation(event.detail, event.detail.source);
+    };
+    document.addEventListener('rafeeq:locationChanged', locationListener);
     refresh();
   }
 
