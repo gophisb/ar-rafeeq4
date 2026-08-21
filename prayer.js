@@ -1709,39 +1709,16 @@ const PrayerEngine = (() => {
             totalSeconds % 60;
 
 
-        if (
-            hours > 0
-        ) {
-
-            return (
-
-                String(hours)
-                    .padStart(2, "0")
-
-                +
-
-                ":"
-
-                +
-
-                String(mins)
-                    .padStart(2, "0")
-
-                +
-
-                ":"
-
-                +
-
-                String(seconds)
-                    .padStart(2, "0")
-
-            );
-
-        }
-
-
         return (
+
+            String(hours)
+                .padStart(2, "0")
+
+            +
+
+            ":"
+
+            +
 
             String(mins)
                 .padStart(2, "0")
