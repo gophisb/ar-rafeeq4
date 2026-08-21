@@ -2,7 +2,7 @@
   'use strict';
 
   const ADHAN_KEY = 'rafeeq.adhan.enabled.v1';
-  const CHANNEL_ID = 'rafeeq_adhan_v2';
+  const CHANNEL_ID = 'rafeeq_adhan_v3';
   const BASE_ID = 41000;
   const PRAYER_NAMES = {
     fajr: 'الفجر',
@@ -45,7 +45,7 @@
       id: CHANNEL_ID,
       name: 'أوقات الصلاة',
       description: 'تنبيهات أوقات الصلاة والأذان المحلي',
-      sound: 'adhan',
+      sound: 'adhan_notification',
       importance: 5,
       visibility: 1,
       vibration: true
@@ -76,7 +76,7 @@
           body: 'الرفيق — الأذان المحلي',
           channelId: CHANNEL_ID,
           schedule: { at, allowWhileIdle: true, isExactNotification: true },
-          sound: 'adhan',
+          sound: 'adhan_notification',
           smallIcon: 'ic_launcher'
         };
       }).filter(Boolean);
