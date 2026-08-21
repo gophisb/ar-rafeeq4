@@ -2,7 +2,7 @@
   'use strict';
 
   const ADHAN_KEY = 'rafeeq.adhan.enabled.v1';
-  const CHANNEL_ID = 'rafeeq_adhan';
+  const CHANNEL_ID = 'rafeeq_adhan_v2';
   const BASE_ID = 41000;
   const PRAYER_NAMES = {
     fajr: 'الفجر',
