@@ -22,6 +22,12 @@
     return capacitor.Plugins && capacitor.Plugins.LocalNotifications ? capacitor.Plugins.LocalNotifications : null;
   }
 
+  function adhanPlaybackPlugin() {
+    const capacitor = window.Capacitor;
+    if (!capacitor || (typeof capacitor.isNativePlatform === 'function' && !capacitor.isNativePlatform())) return null;
+    return capacitor.Plugins && capacitor.Plugins.RafeeqAdhan ? capacitor.Plugins.RafeeqAdhan : null;
+  }
+
   function enabled() {
     try { return localStorage.getItem(ADHAN_KEY) === 'true'; } catch (_) { return false; }
   }
@@ -88,6 +94,8 @@
     if (!plugin) return { native: false, scheduled: 0 };
     if (!enabled()) {
       await cancelManaged(plugin);
+      const playback = adhanPlaybackPlugin();
+      if (playback && typeof playback.cancel === 'function') await playback.cancel();
       lastSignature = '';
       return { native: true, scheduled: 0, disabled: true };
     }
@@ -106,6 +114,15 @@
     await cancelManaged(plugin);
     const notifications = buildNotifications(location, todayTimes);
     if (notifications.length) await plugin.schedule({ notifications });
+    const playback = adhanPlaybackPlugin();
+    if (playback && typeof playback.schedule === 'function') {
+      await playback.schedule({
+        alarms: notifications.map((notification, index) => ({
+          id: index,
+          at: notification.schedule.at.getTime()
+        }))
+      });
+    }
     lastSignature = signature;
     return { native: true, scheduled: notifications.length };
   }
