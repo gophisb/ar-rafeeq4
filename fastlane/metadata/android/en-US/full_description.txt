@@ -1,0 +1,51 @@
+# بيانات متجر جوجل بلاي - الرفيق 4 (Google Play Store Metadata)
+
+## 1. اللغة العربية (Arabic)
+
+### اسم التطبيق (App Name) - بحد أقصى 30 حرفاً
+الرفيق 4: مواقيت الصلاة والقرآن
+
+### الوصف القصير (Short Description) - بحد أقصى 80 حرفاً
+رفيقك المسلم الشامل: مواقيت دقيقة، أذان تلقائي، قرآن وتفسير بواجهة زجاجية عصرية.
+
+### الوصف الكامل (Full Description)
+**الرفيق 4 - التجربة الإسلامية الأرقى على أندرويد**
+
+يأتي إصدار "الرفيق 4" ليعيد تعريف التطبيقات الإسلامية من خلال دمج الدقة الهندسية مع جمالية التصميم الزجاجي (Liquid Glass). صُمم هذا التطبيق ليكون رفيقاً يومياً لكل مسلم يبحث عن الجودة والخصوصية والجمال في آن واحد.
+
+**لماذا تختار الرفيق 4؟**
+- **مواقيت صلاة فائقة الدقة:** حسابات دقيقة بناءً على موقعك الجغرافي مع دعم لكافة المذاهب وطرق الحساب العالمية.
+- **نظام أذان متطور:** تنبيهات تلقائية للأذان تعمل بكفاءة عالية على نظام أندرويد، تذكرك بصلاتك في وقتها.
+- **القرآن الكريم والتفسير:** قراءة سلسة للقرآن الكريم مع إمكانية الوصول السريع للتفاسير المعتمدة لتعميق فهمك للآيات.
+- **واجهة Liquid Glass:** تصميم عصري مريح للعين يدعم الوضع الليلي والنهاري مع تجربة مستخدم (UX) انسيابية.
+- **الأذكار والأربعون النووية:** مكتبة شاملة من الأذكار اليومية وأحاديث الأربعين النووية مع شرح مبسط.
+- **اتجاه القبلة:** بوصلة دقيقة لتحديد اتجاه القبلة من أي مكان في العالم.
+- **الخصوصية أولاً:** لا إعلانات، لا تتبع، ولا جمع للبيانات الشخصية. بياناتك تبقى على جهازك.
+
+الرفيق 4 ليس مجرد تطبيق، بل هو تحفة هندسية صُممت لترافقك في رحلتك الإيمانية.
+
+---
+
+## 2. اللغة الإنجليزية (English)
+
+### App Name
+Ar-Rafeeq 4: Prayer & Quran
+
+### Short Description
+Your ultimate Muslim companion: Accurate prayer times, Adhan, Quran & modern UI.
+
+### Full Description
+**Ar-Rafeeq 4 - The Premium Islamic Experience on Android**
+
+Ar-Rafeeq 4 redefines Islamic applications by merging engineering precision with the stunning Liquid Glass design aesthetic. Built for the modern Muslim, this app offers a seamless blend of functionality, privacy, and beauty.
+
+**Key Features:**
+- **Highly Accurate Prayer Times:** Precise calculations based on your location with support for various calculation methods worldwide.
+- **Advanced Adhan System:** Reliable automatic Adhan notifications to ensure you never miss a prayer.
+- **Holy Quran & Tafsir:** A smooth reading experience of the Quran with quick access to trusted interpretations (Tafsir).
+- **Liquid Glass UI:** A modern, eye-pleasing interface with full RTL support and a fluid user experience.
+- **Adhkar & Nawawi’s Forty:** A comprehensive library of daily supplications and the Forty Hadiths with simplified explanations.
+- **Qibla Finder:** An accurate compass to find the Qibla direction from anywhere in the world.
+- **Privacy-Centric:** No ads, no tracking, and no personal data collection. Your data stays on your device.
+
+Ar-Rafeeq 4 is more than just an app; it is an engineering masterpiece designed to accompany you on your spiritual journey.
