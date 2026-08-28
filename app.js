@@ -23,12 +23,12 @@ class AppController {
 
   async initApp() {
     console.log('Ar-Rafeeq 4 Initializing...');
-
+    
     // إحداثيات افتراضية أو جلبها من نظام تحديد الموقع الجغرافي (Geolocation)
     const coordinates = { lat: 36.365, lng: 6.614 }; // مثال: إحداثيات الجزائر
+    const calculationParams = { method: 'MWL' };
 
-    // ✅ الإصلاح: تمرير اسم المنهج مباشرة بدلاً من كائن
-    const prayerEngine = new PrayerEngine(coordinates, "MWL");
+    const prayerEngine = new PrayerEngine(coordinates, calculationParams);
     const todayTimes = prayerEngine.calculateTimes(new Date());
 
     this.renderPrayerTimes(todayTimes);
