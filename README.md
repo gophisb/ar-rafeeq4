@@ -1,112 +1,600 @@
-# Ar-Rafeeq 4 | الرفيق 4
-> **Advanced Islamic Companion PWA & Native Android Application**
+<div align="center">
 
-Ar-Rafeeq 4 is a high-performance, offline-first Islamic utility application engineered for reliability, accessibility, and precision. Built using a **Spec-Driven Development (SDD)** methodology, it represents a professional-grade implementation of modern web and mobile engineering.
+<img src="assets/icon-192.png" width="96" alt="الرفيق 4"/>
 
----
+الرفيق 4 | Ar-Rafeeq 4
 
-## 🏗 Architecture & Engineering
+رفيقك في طريق الخير
 
-The project follows a modular **Vanilla JS Architecture** to ensure maximum performance and minimal overhead, optimized for both web and native mobile environments.
+An offline-first Islamic companion for Web, PWA, and Android
 
-| Component | Technology | Description |
-| :--- | :--- | :--- |
-| **Frontend** | HTML5, CSS3, Vanilla JS | Optimized for RTL (Right-to-Left) and Arabic typography. |
-| **Mobile Bridge** | Capacitor | Native Android integration for background services and alarms. |
-| **Offline Engine** | Service Workers (PWA) | Full offline capability with strategic App Shell caching. |
-| **Data Layer** | Local JSON Bundles | 114 Surahs, Tafsir Saadi, Adhkar, and Hadith served locally. |
-| **Logic Core** | Modular Prayer Engine | Real-time astronomical calculations for prayer times. |
 
----
 
-## 🛠 Methodology: Spec-Driven Development (SDD)
 
-This version of Ar-Rafeeq was developed using the **Spec Kit (specify-cli)** framework, ensuring that every feature follows a rigorous engineering lifecycle:
 
-1.  **Constitution:** Establishing core project principles and architectural constraints.
-2.  **Specification:** Defining technical requirements before implementation.
-3.  **Plan & Tasks:** Breaking down complex features into verifiable atomic units.
-4.  **Analyze & Implement:** Continuous validation of code against the baseline specification.
-5.  **Converge:** Final verification and artifact generation.
 
----
+القرآن · الصلاة · الأذان · الأذكار · القبلة · التفسير · الحديث
 
-## 🚀 Key Features
+</div>
 
-*   **Precise Prayer Times:** Location-aware calculations using `PrayerEngine` and `LocationManager`.
-*   **Native Adhan Alerts:** Background audio notifications on Android using `AlarmManager` and native plugins.
-*   **Comprehensive Content:** Full Quran (114 Surahs), Tafsir Saadi, 40 Nawawi Hadiths, and Adhkar.
-*   **Interactive Qibla:** Real-time direction tracking via device sensors.
-*   **Liquid Glass UI:** Modern, responsive, and aesthetic interface with full RTL support.
-*   **PWA Ready:** Installable on any device with persistent offline access.
+عن الرفيق 4
 
----
+الرفيق 4 (Ar-Rafeeq 4) هو تطبيق إسلامي مفتوح المصدر صُمم ليجمع الأدوات الإسلامية اليومية الأساسية في تجربة واحدة، مع التركيز على الاستقرار، العمل دون اتصال، الأداء، البساطة، وقابلية التطوير.
 
-## 🛤 The Evolution Journey: Web → PWA → Android
+بدأ المشروع كتطبيق ويب، ثم تطور إلى PWA ذات بنية Offline-first، ثم انتقل إلى Android مع الحفاظ على البنية والوظائف التي تم تطويرها في المراحل السابقة.
 
-Ar-Rafeeq 4 is the result of a deliberate, multi-stage engineering evolution:
+لم يكن الهدف إعادة بناء المشروع في كل مرحلة، وإنما تطويره تدريجيًا:
 
-1.  **Phase 1: The Web Foundation (Static Core):** Building a lightweight, high-performance Islamic portal with zero external dependencies using a modular Vanilla JS core.
-2.  **Phase 2: The PWA Transition (Offline-First):** Implementing advanced Service Workers and strategic App Shell caching for 100% availability in low-connectivity areas.
-3.  **Phase 3: The Android Leap (Native Integration):** Leveraging Capacitor to bridge JavaScript with native Android `AlarmManager`, ensuring reliable Adhan alerts even when the device is asleep.
+Web
+  ↓
+Modular JavaScript Application
+  ↓
+PWA / Offline-first
+  ↓
+Local Islamic Data
+  ↓
+Prayer & Qibla Systems
+  ↓
+Adhan Integration
+  ↓
+Android Application
 
----
+النتيجة هي مشروع واحد يعمل عبر أكثر من بيئة، مع الاعتماد على البيانات المحلية للوظائف التي يمكن تشغيلها دون اتصال.
 
-## 📸 Visual Experience (Liquid Glass UI)
+🎯 فلسفة المشروع
 
-The following screenshots showcase the actual "Liquid Glass" design system implemented in Ar-Rafeeq 4, featuring modern Arabic typography and a professional glassmorphism aesthetic.
+الرفيق 4 لا يُبنى على مبدأ إضافة أكبر عدد ممكن من الميزات.
 
-| Home Screen | Quick Access | Dashboard |
-| :---: | :---: | :---: |
-| ![Home](./assets/screenshots/real_home.png) | ![Quick Access](./assets/screenshots/real_quick_access.png) | ![Dashboard](./assets/screenshots/real_dashboard.png) |
+بل على مبدأ:
 
----
+ابنِ، اختبر، ثبّت، ثم انتقل إلى الخطوة التالية.
 
-## 📥 Installation & Deployment
+ولهذا يعتمد المشروع على مجموعة من المبادئ الهندسية:
 
-### Native Android (APK/AAB)
-The latest stable build with fixed native Adhan alerts is available in the repository. To build from source:
-1.  Run `npm install` and `npm run cap:sync`.
-2.  Open the `android/` directory in Android Studio.
-3.  Build the **Release AAB** for Google Play deployment.
+الاستقرار أولًا
 
-### Web (Static Hosting)
-Deploy to GitHub Pages or any static provider by serving the root directory. Ensure `sw.js` and `manifest.json` are accessible for PWA functionality.
+لا يتم إصلاح وظيفة بكسر وظيفة أخرى.
 
----
+التعديل بأقل قدر ممكن
 
-## 🗺 Roadmap & Future Vision
+عند وجود مشكلة، يتم البحث عن السبب وإجراء الإصلاح المحدود بدل إعادة بناء النظام بالكامل.
 
-*   **Phase 1:** Enhanced Qibla precision using advanced sensor fusion algorithms.
-*   **Phase 2:** Multi-language support (English, French, Urdu) to reach a global audience.
-*   **Phase 3:** Interactive Quran audio streaming and offline management.
-*   **Phase 4:** Home screen widgets for instant prayer time access on Android and iOS.
+Offline-first
 
----
+المحتوى والوظائف التي يمكن توفيرها محليًا لا تعتمد على اتصال مستمر بالإنترنت.
 
-## 🤝 Contributing Guidelines
+فصل المحتوى عن المنطق
 
-We invite developers and thinkers to help us elevate Ar-Rafeeq 4.
-*   **Fork** the repository and review the **Constitution** in `.specify/memory/`.
-*   Focus on **Performance Optimization** and **Localization**.
-*   Submit a **Pull Request** with a clear description of your engineering choices.
+البيانات الإسلامية المحلية منفصلة عن منطق التطبيق قدر الإمكان، مما يسهل اختبارها وتحديثها.
 
----
+الاختبار قبل الادعاء
 
-## 📬 Contact & Collaboration
+وجود الكود لا يعني أن الميزة مكتملة.
 
-Developed and maintained by **Gophisb**. We welcome technical inquiries and contributions.
+المعيار هو:
 
-*   **Lead Developer:** Gophisb
-*   **Email:** [faraspmp@gmail.com](mailto:faraspmp@gmail.com)
-*   **Engineering Partner:** Manus AI
+Implement
+   ↓
+Run
+   ↓
+Test
+   ↓
+Verify
+   ↓
+Document
 
----
+✨ الوظائف الأساسية
 
-## 📜 License
+الوظيفة
 
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+الوصف
 
----
+🕌 مواقيت الصلاة
 
-> "Precision in engineering, devotion in purpose. Built for the community, by the community."
+حساب وعرض مواقيت الصلاة وإظهار الصلاة القادمة
+
+⏳ العد التنازلي
+
+حساب الزمن المتبقي للصلاة القادمة
+
+🔊 الأذان
+
+دمج وتشغيل صوت الأذان وفق منظومة الصلاة
+
+📖 القرآن الكريم
+
+114 سورة ضمن بيانات محلية
+
+📚 تفسير السعدي
+
+بيانات التفسير مدمجة محليًا
+
+📿 الأذكار
+
+أذكار الصباح والمساء ومحتوى الأذكار المحلي
+
+📋 الأربعون النووية
+
+الأحاديث ضمن محتوى التطبيق المحلي
+
+🧭 القبلة
+
+حساب اتجاه القبلة باستخدام إمكانيات الجهاز
+
+🗓 التاريخ الهجري
+
+التعامل مع التاريخ الهجري ضمن التطبيق
+
+📴 Offline
+
+تشغيل المحتوى والوظائف المحلية دون اتصال بالإنترنت
+
+📴 Offline-first
+
+العمل دون اتصال ليس ميزة أُضيفت في النهاية، بل هو جزء من فلسفة بناء الرفيق 4.
+
+تم تضمين المحتوى الأساسي محليًا، بما في ذلك البيانات الإسلامية التي لا تحتاج إلى خدمة خارجية حتى يتم عرضها.
+
+وتُستخدم بنية PWA وService Worker لإدارة موارد التطبيق والتخزين المؤقت.
+
+لذلك يستطيع المستخدم الوصول إلى الوظائف المحلية حتى عند عدم توفر الإنترنت، طالما أن موارد التطبيق وبياناته المحلية موجودة وسليمة.
+
+أما الوظائف التي تعتمد بطبيعتها على خدمات خارجية أو بيانات مباشرة، فقد تحتاج إلى اتصال بالإنترنت.
+
+🏗️ Architecture
+
+يعتمد الرفيق 4 على بنية Modular Vanilla JavaScript خفيفة، بهدف تقليل التعقيد والاعتماديات غير الضرورية.
+
+Ar-Rafeeq 4
+│
+├── UI Layer
+│   ├── HTML
+│   ├── CSS
+│   └── RTL / Arabic Interface
+│
+├── Application Layer
+│   ├── Router
+│   ├── App Logic
+│   └── Page Modules
+│
+├── Islamic Data Layer
+│   ├── Quran
+│   ├── Tafsir
+│   ├── Adhkar
+│   └── Hadith
+│
+├── Logic Layer
+│   ├── Prayer Engine
+│   ├── Location Manager
+│   └── Qibla Logic
+│
+├── Audio
+│   └── Adhan
+│
+├── Offline Layer
+│   ├── Service Worker
+│   ├── Cache
+│   └── App Shell
+│
+└── Android Layer
+    └── Capacitor
+
+🧩 Core Engineering Components
+
+Router
+
+مسؤول عن إدارة التنقل بين أقسام التطبيق مع الحفاظ على بنية صفحات منظمة.
+
+Prayer Engine
+
+طبقة مستقلة للتعامل مع منطق مواقيت الصلاة والحسابات المرتبطة بها.
+
+Location Manager
+
+يفصل إدارة الموقع عن بقية منطق التطبيق، مع دعم الاختيار اليدوي للموقع إلى جانب إمكانيات تحديد الموقع المتاحة على الجهاز.
+
+Local Data
+
+المحتوى الإسلامي الأساسي مخزن ضمن موارد التطبيق المحلية بدل الاعتماد على API خارجي لعرضه.
+
+Service Worker
+
+مسؤول عن إدارة موارد PWA والكاش وApp Shell، مع التعامل معه بحذر لتجنب تقديم موارد قديمة أو غير متوافقة.
+
+Android Layer
+
+يتم استخدام Capacitor لربط تطبيق الويب ببيئة Android وإتاحة التكامل مع إمكانيات الجهاز التي تحتاجها وظائف التطبيق.
+
+📱 من PWA إلى Android
+
+الانتقال إلى Android لم يكن إعادة كتابة كاملة للمشروع.
+
+كان الهدف هو الحفاظ على العمل السابق وإضافة طبقة Android عند الحاجة.
+
+Existing Application
+        │
+        ▼
+      PWA
+        │
+        ▼
+    Capacitor
+        │
+        ▼
+Android Project
+        │
+        ▼
+     APK / AAB
+        │
+        ▼
+ Real Android Device
+
+بهذه الطريقة أصبح المشروع قادرًا على الاستفادة من بنية الويب الموجودة، مع إمكانية الوصول إلى وظائف Android الأصلية عند الحاجة.
+
+🔊 الأذان وAndroid
+
+الأذان من الوظائف التي تتطلب اهتمامًا خاصًا في بيئة Android.
+
+فوجود ملف صوتي داخل التطبيق لا يعني وحده أن تشغيله مضمون في جميع الحالات.
+
+لذلك يتم التعامل مع الأذان باعتباره منظومة تشمل:
+
+Prayer Time
+      ↓
+Upcoming Prayer
+      ↓
+Trigger
+      ↓
+Android Background Behavior
+      ↓
+Audio / Notification
+
+ويجب اختبار هذه المنظومة على الجهاز الحقيقي، بما في ذلك:
+
+التطبيق مفتوح.
+
+التطبيق في الخلفية.
+
+الشاشة مغلقة.
+
+الهاتف مقفل.
+
+أوضاع توفير الطاقة.
+
+صلاحيات الإشعارات.
+
+إعادة تشغيل الجهاز.
+
+اختلاف إصدارات Android.
+
+🧭 القبلة
+
+يعتمد نظام القبلة على بيانات الموقع وإمكانيات الاستشعار المتوفرة في الجهاز.
+
+دقة النتيجة العملية تعتمد على:
+
+دقة الموقع.
+
+حساسات الجهاز.
+
+معايرة البوصلة.
+
+الظروف المغناطيسية المحيطة.
+
+لذلك لا يتم التعامل مع جميع أجهزة Android على أنها متطابقة.
+
+🛠️ منهجية التطوير
+
+تم تطوير الرفيق 4 وفق منهج Spec-Driven Development (SDD).
+
+الفكرة الأساسية هي أن التنفيذ يأتي بعد تحديد المتطلبات والقيود، وليس العكس.
+
+Constitution
+     ↓
+Specification
+     ↓
+Clarification
+     ↓
+Plan
+     ↓
+Tasks
+     ↓
+Analyze
+     ↓
+Implement
+     ↓
+Verify
+     ↓
+Converge
+
+وتساعد هذه المنهجية على إبقاء التطوير تحت السيطرة، خصوصًا في مشروع قائم يتم تطويره تدريجيًا.
+
+🤖 استخدام الذكاء الاصطناعي
+
+تم استخدام أدوات الذكاء الاصطناعي كمساعد هندسي أثناء التطوير، وليس كبديل عن الاختبار أو اتخاذ القرار.
+
+يمكن للـAI أن يساعد في:
+
+اقتراح الكود.
+
+تحليل الأخطاء.
+
+اقتراح حلول.
+
+تسريع التطوير.
+
+مراجعة أجزاء من المشروع.
+
+لكن القرار النهائي يعتمد على:
+
+Requirement
+     ↓
+Engineering Decision
+     ↓
+Implementation
+     ↓
+Real Test
+     ↓
+Verification
+
+الكود الذي تم توليده لا يُعتبر صحيحًا لمجرد أن AI اقترحه.
+
+🧪 الاختبار
+
+يعتمد المشروع على مبدأ:
+
+If it is not tested, it is not considered verified.
+
+وتشمل عملية الإغلاق النهائي اختبار:
+
+Core
+
+تشغيل التطبيق.
+
+التنقل.
+
+تحميل الصفحات.
+
+عدم وجود أخطاء حرجة.
+
+Prayer
+
+مواقيت الصلاة.
+
+الصلاة القادمة.
+
+العد التنازلي.
+
+تغير اليوم.
+
+الموقع.
+
+Adhan
+
+تشغيل الصوت.
+
+الخلفية.
+
+الشاشة المغلقة.
+
+إعادة تشغيل الجهاز.
+
+قيود البطارية.
+
+Offline
+
+تفعيل وضع الطيران.
+
+فتح التطبيق.
+
+قراءة القرآن.
+
+فتح التفسير.
+
+الأذكار.
+
+الأحاديث.
+
+الوظائف المحلية.
+
+Android
+
+التثبيت.
+
+التشغيل.
+
+الصلاحيات.
+
+دورة حياة التطبيق.
+
+العودة من الخلفية.
+
+إعادة تشغيل الجهاز.
+
+🛡️ مبدأ عدم كسر الموجود
+
+من أهم قواعد تطوير الرفيق 4:
+
+Existing Feature
+       │
+       ▼
+    Preserve
+       │
+       ▼
+ Minimal Change
+       │
+       ▼
+      Test
+       │
+       ▼
+Regression Test
+
+لا تتم إعادة هيكلة المشروع لمجرد أن إعادة البناء تبدو أسهل.
+
+ولا يتم حذف وظيفة موجودة لحل مشكلة في وظيفة أخرى دون سبب تقني واضح.
+
+🎨 Design System
+
+يعتمد الرفيق 4 على هوية بصرية عربية حديثة مستوحاة من مفهوم Liquid Glass.
+
+وتجمع الواجهة بين:
+
+تصميم داكن.
+
+أسود فحمي.
+
+أخضر زمردي.
+
+لمسات ذهبية.
+
+Typography عربية واضحة.
+
+RTL كامل.
+
+تصميم متجاوب مع شاشات الهواتف.
+
+الهدف من التصميم ليس الزخرفة فقط، وإنما الحفاظ على واجهة هادئة وواضحة أثناء الاستخدام اليومي.
+
+📂 تنظيم المشروع
+
+/
+├── assets/
+├── data/
+├── js/
+├── pages/
+├── router.js
+├── app.js
+├── prayer.js
+├── locations.js
+├── config.js
+├── manifest.json
+├── sw.js
+├── LICENSE
+└── ...
+
+يتم تنظيم الملفات بحيث تكون المسؤوليات واضحة قدر الإمكان، مع إبقاء المحتوى المحلي منفصلًا عن منطق التطبيق.
+
+🚀 التطور الحالي
+
+الرفيق 4 مر بمراحل متتابعة:
+
+01  Foundation
+    Vanilla JS Architecture
+
+02  PWA
+    Offline-first + Service Worker
+
+03  Islamic Content
+    Quran + Tafsir + Adhkar + Hadith
+
+04  Prayer System
+    Prayer Engine + Location
+
+05  Qibla
+    Device Sensors
+
+06  Adhan
+    Audio Integration
+
+07  Android
+    Capacitor Integration
+
+08  Verification
+    Real Device Testing
+
+09  Release
+    APK / AAB Preparation
+
+🗺️ Roadmap
+
+المشروع قابل للتطوير المستمر، ومن المجالات المستقبلية:
+
+تحسين منظومة الأذان والتنبيهات.
+
+تحسين تجربة القبلة على الأجهزة المختلفة.
+
+دعم لغات إضافية.
+
+إضافة المزيد من خيارات القرآن الصوتي.
+
+تحسين تجربة الشاشة الرئيسية.
+
+تطوير Widget لمواقيت الصلاة.
+
+تحسين الاختبارات الآلية.
+
+توسيع توافق Android.
+
+🤝 Open Source
+
+الرفيق 4 مشروع مفتوح المصدر، والهدف من إتاحته هو السماح للمطورين والمهتمين بالاستفادة منه ودراسة بنيته والمساهمة في تطويره.
+
+المساهمات مرحب بها، مع الحفاظ على مبادئ المشروع الأساسية:
+
+الاستقرار أولًا.
+
+التغييرات المحدودة.
+
+عدم كسر الوظائف الموجودة.
+
+احترام المحتوى ومصادره.
+
+اختبار التغييرات قبل دمجها.
+
+توثيق القرارات المهمة.
+
+📥 تشغيل المشروع
+
+Web / PWA
+
+يمكن تشغيل المشروع على أي استضافة ثابتة مناسبة.
+
+يجب الحفاظ على بنية الملفات، بما في ذلك:
+
+manifest.json
+sw.js
+assets/
+data/
+js/
+pages/
+
+Android
+
+بعد تجهيز بيئة Node.js وCapacitor:
+
+npm install
+npm run cap:sync
+
+ثم يمكن فتح مشروع Android في Android Studio وبناء النسخة المناسبة:
+
+APK
+
+أو:
+
+AAB
+
+بحسب هدف التوزيع.
+
+📜 License
+
+هذا المشروع مرخص بموجب:
+
+MIT License
+
+راجع ملف LICENSE لمعرفة النص الكامل للرخصة.
+
+📬 Project
+
+Ar-Rafeeq 4 | الرفيق 4
+
+المطور: Gophisb
+البريد: faraspmp@gmail.com
+الإصدار: 4.0
+المنصات: PWA · Android
+
+<div align="center">
+
+«نصلح مشكلة واحدة، نثبتها، ثم ننتقل إلى التي بعدها.»
+
+Ar-Rafeeq 4 — Built progressively. Tested deliberately. Designed to remain useful offline.
+
+</div>
