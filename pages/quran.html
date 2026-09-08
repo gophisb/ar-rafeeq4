@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>القرآن الكريم — الرفيق</title>
+<link href="../styles.css" rel="stylesheet"/>
+<link href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;text y='.9em' font-size='90'&gt;📖&lt;/text&gt;&lt;/svg&gt;" rel="icon" type="image/svg+xml"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<style>
+  .container{max-width:760px;margin:0 auto;padding:16px;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 0;}
+  .back{color:var(--gold);text-decoration:none;font-size:14px;font-weight:600;}
+  h1{text-align:center;font-size:26px;color:var(--gold-soft);margin:6px 0 2px;}
+  .sub{text-align:center;color:var(--muted);font-size:13px;margin-bottom:6px;}
+  .riwaya-badge{display:block;text-align:center;font-size:12px;color:var(--gold);
+    background:rgba(212,175,55,0.08);border-radius:99px;padding:4px 12px;width:fit-content;margin:8px auto 18px;border:1px solid var(--border);}
+
+  .search-box{position:relative;margin-bottom:16px;}
+  .search-box input{width:100%;padding:13px 44px 13px 16px;border-radius:14px;border:1px solid var(--border);
+    background:var(--card);backdrop-filter:blur(12px);font-size:15px;font-family:inherit;color:var(--text);}
+  .search-box input:focus{outline:2px solid var(--gold);}
+  .search-box .ic{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);}
+
+  #surahGrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;}
+  .surah-chip{background:var(--card);border:1px solid var(--border);border-radius:14px;
+    padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:.15s;backdrop-filter:blur(8px);}
+  .surah-chip:active{transform:scale(0.97);}
+  .surah-chip:hover{border-color:var(--gold);}
+  .surah-num{flex-shrink:0;width:30px;height:30px;border-radius:8px;background:var(--gold);
+    color:#080B10;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;}
+  .surah-name{font-weight:700;font-size:14.5px;color:var(--text);}
+  .surah-meta{font-size:11px;color:var(--muted);}
+
+  #readerView{display:none;}
+  .reader-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+  .reader-title{font-size:20px;font-weight:800;color:var(--gold-soft);}
+  .reader-meta{font-size:12px;color:var(--muted);}
+  .surah-nav{display:flex;gap:8px;flex-wrap:wrap;}
+  .nav-btn{background:var(--card);border:1px solid var(--border);border-radius:10px;
+    padding:8px 12px;cursor:pointer;font-size:13px;color:var(--gold);backdrop-filter:blur(8px);}
+  .nav-btn:disabled{opacity:0.3;cursor:default;}
+  .nav-btn:hover:not(:disabled){border-color:var(--gold);}
+
+  .bismillah{text-align:center;font-family:'Amiri',serif;font-size:24px;color:var(--gold-soft);
+    margin:14px 0 20px;}
+
+  .ayah-block{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);
+    padding:20px;margin-bottom:12px;backdrop-filter:blur(8px);}
+  .ayah-arabic{font-family:'Amiri',serif;font-size:24px;line-height:2.1;color:var(--text);
+    text-align:right;margin-bottom:10px;}
+  .ayah-number-badge{display:inline-flex;align-items:center;justify-content:center;
+    width:26px;height:26px;border-radius:50%;background:var(--gold);color:#080B10;font-size:11px;
+    font-family:-apple-system,sans-serif;font-weight:700;vertical-align:middle;margin-inline-start:6px;}
+  .tafsir-toggle{font-size:12.5px;color:var(--gold);cursor:pointer;font-weight:600;
+    display:inline-block;margin-top:4px;}
+  .tafsir-text{display:none;background:rgba(212,175,55,0.06);border-right:4px solid var(--gold);
+    border-radius:8px;padding:10px 14px;margin-top:10px;font-size:14px;color:var(--text);
+    font-family:-apple-system,sans-serif;line-height:1.8;}
+  .tafsir-text.open{display:block;}
+
+  #status{text-align:center;color:var(--muted);padding:40px 0;}
+  .ayah-highlight{border-color:var(--accent);box-shadow:0 0 0 3px rgba(94,234,212,.22),0 12px 28px rgba(0,0,0,.18);transition:box-shadow .25s ease,border-color .25s ease;}
+  footer{text-align:center;padding:24px 0 10px;color:var(--muted);font-size:12px;}
+  @media (max-width:600px){.ayah-arabic{font-size:20px;}}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="topbar">
+<a class="back" href="../index.html">→ الرئيسية</a>
+<img class="page-brand-icon" src="assets/icons/icon-quran.png" width="32" height="32" alt="القرآن الكريم">
+</div>
+<h1>القرآن الكريم</h1>
+<p class="sub">114 سورة كاملة — 6236 آية</p>
+<div class="riwaya-badge">📜 رواية حفص عن عاصم — المصحف العثماني</div>
+<div id="listView">
+<div class="search-box">
+<input id="searchInput" placeholder="ابحث باسم السورة..." type="text"/>
+<span class="ic">🔍</span>
+</div>
+<div id="surahGrid"></div>
+</div>
+<div id="readerView">
+<div class="reader-head">
+<div>
+<div class="reader-title" id="readerTitle">—</div>
+<div class="reader-meta" id="readerMeta">—</div>
+</div>
+<div class="surah-nav">
+<button class="nav-btn" id="prevSurah">‹ السابقة</button>
+<button class="nav-btn" id="closeSurah">☰ الفهرس</button>
+<button class="nav-btn" id="nextSurah">التالية ›</button>
+</div>
+</div>
+<div id="bismillahBox"></div>
+<div id="status">جاري تحميل السورة...</div>
+<div id="ayahList"></div>
+</div>
+<footer>الرفيق — القرآن الكريم (حفص عن عاصم) وتفسير السعدي</footer>
+</div>
+<script src="./pages/quran.js"></script>
+</body>
+</html>

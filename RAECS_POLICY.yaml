@@ -1,0 +1,98 @@
+# RAECS v3.0 — Machine Policy
+# Governance changes require ADR + human approval + version bump.
+version: "3.0.0"
+status: final
+
+system:
+  name: "RAECS"
+  full_name: "Rafeeq Autonomous Engineering Command System"
+  principle: "Stability first"
+  mode: "governed-autonomy"
+
+# Lower number = higher severity.
+defcon:
+  1:
+    name: "CRITICAL"
+    response: "STOP THE LINE; contain immediately; human approval required"
+  2:
+    name: "SEVERE"
+    response: "Block release/checkpoint; investigate and remediate"
+  3:
+    name: "MAJOR"
+    response: "Block affected operation until corrected"
+  4:
+    name: "DEGRADED"
+    response: "Proceed only within approved scope with explicit logging"
+  5:
+    name: "NORMAL"
+    response: "Routine governed operation"
+
+autonomy:
+  default: "bounded"
+  levels:
+    observe: "Read, inspect, analyze; no mutation"
+    propose: "Prepare changes or commands; human approval before execution when required"
+    execute: "Execute within explicitly authorized task scope"
+    govern: "Not autonomous; governance changes require human approval"
+
+clearance:
+  public:
+    may_read: ["README.md", "ARCHITECTURE.md", "RUNBOOK.md"]
+  project:
+    may_read: ["project files", "logs", "tests"]
+  restricted:
+    may_read: ["governance records"]
+    approval: "human"
+  prohibited:
+    description: "Secrets, credentials, private keys, and unauthorized personal data"
+
+scope:
+  default: "task-bounded"
+  expansion_requires: "human approval"
+  destructive_actions_require: "human approval"
+  production_release_requires: "human approval"
+
+security:
+  always_forbidden_files:
+    - "AGENTS.md"
+    - "INVARIANTS.md"
+    - "RAECS_POLICY.yaml"
+    - ".env"
+  forbidden_content:
+    - "API keys"
+    - "access tokens"
+    - "private keys"
+    - "passwords"
+    - "credential material"
+  secret_handling: "environment or approved secret manager only"
+  reporting: "do not print secret values"
+
+quality:
+  required_before_checkpoint:
+    - "invariants"
+    - "health"
+  required_before_release:
+    - "policy validation"
+    - "intent validation"
+    - "permissions validation"
+    - "sandbox preflight"
+    - "artifact integrity"
+    - "security scan"
+    - "dependency audit"
+    - "static analysis"
+    - "Git integrity"
+    - "triple consensus"
+    - "evidence chain"
+    - "status report"
+    - "invariants"
+    - "health"
+    - "release gate"
+  evidence_rule: "Never claim an unperformed verification"
+  reproducibility: "lock dependencies when a package manager is used"
+
+governance:
+  policy_change: "ADR + human approval + version bump"
+  invariant_change: "ADR + human approval + version bump"
+  agent_rules_change: "ADR + human approval + version bump"
+  audit_trail: ["OPLOG", "ADR", "AAR", "CHANGELOG"]
+  stop_the_line: true

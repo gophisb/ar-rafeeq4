@@ -1,0 +1,343 @@
+/* ==========================================================
+   الرفيق | variables.css
+   Rafeeq Premium Design System
+   الإصدار: 1.0.0
+
+   المسؤولية:
+   - ألوان الهوية
+   - الزوايا
+   - الظلال
+   - Glassmorphism
+   - التدرجات
+   - الحركة
+   - أحجام الواجهة
+   - التوافق مع Dark / Light
+   - لا يحتوي على منطق JavaScript
+   - لا يحتوي على محتوى ديني
+========================================================== */
+
+:root {
+    /* ======================================================
+       1. Typography
+    ====================================================== */
+    --font-family-ar:
+        "Noto Sans Arabic",
+        "Noto Kufi Arabic",
+        "Tajawal",
+        system-ui,
+        -apple-system,
+        "Segoe UI",
+        sans-serif;
+
+    --font-family-quran:
+        "Amiri",
+        "Noto Naskh Arabic",
+        serif;
+
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-md: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.375rem;
+    --font-size-2xl: 1.75rem;
+    --font-size-3xl: 2.125rem;
+
+    --line-height-tight: 1.3;
+    --line-height-normal: 1.6;
+    --line-height-relaxed: 1.9;
+
+    /* ======================================================
+       2. Premium Accent Colors
+       Darkened for strong contrast on light surfaces
+    ====================================================== */
+    --accent-aqua: #0891b2;
+    --accent-violet: #6d28d9;
+    --accent-rose: #be185d;
+    --accent-amber: #b45309;
+    --accent-lime: #15803d;
+
+    /* Brighter companion tones — used mainly for gradients */
+    --accent-aqua-bright: #06b6d4;
+    --accent-violet-bright: #8b5cf6;
+    --accent-rose-bright: #ec4899;
+    --accent-amber-bright: #f59e0b;
+    --accent-lime-bright: #22c55e;
+
+    /* ======================================================
+       3. Semantic Islamic Feature Colors
+    ====================================================== */
+    --color-quran: var(--accent-aqua);
+    --color-tafsir: var(--accent-violet);
+    --color-prayer: var(--accent-amber);
+    --color-adhkar: var(--accent-lime);
+    --color-favorites: var(--accent-rose);
+    --color-nawawi: #7c3aed;
+    --color-qibla: #0f766e;
+
+    /* ======================================================
+       4. Premium Gradients
+    ====================================================== */
+    --gradient-aqua:
+        linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
+
+    --gradient-violet:
+        linear-gradient(135deg, #6d28d9 0%, #8b5cf6 100%);
+
+    --gradient-rose:
+        linear-gradient(135deg, #be185d 0%, #ec4899 100%);
+
+    --gradient-amber:
+        linear-gradient(135deg, #b45309 0%, #f59e0b 100%);
+
+    --gradient-lime:
+        linear-gradient(135deg, #15803d 0%, #22c55e 100%);
+
+    --gradient-primary:
+        linear-gradient(135deg, #0891b2 0%, #6d28d9 100%);
+
+    --gradient-premium:
+        linear-gradient(
+            135deg,
+            #0891b2 0%,
+            #6d28d9 50%,
+            #be185d 100%
+        );
+
+    /* ======================================================
+       5. Light Theme Surfaces
+    ====================================================== */
+    --bg-main: #f4f7fb;
+    --bg-surface: #ffffff;
+    --bg-surface-soft: #f8fafc;
+    --bg-surface-elevated: #ffffff;
+
+    --text-main: #0f172a;
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+    --text-on-accent: #ffffff;
+
+    --border-color: #e2e8f0;
+    --border-subtle: rgba(15, 23, 42, 0.08);
+
+    /* ======================================================
+       6. Status Colors
+    ====================================================== */
+    --success: #15803d;
+    --warning: #b45309;
+    --danger: #b91c1c;
+    --info: #0369a1;
+
+    /* ======================================================
+       7. Radius System
+    ====================================================== */
+    --radius-xs: 10px;
+    --radius-sm: 14px;
+    --radius-md: 18px;
+    --radius-lg: 24px;
+    --radius-xl: 30px;
+    --radius-2xl: 38px;
+    --radius-pill: 999px;
+
+    /* ======================================================
+       8. Spacing System
+    ====================================================== */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-7: 28px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+
+    /* ======================================================
+       9. Shadows
+    ====================================================== */
+    --shadow-xs:
+        0 2px 6px rgba(15, 23, 42, 0.05);
+
+    --shadow-sm:
+        0 4px 12px rgba(15, 23, 42, 0.06);
+
+    --shadow-md:
+        0 10px 30px rgba(15, 23, 42, 0.08);
+
+    --shadow-lg:
+        0 18px 45px rgba(15, 23, 42, 0.11);
+
+    --shadow-glow-aqua:
+        0 10px 30px rgba(8, 145, 178, 0.22);
+
+    --shadow-glow-violet:
+        0 10px 30px rgba(109, 40, 217, 0.22);
+
+    --shadow-glow-amber:
+        0 10px 30px rgba(180, 83, 9, 0.20);
+
+    /* ======================================================
+       10. Glassmorphism
+    ====================================================== */
+    --glass-bg: rgba(255, 255, 255, 0.68);
+    --glass-bg-strong: rgba(255, 255, 255, 0.82);
+    --glass-border: rgba(255, 255, 255, 0.55);
+
+    --glass-blur: 18px;
+    --glass-saturation: 140%;
+
+    /* ======================================================
+       11. Navigation
+    ====================================================== */
+    --nav-bg: rgba(255, 255, 255, 0.78);
+    --nav-border: rgba(15, 23, 42, 0.08);
+    --nav-height: 76px;
+
+    /* ======================================================
+       12. Layout
+    ====================================================== */
+    --app-max-width: 480px;
+    --content-padding: 18px;
+
+    /* ======================================================
+       13. Motion
+    ====================================================== */
+    --motion-fast: 160ms;
+    --motion-normal: 260ms;
+    --motion-slow: 420ms;
+
+    --ease-standard:
+        cubic-bezier(0.2, 0.8, 0.2, 1);
+
+    --ease-smooth:
+        cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* ======================================================
+       14. Z-index
+    ====================================================== */
+    --z-base: 1;
+    --z-card: 10;
+    --z-header: 100;
+    --z-nav: 900;
+    --z-overlay: 1000;
+    --z-modal: 1100;
+    --z-toast: 1200;
+}
+
+/* ==========================================================
+   DARK THEME
+========================================================== */
+
+[data-theme="dark"] {
+    --bg-main: #080c14;
+    --bg-surface: #111827;
+    --bg-surface-soft: #172033;
+    --bg-surface-elevated: #1b2638;
+
+    --text-main: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+
+    --border-color: #263449;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+
+    --glass-bg: rgba(17, 24, 39, 0.64);
+    --glass-bg-strong: rgba(17, 24, 39, 0.82);
+    --glass-border: rgba(255, 255, 255, 0.10);
+
+    --nav-bg: rgba(17, 24, 39, 0.78);
+    --nav-border: rgba(255, 255, 255, 0.08);
+
+    --shadow-xs:
+        0 2px 8px rgba(0, 0, 0, 0.18);
+
+    --shadow-sm:
+        0 6px 18px rgba(0, 0, 0, 0.22);
+
+    --shadow-md:
+        0 12px 32px rgba(0, 0, 0, 0.28);
+
+    --shadow-lg:
+        0 20px 50px rgba(0, 0, 0, 0.34);
+}
+
+/* ==========================================================
+   SYSTEM DARK MODE
+   يعمل فقط عندما لا يحدد التطبيق theme صراحة.
+========================================================== */
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --bg-main: #080c14;
+        --bg-surface: #111827;
+        --bg-surface-soft: #172033;
+        --bg-surface-elevated: #1b2638;
+
+        --text-main: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+
+        --border-color: #263449;
+        --border-subtle: rgba(255, 255, 255, 0.08);
+
+        --glass-bg: rgba(17, 24, 39, 0.64);
+        --glass-bg-strong: rgba(17, 24, 39, 0.82);
+        --glass-border: rgba(255, 255, 255, 0.10);
+
+        --nav-bg: rgba(17, 24, 39, 0.78);
+        --nav-border: rgba(255, 255, 255, 0.08);
+
+        --shadow-xs:
+            0 2px 8px rgba(0, 0, 0, 0.18);
+
+        --shadow-sm:
+            0 6px 18px rgba(0, 0, 0, 0.22);
+
+        --shadow-md:
+            0 12px 32px rgba(0, 0, 0, 0.28);
+
+        --shadow-lg:
+            0 20px 50px rgba(0, 0, 0, 0.34);
+    }
+}
+
+/* ==========================================================
+   GLASS FALLBACK
+   للأجهزة والمتصفحات التي لا تدعم backdrop-filter.
+========================================================== */
+
+@supports not (backdrop-filter: blur(1px)) {
+    :root {
+        --glass-bg: rgba(255, 255, 255, 0.94);
+        --glass-bg-strong: rgba(255, 255, 255, 0.97);
+        --glass-border: rgba(15, 23, 42, 0.12);
+    }
+
+    [data-theme="dark"] {
+        --glass-bg: rgba(17, 24, 39, 0.94);
+        --glass-bg-strong: rgba(17, 24, 39, 0.97);
+        --glass-border: rgba(255, 255, 255, 0.12);
+    }
+}
+
+/* ==========================================================
+   REDUCED MOTION
+   احترام إعدادات إمكانية الوصول.
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --motion-fast: 0ms;
+        --motion-normal: 0ms;
+        --motion-slow: 0ms;
+    }
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

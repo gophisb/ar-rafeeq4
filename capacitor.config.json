@@ -1,0 +1,9 @@
+{
+  "appId": "com.gophisb.arrafeeq4",
+  "appName": "الرفيق 4",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  }
+}
