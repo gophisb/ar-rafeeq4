@@ -151,6 +151,84 @@ let pendingVerse = null;
 let readAyahs = new Set();
 try { readAyahs = new Set(JSON.parse(localStorage.getItem(quranProgressKey) || '[]')); } catch (_) { readAyahs = new Set(); }
 
+function globalAyahNumber(surah, ayah) {
+  let total = 0;
+  for (let i = 0; i < surah - 1; i += 1) total += SURAH_LIST[i].ayahs;
+  return total + ayah;
+}
+
+function updateRecitationUI(detail) {
+  document.querySelectorAll('.ayah-audio-btn').forEach(btn => {
+    const active = detail &&
+      detail.playing &&
+      Number(btn.dataset.surah) === Number(detail.surah) &&
+      Number(btn.dataset.ayah) === Number(detail.ayah);
+    btn.classList.toggle('active', active);
+    btn.textContent = active ? '❚❚ إيقاف مؤقت' : '▶ استماع';
+  });
+
+  document.querySelectorAll('.ayah-block.reciting').forEach(el => {
+    const active = detail &&
+      detail.playing &&
+      el.dataset.surah === String(detail.surah) &&
+      el.dataset.ayah === String(detail.ayah);
+    if (!active) el.classList.remove('reciting');
+  });
+
+  if (detail && detail.playing) {
+    const active = document.querySelector(
+      `.ayah-block[data-surah="${detail.surah}"][data-ayah="${detail.ayah}"]`
+    );
+    active?.classList.add('reciting');
+  }
+
+  const status = document.getElementById('recitationStatus');
+  if (!status) return;
+
+  if (detail?.loading) {
+    status.textContent = `جاري تحميل الآية ${detail.ayah || ''}…`;
+  } else if (detail?.playing) {
+    status.textContent = `الشيخ محمد صديق المنشاوي — سورة ${SURAH_LIST[detail.surah - 1]?.name || ''} — الآية ${detail.ayah}`;
+  } else if (detail?.error) {
+    status.textContent = detail.error;
+  } else {
+    status.textContent = 'استمع إلى القرآن الكريم آيةً بعد آية';
+  }
+
+  const play = document.getElementById('recitationPlay');
+  if (play) play.textContent = detail?.playing ? '❚❚ إيقاف مؤقت' : '▶ تشغيل';
+}
+
+window.addEventListener('rafeeq:recitation', e => updateRecitationUI(e.detail));
+
+function configureRecitation() {
+  if (!window.RafeeqRecitation) return;
+  window.RafeeqRecitation.configure({
+    onSurahEnd: (finishedSurah) => {
+      if (finishedSurah < 114) openSurah(finishedSurah + 1);
+    }
+  });
+}
+
+configureRecitation();
+
+document.getElementById('recitationPlay')?.addEventListener('click', () => {
+  if (!window.RafeeqRecitation) return;
+  const st = window.RafeeqRecitation.state;
+  const meta = SURAH_LIST[currentSurah - 1];
+  if (st.playing) {
+    window.RafeeqRecitation.pause();
+  } else if (st.surah === currentSurah && st.ayah) {
+    window.RafeeqRecitation.resume();
+  } else {
+    window.RafeeqRecitation.play(currentSurah, 1, meta.ayahs, globalAyahNumber(currentSurah, 1));
+  }
+});
+
+document.getElementById('recitationStop')?.addEventListener('click', () => {
+  window.RafeeqRecitation?.stop();
+});
+
 function saveQuranProgress() {
   try { localStorage.setItem(quranProgressKey, JSON.stringify([...readAyahs])); } catch (_) {}
   document.dispatchEvent(new CustomEvent('rafeeq:quranProgressChanged'));
@@ -164,6 +242,7 @@ try { pendingVerse = JSON.parse(localStorage.getItem(openVerseKey) || 'null'); }
 localStorage.removeItem(openVerseKey);
 
 function openSurah(n){
+  window.RafeeqRecitation?.stop();
   currentSurah = n;
   document.getElementById('listView').style.display = 'none';
   document.getElementById('readerView').style.display = 'block';
@@ -259,8 +338,16 @@ function openPendingVerse() {
 function renderAyahs(ayahs){
   document.getElementById('status').hidden = true;
   document.getElementById('ayahList').innerHTML = ayahs.map((a,i)=>`
-    <div class="ayah-block">
+    <div class="ayah-block" data-surah="${currentSurah}" data-ayah="${a.numberInSurah}">
       <div class="ayah-arabic">${a.text}<span class="ayah-number-badge">${a.numberInSurah}</span></div>
+      <button
+        class="ayah-audio-btn"
+        type="button"
+        data-surah="${currentSurah}"
+        data-ayah="${a.numberInSurah}"
+        aria-label="استماع إلى الآية ${a.numberInSurah}">
+        ▶ استماع
+      </button>
       ${a.tafsir ? `
         <span class="tafsir-toggle" data-i="${i}">📖 عرض تفسير السعدي</span>
         <div class="tafsir-text" id="tafsir-${i}">${a.tafsir}</div>
@@ -269,6 +356,23 @@ function renderAyahs(ayahs){
   `).join('');
 
   markSurahAsRead(currentSurah, ayahs);
+
+  document.querySelectorAll('.ayah-audio-btn').forEach(btn=>{
+    btn.addEventListener('click', () => {
+      const s = Number(btn.dataset.surah);
+      const a = Number(btn.dataset.ayah);
+      const meta = SURAH_LIST[s - 1];
+      const st = window.RafeeqRecitation?.state;
+      if (!window.RafeeqRecitation || !meta) return;
+      if (st?.playing && st.surah === s && st.ayah === a) {
+        window.RafeeqRecitation.pause();
+      } else if (st?.surah === s && st?.ayah === a) {
+        window.RafeeqRecitation.resume();
+      } else {
+        window.RafeeqRecitation.play(s, a, meta.ayahs, globalAyahNumber(s, a));
+      }
+    });
+  });
 
   document.querySelectorAll('.tafsir-toggle').forEach(btn=>{
     btn.addEventListener('click', ()=>{
