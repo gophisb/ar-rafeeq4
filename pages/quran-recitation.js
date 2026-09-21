@@ -25,6 +25,7 @@
 
   let onAyahChange = null;
   let onSurahEnd = null;
+  let getGlobalAyah = null;
 
   function primaryUrl(surah, ayah) {
     return primaryBase + pad(surah, 3) + pad(ayah, 3) + '.mp3';
@@ -124,7 +125,7 @@
 
     if (!state.fallbackTried) {
       state.fallbackTried = true;
-      const global = window.__RAFREEQ_RECITATION_GLOBAL?.(state.surah, state.ayah);
+      const global = getGlobalAyah?.(state.surah, state.ayah);
       if (global) {
         audio.src = fallbackUrl(global);
         const promise = audio.play();
@@ -158,6 +159,7 @@
   function configure(options = {}) {
     onAyahChange = typeof options.onAyahChange === 'function' ? options.onAyahChange : null;
     onSurahEnd = typeof options.onSurahEnd === 'function' ? options.onSurahEnd : null;
+    getGlobalAyah = typeof options.getGlobalAyah === 'function' ? options.getGlobalAyah : null;
   }
 
   root.RafeeqRecitation = Object.freeze({
