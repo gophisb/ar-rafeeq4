@@ -1,0 +1,61 @@
+name: Rafeeq 4 Recitation Smoke Test
+
+on:
+  push:
+    branches:
+      - feat/rafeeq4-minshawi-recitation
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quran-recitation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Syntax checks
+        run: |
+          node --check pages/quran-recitation.js
+          node --check pages/quran.js
+
+      - name: Contract checks
+        run: |
+          test -f pages/quran.html
+          test -f pages/quran-local.json
+          test -f pages/tafsir-saadi-local.json
+          grep -q 'quran-recitation.js' pages/quran.html
+          grep -q 'recitationPlay' pages/quran.html
+          grep -q 'recitationStop' pages/quran.html
+          grep -q 'RafeeqRecitation' pages/quran.js
+          grep -q 'everyayah.com/data/Minshawy_Murattal_128kbps' pages/quran-recitation.js
+          grep -q 'cdn.islamic.network/quran/audio/128/ar.minshawi' pages/quran-recitation.js
+
+      - name: Quran data integrity
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const q = JSON.parse(fs.readFileSync('pages/quran-local.json','utf8'));
+          if (!Array.isArray(q) || q.length !== 114) throw new Error('Expected 114 surahs');
+          const total = q.reduce((n,s) => n + (Array.isArray(s.a) ? s.a.length : 0), 0);
+          if (total !== 6236) throw new Error('Expected 6236 ayahs, got ' + total);
+          for (const s of q) {
+            if (!s || !Number.isInteger(s.i) || !Array.isArray(s.a) || s.a.length === 0) {
+              throw new Error('Invalid surah entry');
+            }
+            for (const a of s.a) {
+              if (!Number.isInteger(a.n) || typeof a.t !== 'string' || !a.t.trim()) throw new Error('Invalid ayah');
+            }
+          }
+          console.log('Quran local data OK:', q.length, 'surahs /', total, 'ayahs');
+          NODE
+
+      - name: Tafsir data integrity
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const t = JSON.parse(fs.readFileSync('pages/tafsir-saadi-local.json','utf8'));
+          if (!Array.isArray(t) || t.length !== 114) throw new Error('Expected 114 tafsir surahs');
+          console.log('Tafsir local data OK:', t.length, 'surah entries');
+          NODE
