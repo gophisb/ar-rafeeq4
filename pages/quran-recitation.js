@@ -6,6 +6,8 @@
 (function (root) {
   'use strict';
 
+  const androidOffline = root.location && root.location.protocol === 'file:';
+  const localBase = '../assets/audio/minshawy/';
   const primaryBase = 'https://everyayah.com/data/Minshawy_Murattal_128kbps/';
   const fallbackBase = 'https://cdn.islamic.network/quran/audio/128/ar.minshawi/';
   const pad = (n, w) => String(n).padStart(w, '0');
@@ -28,7 +30,8 @@
   let getGlobalAyah = null;
 
   function primaryUrl(surah, ayah) {
-    return primaryBase + pad(surah, 3) + pad(ayah, 3) + '.mp3';
+    const file = pad(surah, 3) + pad(ayah, 3) + '.mp3';
+    return androidOffline ? localBase + file : primaryBase + file;
   }
 
   function fallbackUrl(globalAyah) {
