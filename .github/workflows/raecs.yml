@@ -1,0 +1,21 @@
+name: RAECS Governance Gate
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  governance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install policy validator dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+          python -m pip install pyyaml bandit pip-audit semgrep
+      - name: Release gate
+        run: bash scripts/release-gate.sh

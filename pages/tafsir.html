@@ -1,0 +1,15 @@
+<section class="page page-tafsir" dir="rtl">
+  <header class="hero">
+    <h1>تفسير السعدي</h1>
+    <p>عرض تفسير الآيات مع بقاء بيانات القرآن والتفسير منفصلة.</p>
+  </header>
+  <section class="card tafsir-controls">
+    <label for="tafsirSurah">السورة</label>
+    <select id="tafsirSurah" class="input" aria-label="اختيار السورة"></select>
+    <label for="tafsirSearch">بحث في الآيات</label>
+    <input id="tafsirSearch" class="input" type="search" placeholder="رقم الآية أو كلمة..." autocomplete="off">
+  </section>
+  <p id="tafsirStatus" class="muted" role="status">جاري تحميل البيانات المحلية...</p>
+  <section id="tafsirList" class="tafsir-list" aria-live="polite"></section>
+  <script src="./pages/tafsir.js"></script>
+</section>

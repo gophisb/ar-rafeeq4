@@ -1,0 +1,19 @@
+version: "1"
+default_role: observer
+roles:
+  observer:
+    may: [read, inspect, report]
+    approval_required_for: [mutate, execute, release, govern]
+  operator:
+    may: [read, inspect, report, propose, execute]
+    approval_required_for: [mutate, release, govern]
+  reviewer:
+    may: [read, inspect, report, approve]
+    approval_required_for: [mutate, execute, release, govern]
+  administrator:
+    may: [read, inspect, report, propose, execute, mutate, approve, release]
+    approval_required_for: [govern, security_boundary_change]
+separation_of_duties:
+  release_requires_distinct_reviewer: true
+  governance_change_requires_human: true
+  destructive_action_requires_human: true

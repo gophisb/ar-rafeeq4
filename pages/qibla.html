@@ -1,0 +1,39 @@
+<section class="page qibla-page">
+  <header class="hero">
+    <h1>القبلة</h1>
+    <p>اعرف اتجاه القبلة من موقعك الحالي.</p>
+  </header>
+
+  <section class="card qibla-card" aria-labelledby="qiblaHeading">
+    <div class="card-heading">
+      <span class="badge icon-badge" aria-hidden="true"><img src="assets/icons/icon-qibla.png" width="32" height="32" alt=""></span>
+      <div>
+        <h2 id="qiblaHeading">اتجاه القبلة</h2>
+        <p id="qiblaStatus" class="muted" role="status">جاري تحديد الموقع...</p>
+      </div>
+    </div>
+    <div class="qibla-compass" id="qiblaCompass" role="img" aria-label="بوصلة اتجاه القبلة">
+      <div class="qibla-ring" aria-hidden="true"><span>N</span><span>E</span><span>S</span><span>W</span></div>
+      <div class="qibla-arrow" id="qiblaArrow" aria-hidden="true">➤</div>
+      <div class="qibla-center" id="qiblaCenter" aria-live="polite"><img id="qiblaKaaba" src="assets/icons/kaaba.svg" alt="الكعبة المشرفة" width="44" height="44" hidden><span id="qiblaCenterHint">وجّه الهاتف نحو القبلة</span></div>
+    </div>
+    <p class="qibla-bearing" id="qiblaBearing">—</p>
+    <p id="qiblaHeadingValue" class="muted">اتجاه الهاتف: غير متاح</p>
+    <p id="qiblaDifference" class="muted">الفرق بين الهاتف والقبلة: غير متاح</p>
+    <p id="qiblaAlignmentStatus" class="qibla-alignment-status muted" role="status" aria-live="polite">صورة الكعبة تظهر عند اكتشاف اتجاه القبلة.</p>
+    <p id="qiblaCalibration" class="muted" role="status">المعايرة: غير مفعّلة</p>
+    <p class="muted">الزاوية محسوبة من الشمال الحقيقي، وليست بديلًا عن معايرة بوصلة الجهاز.</p>
+    <div class="button-row">
+      <button id="qiblaUseGps" class="btn primary" type="button">استخدام موقعي</button>
+      <button id="qiblaCalibrate" class="btn" type="button">تفعيل بوصلة الجهاز</button>
+    </div>
+    <p id="qiblaSensorStatus" class="muted" role="status">يمكنك استخدام الاتجاه المحسوب دون منح إذن المستشعر.</p>
+  </section>
+
+  <section class="card">
+    <h2>الموقع المستخدم</h2>
+    <p>الولاية: <strong data-location-name>—</strong> (<span data-location-source>—</span>)</p>
+    <p>الإحداثيات: <span data-location-lat>—</span>، <span data-location-lng>—</span></p>
+  </section>
+  <script src="./pages/qibla.js"></script>
+</section>
