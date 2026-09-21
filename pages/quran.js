@@ -204,6 +204,7 @@ window.addEventListener('rafeeq:recitation', e => updateRecitationUI(e.detail));
 function configureRecitation() {
   if (!window.RafeeqRecitation) return;
   window.RafeeqRecitation.configure({
+    getGlobalAyah: globalAyahNumber,
     onSurahEnd: (finishedSurah) => {
       if (finishedSurah < 114) openSurah(finishedSurah + 1);
     }
