@@ -3,6 +3,7 @@ name: Rafeeq 4 Recitation Smoke Test
 on:
   push:
     branches:
+      - main
       - feat/rafeeq4-minshawi-recitation
   workflow_dispatch:
 
