@@ -1,5 +1,18 @@
 plugins { id "com.android.application" }
-android { namespace "com.gophisb.houd11"; compileSdk 35
- defaultConfig { applicationId "com.gophisb.houd11"; minSdk 23; targetSdk 35; versionCode 11; versionName "11.0" }
- buildTypes { release { minifyEnabled false } }
+
+android {
+    namespace "com.gophisb.houd11"
+    compileSdk 35
+    defaultConfig {
+        applicationId "com.gophisb.houd11"
+        minSdk 23
+        targetSdk 35
+        versionCode 11
+        versionName "11.0"
+    }
+    buildTypes { release { minifyEnabled false } }
+}
+
+dependencies {
+    implementation "androidx.webkit:webkit:1.12.1"
 }
