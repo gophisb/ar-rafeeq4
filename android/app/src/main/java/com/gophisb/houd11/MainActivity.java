@@ -25,7 +25,7 @@ public class MainActivity extends Activity {
         if (Build.VERSION.SDK_INT >= 33) requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1001);
     }
     private class HoudAndroidBridge {
-        @JavascriptInterface public String requestPermissions() { return "{\\"display\\":\\"granted\\"}"; }
+        @JavascriptInterface public String requestPermissions() { return "{\"display\":\"granted\"}"; }
         @JavascriptInterface public String scheduleAdhan(String json) { try { scheduler.scheduleAll(new org.json.JSONArray(json)); return "true"; } catch (Exception e) { return "false"; } }
         @JavascriptInterface public String cancelAdhan() { scheduler.cancelAll(); return "true"; }
     }
