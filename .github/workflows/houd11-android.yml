@@ -33,7 +33,7 @@ jobs:
           test -s android/app/src/main/res/raw/adhan.mp3
           test -f android/app/src/main/assets/www/index.html
       - name: Build signed debug APK
-        run: gradle --no-daemon :app:assembleDebug
+        run: cd android && gradle --no-daemon :app:assembleDebug
       - name: Verify APK signature
         shell: bash
         run: |
