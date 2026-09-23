@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rafeeq4-core-v18';
+const CACHE_NAME = 'rafeeq4-core-v19';
 const APP_SHELL = [
   './',
   './index.html',
@@ -16,6 +16,7 @@ const APP_SHELL = [
   './pages/home.js?v=two-fixes',
   './pages/quran.html',
   './pages/quran.js',
+  './pages/quran-recitation.js',
   './pages/quran-local.json',
   './pages/tafsir.html',
   './pages/tafsir.js',
@@ -33,6 +34,7 @@ const APP_SHELL = [
   './pages/settings.html',
   './pages/settings.js',
   './manifest.json',
+  './prayer-engine.js',
   './assets/icons/icon.svg',
   './assets/icons/icon-192.png',
   './assets/icons/icon-512.png',
