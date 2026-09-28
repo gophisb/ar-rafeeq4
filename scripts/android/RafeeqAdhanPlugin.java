@@ -11,6 +11,7 @@ import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.annotation.CapacitorPlugin;
+import com.getcapacitor.PluginMethod;
 
 import org.json.JSONArray;
 
