@@ -37,6 +37,9 @@ jobs:
       - name: Add Android project
         run: npx cap add android
 
+      - name: Install native locked-screen adhan
+        run: node scripts/install-android-adhan.mjs
+
       - name: Sync Capacitor
         run: npx cap sync android
 
