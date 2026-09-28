@@ -65,7 +65,7 @@
 
   async function cancelManaged(plugin) {
     const notifications = [];
-    for (let i = 0; i < 20; i += 1) notifications.push({ id: BASE_ID + i });
+    for (let i = 0; i < 70; i += 1) notifications.push({ id: BASE_ID + i });
     try { await plugin.cancel({ notifications }); } catch (_) {}
   }
 
@@ -145,7 +145,7 @@
     if (playback && typeof playback.schedule === 'function' && notifications.length) {
       try {
         await playback.schedule({
-          alarms: notifications.map((notification, index) => ({
+          alarms: notifications.map(notification => ({
             id: notification.id,
             at: notification.schedule.at.getTime(),
             title: notification.title
