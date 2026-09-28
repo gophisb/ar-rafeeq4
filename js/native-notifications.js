@@ -4,28 +4,20 @@
   const ADHAN_KEY = 'rafeeq.adhan.enabled.v1';
   const CHANNEL_ID = 'rafeeq_adhan_v3';
   const BASE_ID = 41000;
-  const PRAYER_NAMES = {
-    fajr: 'الفجر',
-    sunrise: 'الشروق',
-    dhuhr: 'الظهر',
-    asr: 'العصر',
-    maghrib: 'المغرب',
-    isha: 'العشاء'
-  };
+  const PRAYER_NAMES = { fajr:'الفجر', sunrise:'الشروق', dhuhr:'الظهر', asr:'العصر', maghrib:'المغرب', isha:'العشاء' };
   const PRAYER_KEYS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
   let lastSignature = '';
-  let channelReady = false;
 
   function nativePlugin() {
-    const capacitor = window.Capacitor;
-    if (!capacitor || (typeof capacitor.isNativePlatform === 'function' && !capacitor.isNativePlatform())) return null;
-    return capacitor.Plugins && capacitor.Plugins.LocalNotifications ? capacitor.Plugins.LocalNotifications : null;
+    const c = window.Capacitor;
+    if (!c || (typeof c.isNativePlatform === 'function' && !c.isNativePlatform())) return null;
+    return c.Plugins && c.Plugins.LocalNotifications ? c.Plugins.LocalNotifications : null;
   }
 
   function adhanPlaybackPlugin() {
-    const capacitor = window.Capacitor;
-    if (!capacitor || (typeof capacitor.isNativePlatform === 'function' && !capacitor.isNativePlatform())) return null;
-    return capacitor.Plugins && capacitor.Plugins.RafeeqAdhan ? capacitor.Plugins.RafeeqAdhan : null;
+    const c = window.Capacitor;
+    if (!c || (typeof c.isNativePlatform === 'function' && !c.isNativePlatform())) return null;
+    return c.Plugins && c.Plugins.RafeeqAdhan ? c.Plugins.RafeeqAdhan : null;
   }
 
   function enabled() {
@@ -33,10 +25,8 @@
   }
 
   function dateAt(date, minutes) {
-    const hour = Math.floor(Number(minutes) / 60);
-    const minute = Number(minutes) % 60;
     const value = new Date(date);
-    value.setHours(hour, minute, 0, 0);
+    value.setHours(Math.floor(Number(minutes) / 60), Number(minutes) % 60, 0, 0);
     return value;
   }
 
@@ -45,22 +35,13 @@
     return Number.isFinite(value) ? value : null;
   }
 
-  async function prepareChannel(plugin) {
-    if (channelReady) return;
+  async function requestPermissionSafe(plugin) {
     try {
-      await plugin.createChannel({
-        id: CHANNEL_ID,
-        name: 'أوقات الصلاة',
-        description: 'تنبيهات أوقات الصلاة والأذان المحلي',
-        sound: 'adhan_notification',
-        importance: 5,
-        visibility: 1,
-        vibration: true
-      });
+      const permission = await plugin.requestPermissions();
+      return { granted: !permission || !permission.display || permission.display === 'granted', permission };
     } catch (error) {
-      console.warn('تعذر إنشاء قناة الأذان؛ ستستمر الإشعارات بالقناة الافتراضية.', error);
+      return { granted: false, permission: { display: 'denied' }, error };
     }
-    channelReady = true;
   }
 
   async function cancelManaged(plugin) {
@@ -93,26 +74,33 @@
     });
   }
 
-  async function requestPermissionSafe(plugin) {
+  async function ensureExactAlarmPermission(playback) {
+    if (!playback || typeof playback.canScheduleExactAlarms !== 'function') return true;
     try {
-      const permission = await plugin.requestPermissions();
-      return { granted: !permission || !permission.display || permission.display === 'granted', permission };
+      const result = await playback.canScheduleExactAlarms();
+      if (result && result.allowed) return true;
+      if (typeof playback.requestExactAlarmPermission === 'function') {
+        await playback.requestExactAlarmPermission();
+      }
+      return false;
     } catch (error) {
-      console.warn('تعذر طلب إذن الإشعارات.', error);
-      return { granted: false, permission: { display: 'denied' }, error };
+      console.warn('تعذر التحقق من إذن المنبهات الدقيقة.', error);
+      return false;
     }
   }
 
   async function schedule(location, todayTimes, force = false) {
     const plugin = nativePlugin();
     if (!plugin) return { native: false, scheduled: 0 };
+
+    const playback = adhanPlaybackPlugin();
     if (!enabled()) {
       await cancelManaged(plugin);
-      const playback = adhanPlaybackPlugin();
       if (playback && typeof playback.cancel === 'function') await playback.cancel();
       lastSignature = '';
       return { native: true, scheduled: 0, disabled: true };
     }
+
     const signature = JSON.stringify({
       source: location && location.source,
       code: location && location.code,
@@ -122,41 +110,52 @@
       times: todayTimes && todayTimes.minutes
     });
     if (!force && signature === lastSignature) return { native: true, scheduled: 0, unchanged: true };
+
+    const notifications = buildNotifications(location, todayTimes, true);
+
+    // Native alarm path is the primary adhan path: exact AlarmClock + foreground audio.
+    if (playback && typeof playback.schedule === 'function') {
+      const exactAllowed = await ensureExactAlarmPermission(playback);
+      if (!exactAllowed) {
+        return { native: true, scheduled: 0, exactPermissionRequired: true };
+      }
+      try {
+        if (typeof playback.cancel === 'function') await playback.cancel();
+        if (notifications.length) {
+          await playback.schedule({
+            alarms: notifications.map(notification => ({
+              id: notification.id,
+              at: notification.schedule.at.getTime(),
+              title: notification.title
+            }))
+          });
+          lastSignature = signature;
+          return { native: true, scheduled: notifications.length, exact: true, alarmAudio: true };
+        }
+      } catch (error) {
+        console.warn('فشل مسار الأذان الأصلي؛ سيتم استخدام تنبيه النظام الاحتياطي.', error);
+      }
+    }
+
+    // Fallback only when the native alarm/audio layer is unavailable or fails.
     const permissionResult = await requestPermissionSafe(plugin);
     if (!permissionResult.granted) return { native: true, scheduled: 0, denied: true };
-    await prepareChannel(plugin);
-    await cancelManaged(plugin);
-    let notifications = buildNotifications(location, todayTimes, true);
     let exact = true;
     try {
       if (notifications.length) await plugin.schedule({ notifications });
     } catch (error) {
       console.warn('تعذر جدولة الأذان الدقيق؛ سيتم استخدام تنبيهات غير دقيقة.', error);
-      notifications = buildNotifications(location, todayTimes, false);
       exact = false;
       try {
-        if (notifications.length) await plugin.schedule({ notifications });
+        const fallback = buildNotifications(location, todayTimes, false);
+        if (fallback.length) await plugin.schedule({ notifications: fallback });
       } catch (fallbackError) {
         console.warn('فشلت جدولة التنبيهات الاحتياطية أيضًا.', fallbackError);
-        notifications = [];
-      }
-    }
-    const playback = adhanPlaybackPlugin();
-    if (playback && typeof playback.schedule === 'function' && notifications.length) {
-      try {
-        await playback.schedule({
-          alarms: notifications.map(notification => ({
-            id: notification.id,
-            at: notification.schedule.at.getTime(),
-            title: notification.title
-          }))
-        });
-      } catch (error) {
-        console.warn('تعذر جدولة تشغيل الأذان الأصلي؛ ستظل تنبيهات النظام متاحة.', error);
+        return { native: true, scheduled: 0, exact: false };
       }
     }
     lastSignature = signature;
-    return { native: true, scheduled: notifications.length, exact };
+    return { native: true, scheduled: notifications.length, exact, alarmAudio: false };
   }
 
   async function requestPermission() {
@@ -174,8 +173,8 @@
     return schedule(location, times, true);
   }
 
-  document.addEventListener('rafeeq:adhanChanged', () => { refreshFromApp().catch(error => console.warn('Native adhan refresh failed', error)); });
-  document.addEventListener('rafeeq:locationChanged', () => { refreshFromApp().catch(error => console.warn('Native location refresh failed', error)); });
+  document.addEventListener('rafeeq:adhanChanged', () => refreshFromApp().catch(error => console.warn('Native adhan refresh failed', error)));
+  document.addEventListener('rafeeq:locationChanged', () => refreshFromApp().catch(error => console.warn('Native location refresh failed', error)));
 
   window.RafeeqNativeNotifications = {
     schedule,
