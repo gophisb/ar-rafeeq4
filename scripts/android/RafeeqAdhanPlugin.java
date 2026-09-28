@@ -9,10 +9,10 @@ import android.provider.Settings;
 
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
-import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.JSObject;
+import com.getcapacitor.annotation.CapacitorPlugin;
 
-import java.util.ArrayList;
+import org.json.JSONArray;
 
 @CapacitorPlugin(name = "RafeeqAdhan")
 public class RafeeqAdhanPlugin extends Plugin {
@@ -20,8 +20,8 @@ public class RafeeqAdhanPlugin extends Plugin {
 
     @PluginMethod
     public void canScheduleExactAlarms(PluginCall call) {
-        AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
-        boolean allowed = Build.VERSION.SDK_INT < 31 || alarmManager.canScheduleExactAlarms();
+        AlarmManager manager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
+        boolean allowed = Build.VERSION.SDK_INT < 31 || manager.canScheduleExactAlarms();
         JSObject result = new JSObject();
         result.put("allowed", allowed);
         call.resolve(result);
@@ -39,26 +39,35 @@ public class RafeeqAdhanPlugin extends Plugin {
 
     @PluginMethod
     public void schedule(PluginCall call) {
-        JSObject[] alarms = call.getArray("alarms").toArray(new JSObject[0]);
+        JSONArray alarms = call.getArray("alarms");
+        if (alarms == null) {
+            call.reject("alarms is required");
+            return;
+        }
         AlarmManager manager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
-        ArrayList<Integer> ids = new ArrayList<>();
-        for (JSObject alarm : alarms) {
-            int id = alarm.getInteger("id");
-            long at = alarm.getLong("at");
-            String title = alarm.getString("title", "حان وقت الصلاة");
-            Intent intent = new Intent(getContext(), RafeeqAdhanReceiver.class);
-            intent.putExtra("id", id);
-            intent.putExtra("title", title);
-            PendingIntent pending = PendingIntent.getBroadcast(getContext(), id, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-            AlarmManager.AlarmClockInfo info = new AlarmManager.AlarmClockInfo(at, pending);
-            manager.setAlarmClock(info, pending);
-            ids.add(id);
-            getContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
-                    .putString("alarm_" + id, title).apply();
+        int count = 0;
+        try {
+            for (int i = 0; i < alarms.length(); i++) {
+                JSObject alarm = JSObject.fromJSONObject(alarms.getJSONObject(i));
+                int id = alarm.getInteger("id");
+                long at = alarm.getLong("at");
+                String title = alarm.getString("title", "حان وقت الصلاة");
+                Intent intent = new Intent(getContext(), RafeeqAdhanReceiver.class);
+                intent.putExtra("id", id);
+                intent.putExtra("title", title);
+                PendingIntent pending = PendingIntent.getBroadcast(getContext(), id, intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                manager.setAlarmClock(new AlarmManager.AlarmClockInfo(at, pending), pending);
+                getContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+                        .putString("alarm_" + id, title).apply();
+                count++;
+            }
+        } catch (Exception error) {
+            call.reject("failed to schedule adhan alarms", error);
+            return;
         }
         JSObject result = new JSObject();
-        result.put("scheduled", ids.size());
+        result.put("scheduled", count);
         call.resolve(result);
     }
 
