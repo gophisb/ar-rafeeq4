@@ -72,7 +72,7 @@
   function buildNotifications(location, todayTimes, exact = true) {
     if (!location || !todayTimes || !window.PrayerEngine || typeof window.PrayerEngine.calculate !== 'function') return [];
     const now = new Date();
-    const days = [new Date(now), new Date(now.getTime() + 86400000)];
+    const days = Array.from({ length: 7 }, (_, offset) => new Date(now.getTime() + offset * 86400000));
     return days.flatMap((day, dayOffset) => {
       const times = dayOffset === 0 ? todayTimes : window.PrayerEngine.calculate(day, location, window.PrayerEngine.DEFAULT_SETTINGS);
       return PRAYER_KEYS.map((key, index) => {
@@ -146,8 +146,9 @@
       try {
         await playback.schedule({
           alarms: notifications.map((notification, index) => ({
-            id: index,
-            at: notification.schedule.at.getTime()
+            id: notification.id,
+            at: notification.schedule.at.getTime(),
+            title: notification.title
           }))
         });
       } catch (error) {
