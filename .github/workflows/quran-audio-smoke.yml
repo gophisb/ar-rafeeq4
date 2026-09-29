@@ -1,0 +1,33 @@
+name: Quran Audio Smoke
+
+on:
+  push:
+    branches:
+      - feat/quran-audio-proof
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax
+        run: |
+          set -euo pipefail
+          node --check pages/quran-recitation.js
+          node --check pages/quran.js
+      - name: Required offline audio hooks
+        run: |
+          set -euo pipefail
+          grep -q "downloadSurah" pages/quran-recitation.js
+          grep -q "downloadQuran" pages/quran-recitation.js
+          grep -q "downloadCurrentSurah" pages/quran.html
+          grep -q "downloadFullQuran" pages/quran.html
+          grep -q "audioBytesIncluded.*false" assets/audio/minshawy-proof-manifest.json
+          test ! -d assets/audio/minshawy
