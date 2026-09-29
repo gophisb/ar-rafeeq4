@@ -28,6 +28,12 @@
     return capacitor.Plugins && capacitor.Plugins.RafeeqAdhan ? capacitor.Plugins.RafeeqAdhan : null;
   }
 
+  function nativeAndroidBridge() {
+    return window.HoudAndroid && typeof window.HoudAndroid.scheduleAdhan === 'function'
+      ? window.HoudAndroid
+      : null;
+  }
+
   function enabled() {
     try { return localStorage.getItem(ADHAN_KEY) === 'true'; } catch (_) { return false; }
   }
@@ -104,6 +110,51 @@
   }
 
   async function schedule(location, todayTimes, force = false) {
+    const bridge = nativeAndroidBridge();
+
+    if (bridge) {
+      if (!enabled()) {
+        try { bridge.cancelAdhan(); } catch (_) {}
+        lastSignature = '';
+        return { native: true, scheduled: 0, disabled: true };
+      }
+
+      const signature = JSON.stringify({
+        source: location && location.source,
+        code: location && location.code,
+        lat: location && location.latitude,
+        lng: location && location.longitude,
+        day: new Date().toDateString(),
+        times: todayTimes && todayTimes.minutes
+      });
+      if (!force && signature === lastSignature) {
+        return { native: true, scheduled: 0, unchanged: true };
+      }
+
+      const permission = requestPermission();
+      const permissionResult = await permission;
+      if (permissionResult && permissionResult.display === 'denied') {
+        return { native: true, scheduled: 0, denied: true };
+      }
+
+      const notifications = buildNotifications(location, todayTimes, true);
+      const alarms = notifications.map((notification, index) => ({
+        id: index,
+        at: notification.schedule.at.getTime()
+      }));
+
+      try {
+        bridge.cancelAdhan();
+        const ok = bridge.scheduleAdhan(JSON.stringify(alarms)) === 'true';
+        if (!ok) return { native: true, scheduled: 0, failed: true };
+        lastSignature = signature;
+        return { native: true, scheduled: alarms.length, exact: true, androidBridge: true };
+      } catch (error) {
+        console.warn('فشلت جدولة الأذان عبر جسر Android.', error);
+        return { native: true, scheduled: 0, failed: true };
+      }
+    }
+
     const plugin = nativePlugin();
     if (!plugin) return { native: false, scheduled: 0 };
     if (!enabled()) {
@@ -159,6 +210,14 @@
   }
 
   async function requestPermission() {
+    const bridge = nativeAndroidBridge();
+    if (bridge && typeof bridge.requestPermissions === 'function') {
+      try {
+        return JSON.parse(bridge.requestPermissions());
+      } catch (_) {
+        return { native: true, display: 'denied' };
+      }
+    }
     const plugin = nativePlugin();
     if (!plugin) return { native: false, display: 'unsupported' };
     const result = await requestPermissionSafe(plugin);
