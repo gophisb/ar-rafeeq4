@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "feature": "quran-audio",
+  "reciter": "Muhammad Siddiq Al-Minshawi",
+  "style": "Murattal",
+  "recordingTarget": "Minshawy_Murattal_128kbps",
+  "redistributionStatus": "BLOCKED_PENDING_PERMISSION",
+  "audioBytesIncluded": false,
+  "localStorageTarget": "Capacitor Filesystem Directory.Data",
+  "playbackMode": "local-first-with-streaming-fallback",
+  "pilotSurahs": [
+    {
+      "surah": 1,
+      "name": "الفاتحة",
+      "ayahs": 7,
+      "sources": [
+        {
+          "url": "https://everyayah.com/data/Minshawy_Murattal_128kbps/001001.mp3",
+          "priority": 1,
+          "role": "reference-only-until-redistribution-rights-are-cleared"
+        }
+      ],
+      "timing": {
+        "status": "PENDING_RECORDING_IDENTITY_CHECK",
+        "source": "quran-align/Minshawy_Murattal_128kbps"
+      }
+    },
+    {
+      "surah": 2,
+      "name": "البقرة",
+      "ayahs": 286,
+      "sources": [
+        {
+          "url": "https://everyayah.com/data/Minshawy_Murattal_128kbps/002001.mp3",
+          "priority": 1,
+          "role": "reference-only-until-redistribution-rights-are-cleared"
+        }
+      ],
+      "timing": {
+        "status": "PENDING_RECORDING_IDENTITY_CHECK",
+        "source": "quran-align/Minshawy_Murattal_128kbps"
+      }
+    }
+  ],
+  "rolloutGate": {
+    "requiredBefore114Surahs": [
+      "rights-cleared-for-the-exact-recording",
+      "Fatiha-playback-tested",
+      "Baqarah-playback-tested",
+      "offline-after-download-tested",
+      "sha256-integrity-tested",
+      "timings-validated-against-the-exact-recording"
+    ]
+  }
+}
