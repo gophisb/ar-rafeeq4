@@ -87,7 +87,7 @@ public class MainActivity extends Activity {
                 ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED;
             boolean location = ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
                 ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-            return "{"display":"" + (notification ? "granted" : "denied") + "","location":"" + (location ? "granted" : "denied") + ""}";
+            return "{\"display\":\"" + (notification ? "granted" : "denied") + "\",\"location\":\"" + (location ? "granted" : "denied") + "\"}";
         }
         @JavascriptInterface public String scheduleAdhan(String json) {
             try { scheduler.scheduleAll(new JSONArray(json)); return "true"; }
