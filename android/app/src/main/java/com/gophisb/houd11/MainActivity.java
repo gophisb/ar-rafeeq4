@@ -59,7 +59,7 @@ public class MainActivity extends Activity {
 
     private class HoudAndroidBridge {
         @JavascriptInterface public String requestPermissions() {
-            return "{"display":"granted"}";
+            return "{\"display\":\"granted\"}";
         }
         @JavascriptInterface public String scheduleAdhan(String json) {
             try { scheduler.scheduleAll(new JSONArray(json)); return "true"; }
