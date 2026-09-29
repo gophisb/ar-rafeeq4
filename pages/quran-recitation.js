@@ -84,14 +84,12 @@
       objectUrl = URL.createObjectURL(localBlob);
       audio.src = objectUrl;
       const promise = audio.play();
-      if (promise && typeof promise.catch === 'function') promise.catch(() => {});
-      return true;
+      return promise && typeof promise.then === 'function' ? promise.then(() => true) : true;
     }
 
     audio.src = primaryUrl(surah, ayah);
     const promise = audio.play();
-    if (promise && typeof promise.catch === 'function') promise.catch(() => {});
-    return false;
+    return promise && typeof promise.then === 'function' ? promise.then(() => false) : false;
   }
 
   async function downloadTrack(surah, ayah) {
@@ -203,7 +201,7 @@
 
     onAyahChange?.(a);
 
-    playLocalOrRemote(s, a, total, globalAyah);
+    const promise = playLocalOrRemote(s, a, total, globalAyah);
     if (promise && typeof promise.catch === 'function') {
       promise.catch((error) => {
         if (error && error.name === 'AbortError') return;
@@ -211,7 +209,7 @@
           playing: false,
           loading: false,
           error: navigator.onLine === false
-            ? 'التلاوة تحتاج إلى الاتصال بالإنترنت في هذه النسخة.'
+            ? 'التلاوة غير متاحة دون اتصال لهذه الآية؛ نزّل السورة أولًا.'
             : 'تعذّر تشغيل التلاوة — اضغط تشغيل مرة أخرى.'
         });
       });
