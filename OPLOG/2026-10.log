@@ -5,3 +5,4 @@
 [2026-10-02] [DEFCON-5] [agent] [feat/islamic-library] Added Mukhtasar Minhaj al-Qasidin as the second library book: 237 local sections in one offline JSON file, sourced from the OpenITI cleaned Shamela0098087-ara1 corpus; attribution/license recorded as CC BY-NC-SA 4.0. Reader updated for generic local entries.
 
 [2026-10-02] [DEFCON-5] [agent] [feat/islamic-library] Added Madarij al-Salikin as the third library book from OpenITI cleaned Shamela0008370-ara1: 614 local sections in one offline JSON file; attribution/license recorded as CC BY-NC-SA 4.0.
+[2026-10-02] [DEFCON-5] [agent] [feat/islamic-library] Added Madarij al-Salikin as the third library book: 1,459 local page segments from OpenITI version Shamela0008370-ara1; attribution/license recorded as CC BY-NC-SA 4.0. Service Worker cache bumped to v24 and reader source metadata made version-aware.
