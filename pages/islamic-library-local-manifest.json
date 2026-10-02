@@ -68,6 +68,25 @@
       "sectionCount": 614,
       "partCount": 1,
       "textScope": "full Arabic body text represented by the selected OpenITI cleaned corpus version; editorial paratext and footnotes removed by OpenITI."
+    },
+    {
+      "id": "madarij-al-salikin",
+      "title": "مدارج السالكين",
+      "author": "ابن قيم الجوزية",
+      "localPath": "data/library/madarij/madarij-al-salikin.json",
+      "localPaths": [
+        "data/library/madarij/madarij-al-salikin.json"
+      ],
+      "source": "https://github.com/OpenITI/RELEASE",
+      "sourceFile": "0751IbnQayyimJawziyya.MadarijSalikin.Shamela0008370-ara1",
+      "sourceVersion": "0751IbnQayyimJawziyya.MadarijSalikin.Shamela0008370-ara1",
+      "rightsStatus": "openiti-cc-by-nc-sa-4.0",
+      "ingestionStatus": "complete-1459-page-segments-local",
+      "license": "CC BY-NC-SA 4.0",
+      "attribution": "OpenITI corpus; source version Shamela0008370-ara1; OpenITI mARkdown formatting normalized for the local reader.",
+      "sectionCount": 1459,
+      "partCount": 1,
+      "textScope": "Arabic body text represented by the selected OpenITI corpus version; OpenITI states that copyrighted editorial input such as footnotes and introductory matter is removed."
     }
   ]
 }
