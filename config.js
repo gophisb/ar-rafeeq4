@@ -134,6 +134,9 @@ const CONFIG = Object.freeze({
         ISLAMIC_LIBRARY:
             "islamic-library",
 
+        ISLAMIC_LIBRARY_READER:
+            "islamic-library-reader",
+
         SETTINGS:
             "settings"
 
