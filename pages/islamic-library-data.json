@@ -1,0 +1,23 @@
+[
+  {
+    "id":"riyad-al-salihin",
+    "title":"رياض الصالحين",
+    "author":"الإمام يحيى بن شرف النووي",
+    "description":"كتاب جامع في الأحاديث والآداب والأعمال الصالحة.",
+    "source":"https://www.waqfeya.net/"
+  },
+  {
+    "id":"mukhtasar-minhaj-al-qasidin",
+    "title":"مختصر منهاج القاصدين",
+    "author":"أحمد بن عبد الرحمن بن قدامة المقدسي",
+    "description":"مختصر في تزكية النفس والآداب والسلوك.",
+    "source":"https://www.waqfeya.net/"
+  },
+  {
+    "id":"madarij-al-salikin",
+    "title":"مدارج السالكين",
+    "author":"محمد بن أبي بكر ابن قيم الجوزية",
+    "description":"كتاب في منازل السائرين وأعمال القلوب والسلوك.",
+    "source":"https://www.waqfeya.net/"
+  }
+]
