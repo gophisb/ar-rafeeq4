@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "books": [
+    {
+      "id": "riyad-al-salihin",
+      "title": "رياض الصالحين",
+      "localPath": null,
+      "source": "https://ar.wikisource.org/wiki/رياض_الصالحين/الصفحة_الأولى",
+      "rightsStatus": "public-domain-source-identified",
+      "ingestionStatus": "reader-ready-text-not-yet-ingested"
+    },
+    {
+      "id": "mukhtasar-minhaj-al-qasidin",
+      "title": "مختصر منهاج القاصدين",
+      "localPath": null,
+      "rightsStatus": "verification-required",
+      "ingestionStatus": "not-started"
+    },
+    {
+      "id": "madarij-al-salikin",
+      "title": "مدارج السالكين",
+      "localPath": null,
+      "rightsStatus": "verification-required",
+      "ingestionStatus": "not-started"
+    }
+  ]
+}
