@@ -27,12 +27,12 @@
           "<h2 class=\"library-reader-book\">" + escapeHtml(h.book) + "</h2>") : "";
         return heading +
           "<article class=\"library-reader-section\">" +
-          "<h3>حديث رقم " + escapeHtml(h.idInBook) + "</h3>" +
+          "<h3>" + (book.id === "riyad-al-salihin" ? "حديث رقم " : "مقطع رقم ") + escapeHtml(h.idInBook) + "</h3>" +
           "<div class=\"library-reader-text\">" +
           escapeHtml(h.arabic || "").replace(/\\n/g, "<br>") +
           "</div></article>";
       }).join("");
-      source.textContent = book.license === "CC BY-NC-SA 4.0" ? "المصدر: OpenITI corpus؛ النسخة الرقمية: Shamela0098087-ara1؛ الترخيص: CC BY-NC-SA 4.0." : "المصدر: Hadith JSON (ISC)؛ البيانات موثقة في المستودع كمجمّعة من Sunnah.com. مرجع العمل: ويكي مصدر.";
+      source.textContent = book.license === "CC BY-NC-SA 4.0" ? "المصدر: OpenITI corpus؛ النسخة الرقمية: " + (book.sourceVersion || "OpenITI") + "؛ الترخيص: CC BY-NC-SA 4.0." : "المصدر: Hadith JSON (ISC)؛ البيانات موثقة في المستودع كمجمّعة من Sunnah.com. مرجع العمل: ويكي مصدر.";
       status.hidden = true;
       body.hidden = false;
     })
