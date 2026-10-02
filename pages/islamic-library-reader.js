@@ -20,15 +20,33 @@
     })
     .then(({ book, data }) => {
       document.getElementById("islamicLibraryReaderTitle").textContent = book.title;
-      text.textContent = data.text || "";
+      const sections = Array.isArray(data.sections) ? data.sections : [];
+      text.innerHTML = sections.map(section =>
+        "<article class=\"library-reader-section\">" +
+        "<h2>" + escapeHtml(section.number + " — " + section.title) + "</h2>" +
+        "<div class=\"library-reader-text\">" +
+        escapeHtml(section.text || "").replace(/\\n/g, "<br>") +
+        "</div></article>"
+      ).join("");
       source.textContent = "المصدر المرجعي: " + book.source;
-      status.hidden = true;
-      body.hidden = false;
+      status.hidden = sections.length > 0;
+      body.hidden = sections.length === 0;
+      if (!sections.length) throw new Error("empty-local-book");
     })
     .catch(() => {
+      status.hidden = false;
+      body.hidden = true;
       status.innerHTML =
-        "<p><strong>النص المحلي الكامل لم يُدرج بعد.</strong></p>" +
-        "<p class=\"muted\">تم تجهيز القارئ والمسار دون تغيير محتوى التطبيق الحالي. " +
-        "لن نضع نصًا كاملًا قبل اكتمال التحقق من النسخة وحقوق إعادة التوزيع.</p>";
+        "<p><strong>النص المحلي لهذا الجزء غير متاح.</strong></p>" +
+        "<p class=\"muted\">القارئ يعمل محليًا، ولن نعرض نصًا غير موثّق أو مُختلق.</p>";
     });
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
 })();
