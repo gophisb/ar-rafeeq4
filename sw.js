@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rafeeq4-core-v20';
+const CACHE_NAME = 'rafeeq4-core-v21';
 const APP_SHELL = [
   './',
   './index.html',
@@ -33,6 +33,7 @@ const APP_SHELL = [
     './pages/islamic-library-reader.html',
     './pages/islamic-library-reader.js',
     './pages/islamic-library-local-manifest.json',
+  './data/library/riyad/part-001.json',
   './pages/prayer.html',
   './pages/prayer.js',
   './pages/qibla.html',
