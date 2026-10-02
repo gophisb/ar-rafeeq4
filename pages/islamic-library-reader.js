@@ -19,7 +19,7 @@
     })
     .then(({ book, parts }) => {
       document.getElementById("islamicLibraryReaderTitle").textContent = book.title;
-      const hadiths = parts.flatMap(part => Array.isArray(part.hadiths) ? part.hadiths : []);
+      const hadiths = parts.flatMap(part => Array.isArray(part.hadiths) ? part.hadiths : (Array.isArray(part.entries) ? part.entries : []));
       if (!hadiths.length) throw new Error("empty-local-book");
       let currentBook = "";
       text.innerHTML = hadiths.map(h => {
@@ -32,8 +32,7 @@
           escapeHtml(h.arabic || "").replace(/\\n/g, "<br>") +
           "</div></article>";
       }).join("");
-      source.textContent = "المصدر: Hadith JSON (ISC)؛ البيانات موثقة في المستودع كمجمّعة من Sunnah.com. " +
-        "مرجع العمل: ويكي مصدر.";
+      source.textContent = book.license === "CC BY-NC-SA 4.0" ? "المصدر: OpenITI corpus؛ النسخة الرقمية: Shamela0098087-ara1؛ الترخيص: CC BY-NC-SA 4.0." : "المصدر: Hadith JSON (ISC)؛ البيانات موثقة في المستودع كمجمّعة من Sunnah.com. مرجع العمل: ويكي مصدر.";
       status.hidden = true;
       body.hidden = false;
     })
