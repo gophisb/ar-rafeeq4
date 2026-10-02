@@ -22,8 +22,8 @@
         <p class="muted">المؤلف: ${esc(book.author)}</p>
         <p>${esc(book.description)}</p>
         <div class="library-actions">
-          <button type="button" class="text-button" disabled title="سيُفعّل بعد إدخال النص المحلي الموثق">
-            القراءة دون إنترنت — قيد التجهيز
+          <button type="button" class="text-button" data-library-book="${esc(book.id)}">
+            قارئ المكتبة
           </button>
           <a class="text-button" href="${esc(book.source)}" target="_blank" rel="noopener noreferrer">
             المصدر
