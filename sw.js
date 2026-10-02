@@ -53,7 +53,7 @@ const APP_SHELL = [
   './data/library/riyad/hadiths-018.json',
   './data/library/riyad/hadiths-019.json',
   './data/library/mukhtasar-minhaj/mukhtasar-minhaj-al-qasidin.json',
-  './data/library/madarij/madarij-al-salikin.json',
+  './data/library/madarij-al-salikin/madarij-al-salikin.json',
   './pages/prayer.html',
   './pages/prayer.js',
   './pages/qibla.html',
