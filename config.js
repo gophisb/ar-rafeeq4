@@ -131,6 +131,9 @@ const CONFIG = Object.freeze({
         NAWAWI:
             "nawawi",
 
+        ISLAMIC_LIBRARY:
+            "islamic-library",
+
         SETTINGS:
             "settings"
 
@@ -301,6 +304,9 @@ const CONFIG = Object.freeze({
             true,
 
         NAWAWI:
+            true,
+
+        ISLAMIC_LIBRARY:
             true,
 
         SETTINGS:
