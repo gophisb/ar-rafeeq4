@@ -76,6 +76,8 @@ const APP_SHELL = [
   './assets/icons/icon-qibla.svg',
   './assets/icons/icon-qibla.png',
   './assets/audio/adhan.mp3'
+  './data/library/madarij/madarij-al-salikin.json',
+
 ];
 
 async function cacheShell() {
