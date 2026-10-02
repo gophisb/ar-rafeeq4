@@ -4,10 +4,10 @@
     {
       "id": "riyad-al-salihin",
       "title": "رياض الصالحين",
-      "localPath": null,
+      "localPath": "data/library/riyad/part-001.json",
       "source": "https://ar.wikisource.org/wiki/رياض_الصالحين/الصفحة_الأولى",
       "rightsStatus": "public-domain-source-identified",
-      "ingestionStatus": "reader-ready-text-not-yet-ingested"
+      "ingestionStatus": "partial-local-text-ingested-first-chapter"
     },
     {
       "id": "mukhtasar-minhaj-al-qasidin",
