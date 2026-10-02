@@ -55,9 +55,19 @@
     {
       "id": "madarij-al-salikin",
       "title": "مدارج السالكين",
-      "localPath": null,
-      "rightsStatus": "verification-required",
-      "ingestionStatus": "not-started"
+      "localPath": "data/library/madarij-al-salikin/madarij-al-salikin.json",
+      "rightsStatus": "openiti-cc-by-nc-sa-4.0",
+      "ingestionStatus": "complete-614-sections-local",
+      "localPaths": [
+        "data/library/madarij-al-salikin/madarij-al-salikin.json"
+      ],
+      "source": "https://github.com/OpenITI/RELEASE",
+      "sourceFile": "https://raw.githubusercontent.com/OpenITI/RELEASE/cfc4157a3cf2054c0888f133970a4eaa3e22e58c/data/0751IbnQayyimJawziyya/0751IbnQayyimJawziyya.MadarijSalikin/0751IbnQayyimJawziyya.MadarijSalikin.Shamela0008370-ara1",
+      "license": "CC BY-NC-SA 4.0",
+      "attribution": "OpenITI corpus; source version Shamela0008370-ara1; cleaned version removes paratextual/editorial material.",
+      "sectionCount": 614,
+      "partCount": 1,
+      "textScope": "full Arabic body text represented by the selected OpenITI cleaned corpus version; editorial paratext and footnotes removed by OpenITI."
     }
   ]
 }
