@@ -121,6 +121,14 @@ const Router = (() => {
         ],
 
         [
+            CONFIG.PAGES.ISLAMIC_LIBRARY_READER,
+            {
+                file: "pages/islamic-library-reader.html",
+                title: "قارئ مكتبة الرفيق"
+            }
+        ],
+
+        [
             CONFIG.PAGES.SETTINGS,
             {
                 file: "pages/settings.html",
