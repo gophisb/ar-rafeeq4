@@ -4,10 +4,36 @@
     {
       "id": "riyad-al-salihin",
       "title": "رياض الصالحين",
-      "localPath": "data/library/riyad/part-001.json",
+      "localPath": "data/library/riyad/hadiths-001.json",
       "source": "https://ar.wikisource.org/wiki/رياض_الصالحين/الصفحة_الأولى",
       "rightsStatus": "public-domain-source-identified",
-      "ingestionStatus": "partial-local-text-ingested-first-chapter"
+      "ingestionStatus": "complete-1896-hadiths-local",
+      "localPaths": [
+        "data/library/riyad/hadiths-001.json",
+        "data/library/riyad/hadiths-002.json",
+        "data/library/riyad/hadiths-003.json",
+        "data/library/riyad/hadiths-004.json",
+        "data/library/riyad/hadiths-005.json",
+        "data/library/riyad/hadiths-006.json",
+        "data/library/riyad/hadiths-007.json",
+        "data/library/riyad/hadiths-008.json",
+        "data/library/riyad/hadiths-009.json",
+        "data/library/riyad/hadiths-010.json",
+        "data/library/riyad/hadiths-011.json",
+        "data/library/riyad/hadiths-012.json",
+        "data/library/riyad/hadiths-013.json",
+        "data/library/riyad/hadiths-014.json",
+        "data/library/riyad/hadiths-015.json",
+        "data/library/riyad/hadiths-016.json",
+        "data/library/riyad/hadiths-017.json",
+        "data/library/riyad/hadiths-018.json",
+        "data/library/riyad/hadiths-019.json"
+      ],
+      "hadithCount": 1896,
+      "partCount": 19,
+      "textScope": "full Arabic hadith corpus represented by the selected dataset; chapter commentary/explanatory notes are not claimed as separately ingested",
+      "sourceDataset": "https://github.com/elmasri-tayeb/hadith-json",
+      "license": "ISC"
     },
     {
       "id": "mukhtasar-minhaj-al-qasidin",
