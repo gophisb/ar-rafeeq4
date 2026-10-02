@@ -33,6 +33,13 @@
     ).join("") || '<div class="card"><p>لا توجد نتائج.</p></div>';
   }
 
+  list.addEventListener("click", event => {
+    const button = event.target.closest("[data-library-book]");
+    if (!button) return;
+    localStorage.setItem("rafeeq.library.book", button.dataset.libraryBook);
+    window.location.hash = "islamic-library-reader";
+  });
+
   fetch("./pages/islamic-library-data.json")
     .then(r => { if (!r.ok) throw new Error("library-data"); return r.json(); })
     .then(data => {
