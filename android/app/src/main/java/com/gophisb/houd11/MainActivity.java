@@ -70,6 +70,22 @@ public class MainActivity extends Activity {
         @JavascriptInterface public String cancelAdhan() {
             scheduler.cancelAll(); return "true";
         }
+        @JavascriptInterface public String setPrayerNotification(String json) {
+            try {
+                PrayerNotificationReceiver.saveAndShow(MainActivity.this, json);
+                return "true";
+            } catch (Exception e) {
+                return "false";
+            }
+        }
+        @JavascriptInterface public String clearPrayerNotification() {
+            try {
+                PrayerNotificationReceiver.clear(MainActivity.this);
+                return "true";
+            } catch (Exception e) {
+                return "false";
+            }
+        }
     }
 
     @Override protected void onDestroy() {
