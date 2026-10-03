@@ -45,6 +45,38 @@
     return Number.isFinite(value) ? value : null;
   }
 
+  async function updatePersistentPrayerStatus(location, todayTimes) {
+    if (!window.HoudAndroid || typeof window.HoudAndroid.setPrayerNotification !== 'function') return;
+    if (!location || !todayTimes || !window.PrayerEngine) return;
+    try {
+      const today = new Date();
+      const tomorrow = new Date(today.getTime());
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowTimes = window.PrayerEngine.calculate(
+        tomorrow,
+        location,
+        window.PrayerEngine.DEFAULT_SETTINGS
+      );
+      const prayers = [];
+      [
+        { day: today, times: todayTimes },
+        { day: tomorrow, times: tomorrowTimes }
+      ].forEach(({ day, times }) => {
+        PRAYER_KEYS.forEach(key => {
+          const minutes = numericMinutes(times, key);
+          if (minutes === null) return;
+          prayers.push({
+            name: PRAYER_NAMES[key],
+            at: dateAt(day, minutes).getTime()
+          });
+        });
+      });
+      window.HoudAndroid.setPrayerNotification(JSON.stringify({ prayers }));
+    } catch (error) {
+      console.warn('Persistent prayer notification update failed', error);
+    }
+  }
+
   async function prepareChannel(plugin) {
     if (channelReady) return;
     try {
@@ -106,6 +138,9 @@
   async function schedule(location, todayTimes, force = false) {
     const plugin = nativePlugin();
     if (!plugin) return { native: false, scheduled: 0 };
+
+    await updatePersistentPrayerStatus(location, todayTimes);
+
     if (!enabled()) {
       await cancelManaged(plugin);
       const playback = adhanPlaybackPlugin();
@@ -113,6 +148,7 @@
       lastSignature = '';
       return { native: true, scheduled: 0, disabled: true };
     }
+
     const signature = JSON.stringify({
       source: location && location.source,
       code: location && location.code,
@@ -122,10 +158,13 @@
       times: todayTimes && todayTimes.minutes
     });
     if (!force && signature === lastSignature) return { native: true, scheduled: 0, unchanged: true };
+
     const permissionResult = await requestPermissionSafe(plugin);
     if (!permissionResult.granted) return { native: true, scheduled: 0, denied: true };
+
     await prepareChannel(plugin);
     await cancelManaged(plugin);
+
     let notifications = buildNotifications(location, todayTimes, true);
     let exact = true;
     try {
@@ -141,6 +180,7 @@
         notifications = [];
       }
     }
+
     const playback = adhanPlaybackPlugin();
     if (playback && typeof playback.schedule === 'function' && notifications.length) {
       try {
@@ -154,6 +194,7 @@
         console.warn('تعذر جدولة تشغيل الأذان الأصلي؛ ستظل تنبيهات النظام متاحة.', error);
       }
     }
+
     lastSignature = signature;
     return { native: true, scheduled: notifications.length, exact };
   }
