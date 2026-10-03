@@ -1,0 +1,29 @@
+[
+  {
+    "id": "riyad-al-salihin",
+    "title": "رياض الصالحين",
+    "author": "الإمام يحيى بن شرف النووي",
+    "description": "كتاب جامع في الأحاديث والآداب والأعمال الصالحة.",
+    "source": "https://www.islamarchive.cc/ketab_content/1102",
+    "sourceLabel": "أرشيف الإسلام — نص الكتاب",
+    "offlineStatus": "جاهز للإدخال المحلي بعد التحقق من النسخة والترخيص"
+  },
+  {
+    "id": "mukhtasar-minhaj-al-qasidin",
+    "title": "مختصر منهاج القاصدين",
+    "author": "أحمد بن عبد الرحمن بن قدامة المقدسي",
+    "description": "كتاب في تهذيب النفس والآداب والسلوك، وهو اختصار لمنهاج القاصدين.",
+    "source": "https://app.alreq.com/ar/AuthoredBooks/AuthoredBook/67cad341-39af-4a1a-a5eb-08d7afef4d1b",
+    "sourceLabel": "الرق المنشور — فهرسة ونص",
+    "offlineStatus": "جاهز للإدخال المحلي بعد التحقق من النسخة والترخيص"
+  },
+  {
+    "id": "madarij-al-salikin",
+    "title": "مدارج السالكين",
+    "author": "محمد بن أبي بكر ابن قيم الجوزية",
+    "description": "كتاب في منازل السائرين وأعمال القلوب والسلوك.",
+    "source": "https://ar.wikisource.org/wiki/مدارج_السالكين/الجزء_الأول",
+    "sourceLabel": "ويكي مصدر — النص الرقمي",
+    "offlineStatus": "النص الرقمي متاح؛ نتحقق من النسخة قبل التضمين المحلي"
+  }
+]

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rafeeq4-core-v19';
+const CACHE_NAME = 'rafeeq4-core-v25';
 const APP_SHELL = [
   './',
   './index.html',
@@ -27,6 +27,36 @@ const APP_SHELL = [
   './pages/nawawi.html',
   './pages/nawawi.js',
   './pages/nawawi-data.json',
+  './pages/islamic-library.html',
+  './pages/islamic-library.js',
+  './pages/islamic-library-data.json',
+    './pages/islamic-library-reader.html',
+    './pages/islamic-library-reader.js',
+    './pages/islamic-library-local-manifest.json',
+  './data/library/riyad/hadiths-001.json',
+  './data/library/riyad/hadiths-002.json',
+  './data/library/riyad/hadiths-003.json',
+  './data/library/riyad/hadiths-004.json',
+  './data/library/riyad/hadiths-005.json',
+  './data/library/riyad/hadiths-006.json',
+  './data/library/riyad/hadiths-007.json',
+  './data/library/riyad/hadiths-008.json',
+  './data/library/riyad/hadiths-009.json',
+  './data/library/riyad/hadiths-010.json',
+  './data/library/riyad/hadiths-011.json',
+  './data/library/riyad/hadiths-012.json',
+  './data/library/riyad/hadiths-013.json',
+  './data/library/riyad/hadiths-014.json',
+  './data/library/riyad/hadiths-015.json',
+  './data/library/riyad/hadiths-016.json',
+  './data/library/riyad/hadiths-017.json',
+  './data/library/riyad/hadiths-018.json',
+  './data/library/riyad/hadiths-019.json',
+  './data/library/mukhtasar-minhaj/mukhtasar-minhaj-al-qasidin.json',
+  './data/library/madarij/madarij-al-salikin-001.json',
+  './data/library/madarij/madarij-al-salikin-002.json',
+  './data/library/madarij/madarij-al-salikin-003.json',
+  './data/library/madarij/madarij-al-salikin-004.json',
   './pages/prayer.html',
   './pages/prayer.js',
   './pages/qibla.html',
@@ -53,15 +83,7 @@ const APP_SHELL = [
 
 async function cacheShell() {
   const cache = await caches.open(CACHE_NAME);
-  await Promise.all(APP_SHELL.map(async path => {
-    try {
-      const request = new Request(path, { cache: 'no-store' });
-      const response = await fetch(request);
-      if (response.ok) await cache.put(request, response);
-    } catch (_) {
-      // مورد اختياري فشل لا يجب أن يمنع تثبيت Service Worker كاملًا.
-    }
-  }));
+  await cache.addAll(APP_SHELL);
 }
 
 async function cachedResponse(request) {
