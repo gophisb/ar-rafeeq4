@@ -83,15 +83,7 @@ const APP_SHELL = [
 
 async function cacheShell() {
   const cache = await caches.open(CACHE_NAME);
-  await Promise.all(APP_SHELL.map(async path => {
-    try {
-      const request = new Request(path, { cache: 'no-store' });
-      const response = await fetch(request);
-      if (response.ok) await cache.put(request, response);
-    } catch (_) {
-      // مورد اختياري فشل لا يجب أن يمنع تثبيت Service Worker كاملًا.
-    }
-  }));
+  await cache.addAll(APP_SHELL);
 }
 
 async function cachedResponse(request) {
