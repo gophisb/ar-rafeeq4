@@ -55,24 +55,6 @@
     {
       "id": "madarij-al-salikin",
       "title": "مدارج السالكين",
-      "localPath": "data/library/madarij-al-salikin/madarij-al-salikin.json",
-      "rightsStatus": "openiti-cc-by-nc-sa-4.0",
-      "ingestionStatus": "complete-1459-sections-local",
-      "localPaths": [
-        "data/library/madarij-al-salikin/madarij-al-salikin.json"
-      ],
-      "source": "https://github.com/OpenITI/RELEASE",
-      "sourceFile": "0751IbnQayyimJawziyya.MadarijSalikin.Shamela0008370-ara1",
-      "license": "CC BY-NC-SA 4.0",
-      "attribution": "OpenITI corpus; source version Shamela0008370-ara1; cleaned version removes paratextual/editorial material.",
-      "sectionCount": 1459,
-      "partCount": 1,
-      "textScope": "full Arabic body text represented by the selected OpenITI cleaned corpus version; editorial paratext and footnotes removed by OpenITI.",
-      "sourceVersion": "Shamela0008370-ara1"
-    },
-    {
-      "id": "madarij-al-salikin",
-      "title": "مدارج السالكين",
       "author": "ابن قيم الجوزية",
       "localPath": "data/library/madarij/madarij-al-salikin-001.json",
       "localPaths": [
