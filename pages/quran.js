@@ -230,6 +230,31 @@ document.getElementById('recitationStop')?.addEventListener('click', () => {
   window.RafeeqRecitation?.stop();
 });
 
+document.getElementById('downloadSurahAudio')?.addEventListener('click', async () => {
+  const button = document.getElementById('downloadSurahAudio');
+  const meta = SURAH_LIST[currentSurah - 1];
+  if (!window.RafeeqRecitation || !meta || !button) return;
+  button.disabled = true;
+  try {
+    const ready = await window.RafeeqRecitation.isSurahDownloaded(currentSurah, meta.ayahs);
+    if (ready) {
+      button.textContent = '✓ محفوظة بلا إنترنت';
+      return;
+    }
+    for (let i = 1; i <= meta.ayahs; i += 1) {
+      await window.RafeeqRecitation.downloadSurah(currentSurah, meta.ayahs, (done, total) => {
+        button.textContent = `⬇ ${done}/${total}`;
+      });
+      break;
+    }
+    button.textContent = '✓ السورة محفوظة بلا إنترنت';
+  } catch (error) {
+    button.textContent = navigator.onLine === false ? '✕ لا يوجد اتصال' : '✕ فشل التنزيل';
+  } finally {
+    button.disabled = false;
+  }
+});
+
 function saveQuranProgress() {
   try { localStorage.setItem(quranProgressKey, JSON.stringify([...readAyahs])); } catch (_) {}
   document.dispatchEvent(new CustomEvent('rafeeq:quranProgressChanged'));
