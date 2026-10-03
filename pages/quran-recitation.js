@@ -8,8 +8,8 @@
 
   const androidOffline = root.location && root.location.protocol === 'file:';
   const localBase = '../assets/audio/minshawy/';
-  const primaryBase = 'https://everyayah.com/data/Minshawy_Murattal_128kbps/';
-  const fallbackBase = 'https://cdn.islamic.network/quran/audio/128/ar.minshawi/';
+  const primaryBase = 'https://cdn.islamic.network/quran/audio/128/ar.minshawi/';
+  const fallbackBase = 'https://everyayah.com/data/Minshawy_Murattal_128kbps/';
   const pad = (n, w) => String(n).padStart(w, '0');
 
   const audio = new Audio();
