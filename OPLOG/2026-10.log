@@ -10,3 +10,5 @@
 [2026-10-03] [DEFCON-5] [agent] [feat/islamic-library] Added Madarij al-Salikin as the third library book from OpenITI version 0751IbnQayyimJawziyya.MadarijSalikin.Shamela0008370-ara1; ingested 1,459 page chunks into 4 offline JSON parts; attribution/license recorded as CC BY-NC-SA 4.0; obsolete duplicate manifest/data entry removed; Service Worker cache bumped to v25. Scope: full Arabic body text represented by the selected OpenITI cleaned corpus version, not editorial paratext/footnotes from the printed edition.
 
 [2026-10-03T10:18:00Z] [DEFCON-5] [agent] [houd11-android-offline] Trigger Android APK build for test integration of feat/islamic-library; main untouched.
+
+[2026-10-03T14:35:00+01:00] [DEFCON-5] [agent] [houd11-android-offline] Rebuild APK after root-cause fixes: INTERNET permission, robust native adhan MediaPlayer initialization, Quran HTTPS source order.
