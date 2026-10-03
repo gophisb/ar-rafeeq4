@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rafeeq4-core-v24';
+const CACHE_NAME = 'rafeeq4-core-v25';
 const APP_SHELL = [
   './',
   './index.html',
@@ -57,7 +57,6 @@ const APP_SHELL = [
   './data/library/madarij/madarij-al-salikin-002.json',
   './data/library/madarij/madarij-al-salikin-003.json',
   './data/library/madarij/madarij-al-salikin-004.json',
-  './data/library/madarij-al-salikin/madarij-al-salikin.json',
   './pages/prayer.html',
   './pages/prayer.js',
   './pages/qibla.html',
