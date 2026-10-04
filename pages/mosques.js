@@ -110,6 +110,13 @@
     $("mosques-search")?.addEventListener("input", applyFilters);
     $("mosques-wilaya")?.addEventListener("change", applyFilters);
     $("mosques-nearest")?.addEventListener("click", nearest);
+    $("mosques-map")?.addEventListener("click", () => {
+      if (window.HoudAndroid && typeof window.HoudAndroid.openMosqueMap === "function") {
+        window.HoudAndroid.openMosqueMap();
+      } else {
+        status("خريطة Android متاحة داخل نسخة APK فقط.");
+      }
+    });
     $("mosques-results")?.addEventListener("click", (event) => {
       const button = event.target.closest(".mosque-open-map");
       if (!button) return;
