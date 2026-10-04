@@ -134,6 +134,14 @@ const Router = (() => {
                 file: "pages/settings.html",
                 title: "الإعدادات"
             }
+        ],
+
+        [
+            CONFIG.PAGES.MOSQUES,
+            {
+                file: "pages/mosques.html",
+                title: "المساجد القريبة"
+            }
         ]
 
     ]);
