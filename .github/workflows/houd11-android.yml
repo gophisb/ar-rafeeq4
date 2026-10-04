@@ -2,7 +2,7 @@ name: Houd11 Android Offline APK
 
 on:
   push:
-    branches: [houd11-android-offline, feat/offline-mosque-map-v2]
+    branches: [houd11-android-offline, feat/offline-mosque-map-v2, feat/offline-algeria-map-bundled]
   workflow_dispatch:
 
 permissions:
@@ -29,6 +29,21 @@ jobs:
           set -euo pipefail
           python3 tools/prepare_mosque_data.py
           test -s pages/mosquees-data.json
+
+      - name: Fetch official Algeria Mapsforge map
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p android/app/src/main/assets/maps
+          curl -fL --retry 4 --retry-all-errors --connect-timeout 30 --max-time 1800 \
+            "https://download.mapsforge.org/maps/v5/africa/algeria.map" \
+            -o android/app/src/main/assets/maps/algeria.map
+          test -s android/app/src/main/assets/maps/algeria.map
+          SIZE=$(stat -c%s android/app/src/main/assets/maps/algeria.map)
+          echo "Algeria map bytes: $SIZE"
+          test "$SIZE" -ge 250000000
+          sha256sum android/app/src/main/assets/maps/algeria.map | tee algeria-map.sha256
+          test -s algeria-map.sha256
 
       - name: Prepare offline web bundle
         shell: bash
