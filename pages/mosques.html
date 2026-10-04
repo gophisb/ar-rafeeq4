@@ -1,0 +1,29 @@
+<section class="page page-mosques" id="mosques-page">
+  <section class="section-block">
+    <div class="section-heading">
+      <div>
+        <span class="section-kicker">المساجد</span>
+        <h1>المساجد القريبة</h1>
+        <p id="mosques-status">جاري تجهيز بيانات المساجد المحلية...</p>
+      </div>
+    </div>
+
+    <div class="card-premium">
+      <label for="mosques-search">بحث</label>
+      <input id="mosques-search" type="search" placeholder="اسم المسجد أو البلدية" autocomplete="off">
+
+      <label for="mosques-wilaya" style="display:block;margin-top:12px">الولاية</label>
+      <select id="mosques-wilaya">
+        <option value="">كل الولايات</option>
+      </select>
+    </div>
+
+    <div class="card-premium" style="margin-top:16px">
+      <button id="mosques-nearest" type="button" class="text-button">المساجد الأقرب إلى موقعي</button>
+    </div>
+
+    <div id="mosques-results" aria-live="polite" style="margin-top:16px"></div>
+  </section>
+</section>
+
+<script src="./pages/mosques.js"></script>
