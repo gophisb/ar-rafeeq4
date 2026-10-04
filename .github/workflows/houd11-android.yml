@@ -2,7 +2,7 @@ name: Houd11 Android Offline APK
 
 on:
   push:
-    branches: [houd11-android-offline]
+    branches: [houd11-android-offline, feat/offline-mosque-map-v2]
   workflow_dispatch:
 
 permissions:
