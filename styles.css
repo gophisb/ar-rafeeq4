@@ -3334,3 +3334,14 @@ html[data-font-size="large"] { font-size: 18px; }
     align-items: center;
     gap: 10px;
 }
+
+/* خريطة الجزائر — طبقة مستقلة */
+.map-page .map-card { padding: 8px; overflow: hidden; }
+.map-page #algeriaMap { height: min(62vh, 560px); min-height: 360px; border-radius: 16px; z-index: 0; }
+.map-page .map-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+.map-page .map-toolbar .muted { flex-basis:100%; margin:0; }
+.map-page .map-attribution { font-size:11px; text-align:center; }
+.map-page #mosqueResults { display:grid; gap:8px; }
+.map-page .map-result { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px; border:1px solid var(--border); border-radius:12px; background:var(--card); color:var(--text); text-align:right; cursor:pointer; font:inherit; }
+.map-page .map-result:hover { border-color:var(--gold); }
+.map-page .map-result span { color:var(--muted); font-size:12px; white-space:nowrap; }
