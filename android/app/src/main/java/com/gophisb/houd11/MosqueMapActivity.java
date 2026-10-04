@@ -204,8 +204,15 @@ public class MosqueMapActivity extends Activity {
             );
 
             mapView.getLayerManager().getLayers().add(tileRendererLayer);
-            mapView.setCenter(mapDataStore.startPosition());
-            mapView.setZoomLevel(mapDataStore.startZoomLevel());
+            double lat = getIntent().getDoubleExtra("lat", Double.NaN);
+            double lng = getIntent().getDoubleExtra("lng", Double.NaN);
+            if (Double.isFinite(lat) && Double.isFinite(lng)) {
+                mapView.setCenter(new org.mapsforge.core.model.LatLong(lat, lng));
+                mapView.setZoomLevel((byte) 16);
+            } else {
+                mapView.setCenter(mapDataStore.startPosition());
+                mapView.setZoomLevel(mapDataStore.startZoomLevel());
+            }
         } catch (Exception e) {
             showMapError("تعذر فتح خريطة الجزائر: " + e.getMessage());
         }
