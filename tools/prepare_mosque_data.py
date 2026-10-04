@@ -9,7 +9,7 @@ import pathlib
 import sys
 import urllib.request
 
-SOURCE_URL = "https://cdn.jsdelivr.net/npm/@geoalgeria/mosquees@2.0.4/data/mosquees.json"
+SOURCE_URL = "https://cdn.jsdelivr.net/npm/@geoalgeria/mosquees/data/mosquees.json"
 EXPECTED_COUNT = 20759
 OUT = pathlib.Path("pages/mosquees-data.json")
 
