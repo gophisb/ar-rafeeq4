@@ -102,6 +102,10 @@
   function showMosqueOnMap(m) {
     const lat = Number(m.lat), lng = Number(m.lng);
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+    if (window.HoudAndroid && typeof window.HoudAndroid.openMosqueMapAt === "function") {
+      window.HoudAndroid.openMosqueMapAt(lat, lng, displayName(m));
+      return;
+    }
     const url = "geo:" + lat + "," + lng + "?q=" + lat + "," + lng + "(" + encodeURIComponent(displayName(m)) + ")";
     window.location.href = url;
   }
