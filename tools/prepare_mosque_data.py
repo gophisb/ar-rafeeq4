@@ -7,7 +7,7 @@ so the installed app does not need network access for mosque lookup.
 import json
 import pathlib
 import sys
-import urllib.request
+import requests
 
 SOURCE_URL = "https://cdn.jsdelivr.net/npm/@geoalgeria/mosquees@2.0.4/data/mosquees.json"
 EXPECTED_COUNT = 20759
@@ -22,8 +22,9 @@ def fail(msg):
 def main():
     OUT.parent.mkdir(parents=True, exist_ok=True)
     print("Fetching pinned dataset:", SOURCE_URL)
-    with urllib.request.urlopen(SOURCE_URL, timeout=60) as r:
-        raw = r.read()
+    response = requests.get(SOURCE_URL, timeout=60, allow_redirects=False)
+    response.raise_for_status()
+    raw = response.content
     try:
         rows = json.loads(raw.decode("utf-8"))
     except Exception as exc:
