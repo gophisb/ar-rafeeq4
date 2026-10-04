@@ -62,6 +62,13 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void openMosqueMap() {
             startActivity(new Intent(MainActivity.this, MosqueMapActivity.class));
         }
+        @JavascriptInterface public void openMosqueMapAt(double lat, double lng, String name) {
+            Intent intent = new Intent(MainActivity.this, MosqueMapActivity.class);
+            intent.putExtra("lat", lat);
+            intent.putExtra("lng", lng);
+            intent.putExtra("name", name == null ? "" : name);
+            startActivity(intent);
+        }
         @JavascriptInterface public String requestPermissions() {
             return Build.VERSION.SDK_INT >= 33
                     ? "{\"display\":\"granted\"}"
