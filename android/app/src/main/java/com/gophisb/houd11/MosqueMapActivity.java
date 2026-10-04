@@ -35,12 +35,11 @@ import java.net.URL;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 public class MosqueMapActivity extends Activity {
     private static final String MAP_URL =
-            "https://data.bbbike.org/osm/mapsforge/region/africa/algeria/algeria.osm.mapsforge-osm.zip";
+            "https://download.mapsforge.org/maps/v5/africa/algeria.map";
+    private static final String BUNDLED_MAP = "maps/algeria.map";
     private static final String MAP_NAME = "algeria.map";
 
     private MapView mapView;
@@ -68,7 +67,7 @@ public class MosqueMapActivity extends Activity {
 
     private void showMapOrDownload() {
         File file = mapFile();
-        if (file.isFile() && file.length() > 1024 * 1024) {
+        if (file.isFile() && file.length() > 250L * 1024L * 1024L) {
             loadMap(file);
             return;
         }
@@ -84,13 +83,15 @@ public class MosqueMapActivity extends Activity {
         title.setGravity(Gravity.CENTER);
 
         status = new TextView(this);
-        status.setText("الخريطة غير مثبتة. التنزيل الأول يحتاج إنترنت ومساحة تخزين كافية.");
+        status.setText("جاري تجهيز خريطة الجزائر Offline المدمجة...");
         status.setGravity(Gravity.CENTER);
         status.setPadding(0, 24, 0, 24);
 
         action = new Button(this);
-        action.setText("تنزيل خريطة الجزائر");
+        action.setText("تجهيز الخريطة");
         action.setOnClickListener(v -> downloadMap());
+
+        prepareBundledMap(file);
 
         root.addView(title);
         root.addView(status);
@@ -98,9 +99,49 @@ public class MosqueMapActivity extends Activity {
         setContentView(root);
     }
 
+    private void prepareBundledMap(File target) {
+        executor.execute(() -> {
+            File temp = new File(target.getParentFile(), MAP_NAME + ".bundled.part");
+            try (InputStream in = getAssets().open(BUNDLED_MAP);
+                 BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(temp), 1024 * 1024)) {
+                byte[] buffer = new byte[1024 * 1024];
+                long done = 0;
+                int n;
+                while ((n = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, n);
+                    done += n;
+                    long current = done;
+                    runOnUiThread(() -> status.setText(String.format(Locale.ROOT,
+                            "تجهيز خريطة الجزائر Offline: %.0f MB", current / 1048576.0)));
+                }
+                out.flush();
+                if (temp.length() < 250L * 1024L * 1024L) {
+                    throw new IllegalStateException("bundled map is incomplete");
+                }
+                if (target.exists() && !target.delete()) {
+                    throw new IllegalStateException("cannot replace old map");
+                }
+                if (!temp.renameTo(target)) {
+                    throw new IllegalStateException("cannot finalize bundled map");
+                }
+                runOnUiThread(() -> {
+                    status.setText("تم تجهيز الخريطة. جاري فتحها...");
+                    loadMap(target);
+                });
+            } catch (Exception bundledError) {
+                temp.delete();
+                runOnUiThread(() -> {
+                    status.setText("الخريطة المدمجة غير متاحة؛ يمكن تنزيلها من المصدر الرسمي.");
+                    action.setEnabled(true);
+                    action.setText("تنزيل خريطة الجزائر");
+                });
+            }
+        });
+    }
+
     private void downloadMap() {
         action.setEnabled(false);
-        status.setText("بدء تنزيل خريطة الجزائر...");
+        status.setText("بدء تنزيل خريطة الجزائر الرسمية...");
 
         executor.execute(() -> {
             File temp = new File(mapFile().getParentFile(), MAP_NAME + ".part");
@@ -108,8 +149,8 @@ public class MosqueMapActivity extends Activity {
             try {
                 URL url = new URL(MAP_URL);
                 connection = (HttpURLConnection) url.openConnection();
-                connection.setConnectTimeout(20000);
-                connection.setReadTimeout(60000);
+                connection.setConnectTimeout(30000);
+                connection.setReadTimeout(120000);
                 connection.setInstanceFollowRedirects(true);
                 connection.connect();
 
@@ -120,48 +161,30 @@ public class MosqueMapActivity extends Activity {
 
                 long total = connection.getContentLengthLong();
                 long done = 0;
-                boolean extracted = false;
 
                 try (InputStream raw = new BufferedInputStream(connection.getInputStream(), 1024 * 1024);
-                     ZipInputStream zip = new ZipInputStream(raw)) {
-                    ZipEntry entry;
-                    while ((entry = zip.getNextEntry()) != null) {
-                        if (entry.isDirectory()) continue;
-                        String name = entry.getName().replace('\\', '/');
-                        if (!name.toLowerCase(Locale.ROOT).endsWith(".map")) {
-                            continue;
-                        }
-
-                        File parent = temp.getParentFile();
-                        if (!entry.getName().equals(new File(entry.getName()).getName())) {
-                            throw new SecurityException("unsafe map archive entry");
-                        }
-
-                        try (BufferedOutputStream out =
-                                     new BufferedOutputStream(new FileOutputStream(temp), 1024 * 1024)) {
-                            byte[] buffer = new byte[1024 * 1024];
-                            int n;
-                            while ((n = zip.read(buffer)) != -1) {
-                                out.write(buffer, 0, n);
-                                done += n;
-                                long current = done;
-                                runOnUiThread(() -> {
-                                    if (total > 0) {
-                                        int pct = (int) Math.min(99, current * 100L / total);
-                                        status.setText("تنزيل الخريطة: " + pct + "%");
-                                    } else {
-                                        status.setText(String.format(Locale.ROOT,
-                                                "تنزيل الخريطة: %.1f MB", current / 1048576.0));
-                                    }
-                                });
+                     BufferedOutputStream out =
+                             new BufferedOutputStream(new FileOutputStream(temp), 1024 * 1024)) {
+                    byte[] buffer = new byte[1024 * 1024];
+                    int n;
+                    while ((n = raw.read(buffer)) != -1) {
+                        out.write(buffer, 0, n);
+                        done += n;
+                        long current = done;
+                        runOnUiThread(() -> {
+                            if (total > 0) {
+                                int pct = (int) Math.min(99, current * 100L / total);
+                                status.setText("تنزيل خريطة الجزائر: " + pct + "%");
+                            } else {
+                                status.setText(String.format(Locale.ROOT,
+                                        "تنزيل الخريطة: %.1f MB", current / 1048576.0));
                             }
-                        }
-                        extracted = true;
-                        break;
+                        });
                     }
+                    out.flush();
                 }
 
-                if (!extracted || !temp.isFile() || temp.length() < 1024 * 1024) {
+                if (!temp.isFile() || temp.length() < 250L * 1024L * 1024L) {
                     throw new IllegalStateException("map file missing or incomplete");
                 }
 
