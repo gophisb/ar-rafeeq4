@@ -1,6 +1,11 @@
 package com.gophisb.houd11;
 
 import android.app.Activity;
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -9,6 +14,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.mapsforge.map.android.graphics.AndroidGraphicFactory;
+import org.mapsforge.map.android.layers.MyLocationOverlay;
+import org.mapsforge.map.layer.overlay.Marker;
+import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.android.util.AndroidUtil;
 import org.mapsforge.map.android.view.MapView;
 import org.mapsforge.map.datastore.MapDataStore;
@@ -41,6 +49,9 @@ public class MosqueMapActivity extends Activity {
     private TextView status;
     private Button action;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private LocationManager locationManager;
+    private MyLocationOverlay myLocationOverlay;
+    private static final int LOCATION_REQUEST = 2002;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -204,6 +215,7 @@ public class MosqueMapActivity extends Activity {
             );
 
             mapView.getLayerManager().getLayers().add(tileRendererLayer);
+            setupLocationOverlay();
             double lat = getIntent().getDoubleExtra("lat", Double.NaN);
             double lng = getIntent().getDoubleExtra("lng", Double.NaN);
             if (Double.isFinite(lat) && Double.isFinite(lng)) {
@@ -218,6 +230,59 @@ public class MosqueMapActivity extends Activity {
         }
     }
 
+
+    private void setupLocationOverlay() {
+        android.graphics.drawable.Drawable drawable =
+                getDrawable(com.gophisb.houd11.R.drawable.icon_launcher);
+        org.mapsforge.core.graphics.Bitmap bitmap =
+                AndroidGraphicFactory.convertToBitmap(drawable);
+        Marker marker = new Marker(null, bitmap, 0, -bitmap.getHeight() / 2);
+        myLocationOverlay = new MyLocationOverlay(marker);
+        mapView.getLayerManager().getLayers().add(myLocationOverlay);
+
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[] {
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+            }, LOCATION_REQUEST);
+            return;
+        }
+        startLocationUpdates();
+    }
+
+    private void startLocationUpdates() {
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        if (locationManager == null) return;
+        LocationListener listener = new LocationListener() {
+            @Override public void onLocationChanged(Location location) {
+                if (myLocationOverlay != null) {
+                    myLocationOverlay.setPosition(
+                            location.getLatitude(),
+                            location.getLongitude(),
+                            location.hasAccuracy() ? location.getAccuracy() : 25f);
+                }
+            }
+        };
+        try {
+            locationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER, 2000L, 5f, listener);
+            Location last = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (last != null && myLocationOverlay != null) {
+                myLocationOverlay.setPosition(last.getLatitude(), last.getLongitude(),
+                        last.hasAccuracy() ? last.getAccuracy() : 25f);
+            }
+        } catch (SecurityException ignored) {
+        }
+    }
+
+    @Override public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_REQUEST) startLocationUpdates();
+    }
+
     private void showMapError(String message) {
         TextView error = new TextView(this);
         error.setText(message);
@@ -227,6 +292,9 @@ public class MosqueMapActivity extends Activity {
     }
 
     @Override protected void onDestroy() {
+        if (locationManager != null && myLocationOverlay != null) {
+            try { locationManager.removeUpdates((LocationListener) null); } catch (Exception ignored) { }
+        }
         executor.shutdownNow();
         if (mapDataStore != null) mapDataStore.close();
         if (mapView != null) mapView.destroyAll();
