@@ -2,6 +2,7 @@ package com.gophisb.houd11;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.webkit.JavascriptInterface;
@@ -58,6 +59,9 @@ public class MainActivity extends Activity {
     }
 
     private class HoudAndroidBridge {
+        @JavascriptInterface public void openMosqueMap() {
+            startActivity(new Intent(MainActivity.this, MosqueMapActivity.class));
+        }
         @JavascriptInterface public String requestPermissions() {
             return Build.VERSION.SDK_INT >= 33
                     ? "{\"display\":\"granted\"}"
