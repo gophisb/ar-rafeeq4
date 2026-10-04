@@ -1,0 +1,15 @@
+{
+  "dataset": "@geoalgeria/mosquees",
+  "version": "2.0.4",
+  "expected_count": 20759,
+  "source": [
+    "Wikidata",
+    "OpenStreetMap"
+  ],
+  "licenses": [
+    "CC0-1.0",
+    "ODbL-1.0"
+  ],
+  "generated_at": "build-time",
+  "offline": true
+}
