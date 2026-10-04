@@ -140,9 +140,6 @@ const CONFIG = Object.freeze({
         SETTINGS:
             "settings",
 
-        MOSQUES:
-            "mosques"
-
     }),
 
 
