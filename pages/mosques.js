@@ -38,6 +38,7 @@
       return `<article class="card-premium" style="margin-bottom:10px">
         <h3>${escapeHtml(displayName(m))}</h3>
         <div>${escapeHtml(m.commune || "بلدية غير محددة")} — ولاية ${escapeHtml(m.wilaya_code || "—")}</div>
+        <button type="button" class="text-button mosque-open-map" data-lat="${Number(m.lat)}" data-lng="${Number(m.lng)}">عرض الموقع</button>
         ${d}
       </article>`;
     }).join("");
@@ -98,10 +99,25 @@
     }
   }
 
+  function showMosqueOnMap(m) {
+    const lat = Number(m.lat), lng = Number(m.lng);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+    const url = "geo:" + lat + "," + lng + "?q=" + lat + "," + lng + "(" + encodeURIComponent(displayName(m)) + ")";
+    window.location.href = url;
+  }
+
   function initialize() {
     $("mosques-search")?.addEventListener("input", applyFilters);
     $("mosques-wilaya")?.addEventListener("change", applyFilters);
     $("mosques-nearest")?.addEventListener("click", nearest);
+    $("mosques-results")?.addEventListener("click", (event) => {
+      const button = event.target.closest(".mosque-open-map");
+      if (!button) return;
+      const card = button.closest("article");
+      const index = [...$("mosques-results").children].indexOf(card);
+      const mosque = state.filtered[index];
+      if (mosque) showMosqueOnMap(mosque);
+    });
     load();
   }
 
