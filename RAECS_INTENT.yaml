@@ -20,6 +20,9 @@ allowed_paths:
   - "DECISIONS/"
   - "OPLOG/"
   - "scripts/"
+  - "tools/"
+  - ".github/workflows/houd11-android.yml"
+  - "android/"
   - "RAECS_EXECUTABLES_ALLOWLIST.txt"
 forbidden_actions:
   - "execute unreviewed downloaded code"
