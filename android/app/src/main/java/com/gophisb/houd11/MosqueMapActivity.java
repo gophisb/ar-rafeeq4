@@ -50,6 +50,7 @@ public class MosqueMapActivity extends Activity {
     private Button action;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private LocationManager locationManager;
+    private LocationListener locationListener;
     private MyLocationOverlay myLocationOverlay;
     private static final int LOCATION_REQUEST = 2002;
 
@@ -256,7 +257,7 @@ public class MosqueMapActivity extends Activity {
     private void startLocationUpdates() {
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (locationManager == null) return;
-        LocationListener listener = new LocationListener() {
+        locationListener = new LocationListener() {
             @Override public void onLocationChanged(Location location) {
                 if (myLocationOverlay != null) {
                     myLocationOverlay.setPosition(
@@ -268,7 +269,7 @@ public class MosqueMapActivity extends Activity {
         };
         try {
             locationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER, 2000L, 5f, listener);
+                    LocationManager.GPS_PROVIDER, 2000L, 5f, locationListener);
             Location last = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             if (last != null && myLocationOverlay != null) {
                 myLocationOverlay.setPosition(last.getLatitude(), last.getLongitude(),
@@ -280,7 +281,8 @@ public class MosqueMapActivity extends Activity {
 
     @Override public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == LOCATION_REQUEST) startLocationUpdates();
+        if (requestCode == LOCATION_REQUEST && grantResults.length > 0
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) startLocationUpdates();
     }
 
     private void showMapError(String message) {
@@ -292,8 +294,8 @@ public class MosqueMapActivity extends Activity {
     }
 
     @Override protected void onDestroy() {
-        if (locationManager != null && myLocationOverlay != null) {
-            try { locationManager.removeUpdates((LocationListener) null); } catch (Exception ignored) { }
+        if (locationManager != null && locationListener != null) {
+            try { locationManager.removeUpdates(locationListener); } catch (SecurityException ignored) { }
         }
         executor.shutdownNow();
         if (mapDataStore != null) mapDataStore.close();
