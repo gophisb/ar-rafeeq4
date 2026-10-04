@@ -105,6 +105,13 @@ const Router = (() => {
         ],
 
         [
+            CONFIG.PAGES.MAP,
+            {
+                file: "pages/map.html",
+                title: "خريطة الجزائر والمساجد"
+            }
+        ],
+        [
             CONFIG.PAGES.NAWAWI,
             {
                 file: "pages/nawawi.html",

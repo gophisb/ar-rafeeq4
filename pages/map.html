@@ -1,0 +1,19 @@
+<section class="page map-page" dir="rtl" aria-labelledby="mapTitle">
+  <header class="hero">
+    <div class="page-title-with-icon"><span aria-hidden="true" style="font-size:30px">🗺️</span><h1 id="mapTitle">خريطة الجزائر والمساجد</h1></div>
+    <p>خريطة عملية للجزائر مع تحديد موقعك والبحث عن أقرب مسجد. تُحفظ آخر النتائج محلياً لتظهر عند انقطاع الإنترنت.</p>
+  </header>
+  <section class="card map-toolbar">
+    <button id="mapLocate" class="btn primary" type="button">📍 موقعي</button>
+    <button id="mapNearest" class="btn" type="button">🕌 أقرب مسجد</button>
+    <button id="mapDownload" class="btn" type="button">⬇ تنزيل خريطة الجزائر</button>
+    <button id="mapReset" class="btn" type="button">الجزائر كاملة</button>
+    <p id="mapStatus" class="muted" role="status" aria-live="polite">الخريطة جاهزة.</p>
+  </section>
+  <section class="card map-card"><div id="algeriaMap" role="application" aria-label="خريطة الجزائر التفاعلية"></div></section>
+  <section class="card"><h2>المساجد القريبة</h2><div id="mosqueResults" aria-live="polite"><p class="muted">اضغط «أقرب مسجد» مع تشغيل الموقع.</p></div></section>
+  <p class="muted map-attribution">الخرائط والبيانات الجغرافية © OpenStreetMap contributors. الخريطة الحالية Online، والبيانات المحفوظة تظهر عند انقطاع الشبكة.</p>
+</section>
+<link rel="stylesheet" href="./assets/vendor/leaflet/leaflet.css">
+<script src="./assets/vendor/leaflet/leaflet.js"></script>
+<script src="./pages/map.js"></script>

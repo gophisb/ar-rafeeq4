@@ -1,13 +1,13 @@
-const CACHE_NAME = 'rafeeq4-core-v19';
+const CACHE_NAME = 'rafeeq4-core-v20';
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css?v=16',
   './variables.css',
-  './config.js',
+  './config.js?v=5b539a4',
   './prayer.js',
   './locations.js',
-  './router.js?v=6201a31',
+  './router.js?v=5b539a4',
   './app.js',
   './js/location-manager.js',
   './js/page-modules.js',
@@ -31,6 +31,10 @@ const APP_SHELL = [
   './pages/prayer.js',
   './pages/qibla.html',
   './pages/qibla.js',
+  './pages/map.html',
+  './pages/map.js',
+  './assets/vendor/leaflet/leaflet.js',
+  './assets/vendor/leaflet/leaflet.css',
   './pages/settings.html',
   './pages/settings.js',
   './manifest.json',
@@ -90,6 +94,20 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
+  const isMapTile = /(^|\.)tile\.openstreetmap\.org$/.test(url.hostname);
+  if (isMapTile) {
+    event.respondWith((async () => {
+      const tileCache = await caches.open('rafeeq4-map-tiles-v1');
+      try {
+        const response = await fetch(event.request);
+        if (response && (response.ok || response.type === 'opaque')) tileCache.put(event.request, response.clone()).catch(() => {});
+        return response;
+      } catch (_) {
+        return (await tileCache.match(event.request)) || new Response('', { status: 503, statusText: 'Map tile unavailable offline' });
+      }
+    })());
+    return;
+  }
   if (url.origin !== self.location.origin) return;
 
   event.respondWith((async () => {

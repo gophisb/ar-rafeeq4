@@ -2,7 +2,7 @@
   'use strict';
 
   const ADHAN_KEY = 'rafeeq.adhan.enabled.v1';
-  const CHANNEL_ID = 'rafeeq_adhan_v3';
+  const CHANNEL_ID = 'rafeeq_adhan_v4';
   const BASE_ID = 41000;
   const PRAYER_NAMES = {
     fajr: 'الفجر',
@@ -52,7 +52,7 @@
         id: CHANNEL_ID,
         name: 'أوقات الصلاة',
         description: 'تنبيهات أوقات الصلاة والأذان المحلي',
-        sound: 'adhan_notification',
+        sound: 'adhan',
         importance: 5,
         visibility: 1,
         vibration: true
@@ -65,14 +65,14 @@
 
   async function cancelManaged(plugin) {
     const notifications = [];
-    for (let i = 0; i < 20; i += 1) notifications.push({ id: BASE_ID + i });
+    for (let i = 0; i < 80; i += 1) notifications.push({ id: BASE_ID + i });
     try { await plugin.cancel({ notifications }); } catch (_) {}
   }
 
   function buildNotifications(location, todayTimes, exact = true) {
     if (!location || !todayTimes || !window.PrayerEngine || typeof window.PrayerEngine.calculate !== 'function') return [];
     const now = new Date();
-    const days = [new Date(now), new Date(now.getTime() + 86400000)];
+    const days = Array.from({ length: 7 }, (_, index) => new Date(now.getTime() + index * 86400000));
     return days.flatMap((day, dayOffset) => {
       const times = dayOffset === 0 ? todayTimes : window.PrayerEngine.calculate(day, location, window.PrayerEngine.DEFAULT_SETTINGS);
       return PRAYER_KEYS.map((key, index) => {
@@ -86,7 +86,7 @@
           body: exact ? 'الرفيق — الأذان المحلي' : 'الرفيق — تنبيه وقت الصلاة',
           channelId: CHANNEL_ID,
           schedule: exact ? { at, allowWhileIdle: true, isExactNotification: true } : { at, allowWhileIdle: true },
-          sound: 'adhan_notification',
+          sound: 'adhan',
           smallIcon: 'ic_launcher'
         };
       }).filter(Boolean);

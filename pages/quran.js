@@ -229,6 +229,18 @@ document.getElementById('recitationPlay')?.addEventListener('click', () => {
 document.getElementById('recitationStop')?.addEventListener('click', () => {
   window.RafeeqRecitation?.stop();
 });
+document.getElementById('recitationDownload')?.addEventListener('click', async () => {
+  const button = document.getElementById('recitationDownload');
+  const meta = SURAH_LIST[currentSurah - 1];
+  if (!meta || !window.RafeeqRecitation) return;
+  button.disabled = true;
+  button.textContent = 'جاري الحفظ…';
+  try {
+    await window.RafeeqRecitation.downloadSurah(currentSurah, meta.ayahs, (done, total) => { button.textContent = `حفظ ${done}/${total}`; });
+    button.textContent = '✓ محفوظ دون إنترنت';
+  } catch (_) { button.textContent = 'تعذر الحفظ'; }
+  finally { window.setTimeout(() => { button.disabled = false; if (!window.RafeeqRecitation.state.downloading) button.textContent = '⬇ حفظ السورة'; }, 1800); }
+});
 
 function saveQuranProgress() {
   try { localStorage.setItem(quranProgressKey, JSON.stringify([...readAyahs])); } catch (_) {}

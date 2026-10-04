@@ -128,6 +128,9 @@ const CONFIG = Object.freeze({
         QIBLA:
             "qibla",
 
+        MAP:
+            "map",
+
         NAWAWI:
             "nawawi",
 

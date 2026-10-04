@@ -940,7 +940,7 @@ const RafeeqApp = (() => {
                 await navigator
                     .serviceWorker
                     .register(
-                        "sw.js"
+                        "sw.js?v=5b539a4"
                     );
 
 
