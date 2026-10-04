@@ -137,7 +137,7 @@ const Router = (() => {
         ],
 
         [
-            CONFIG.PAGES.MOSQUES,
+            "mosques",
             {
                 file: "pages/mosques.html",
                 title: "المساجد القريبة"
