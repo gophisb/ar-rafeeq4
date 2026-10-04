@@ -15,4 +15,5 @@ android {
 
 dependencies {
     implementation "androidx.webkit:webkit:1.12.1"
+    implementation "org.mapsforge:mapsforge-map-android:0.25.0"
 }
