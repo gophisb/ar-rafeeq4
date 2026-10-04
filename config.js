@@ -137,6 +137,9 @@ const CONFIG = Object.freeze({
         ISLAMIC_LIBRARY_READER:
             "islamic-library-reader",
 
+        MOSQUES:
+            "mosques",
+
         SETTINGS:
             "settings"
 
@@ -310,6 +313,9 @@ const CONFIG = Object.freeze({
             true,
 
         ISLAMIC_LIBRARY:
+            true,
+
+        MOSQUES:
             true,
 
         SETTINGS:
