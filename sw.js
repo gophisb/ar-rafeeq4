@@ -94,6 +94,20 @@ self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
 
   const url = new URL(event.request.url);
+  const isMapTile = /(^|\.)tile\.openstreetmap\.org$/.test(url.hostname);
+  if (isMapTile) {
+    event.respondWith((async () => {
+      const tileCache = await caches.open('rafeeq4-map-tiles-v1');
+      try {
+        const response = await fetch(event.request);
+        if (response && (response.ok || response.type === 'opaque')) tileCache.put(event.request, response.clone()).catch(() => {});
+        return response;
+      } catch (_) {
+        return (await tileCache.match(event.request)) || new Response('', { status: 503, statusText: 'Map tile unavailable offline' });
+      }
+    })());
+    return;
+  }
   if (url.origin !== self.location.origin) return;
 
   event.respondWith((async () => {

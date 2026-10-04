@@ -2,6 +2,8 @@
   'use strict';
   const ALGERIA = { center:[28.0339, 1.6596], zoom:5, bounds:[[18.9,-8.7],[37.1,12.1]] };
   const CACHE_KEY = 'rafeeq.algeria.mosques.v1';
+  const TILE_CACHE = 'rafeeq4-map-tiles-v1';
+  const TILE_HOSTS = ['a.tile.openstreetmap.org','b.tile.openstreetmap.org','c.tile.openstreetmap.org'];
   const map = L.map('algeriaMap', { zoomControl:true, minZoom:4, maxZoom:19 }).setView(ALGERIA.center, ALGERIA.zoom);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19, attribution:'© OpenStreetMap contributors' }).addTo(map);
   const status = document.getElementById('mapStatus');
@@ -23,6 +25,49 @@
   }
   function save() { try { localStorage.setItem(CACHE_KEY, JSON.stringify(mosques)); } catch (_) {} }
   function loadCache() { try { const data=JSON.parse(localStorage.getItem(CACHE_KEY)||'[]'); if(Array.isArray(data)) { mosques=data; drawMosques(); renderResults(); } } catch (_) {} }
+  function tileXY(lat, lon, zoom) {
+    const n = 2 ** zoom;
+    const x = Math.floor((lon + 180) / 360 * n);
+    const rad = lat * Math.PI / 180;
+    const y = Math.floor((1 - Math.asinh(Math.tan(rad)) / Math.PI) / 2 * n);
+    return { x, y };
+  }
+  function tileUrls() {
+    const urls = [];
+    for (let z = 4; z <= 8; z += 1) {
+      const nw = tileXY(ALGERIA.bounds[1][0], ALGERIA.bounds[0][1], z);
+      const se = tileXY(ALGERIA.bounds[0][0], ALGERIA.bounds[1][1], z);
+      for (let x = nw.x; x <= se.x; x += 1) for (let y = nw.y; y <= se.y; y += 1) {
+        const host = TILE_HOSTS[(x + y) % TILE_HOSTS.length];
+        urls.push(`https://${host}/${z}/${x}/${y}.png`);
+      }
+    }
+    return urls;
+  }
+  async function downloadMap() {
+    const button = document.getElementById('mapDownload');
+    const urls = tileUrls();
+    button.disabled = true;
+    let done = 0, failed = 0;
+    setStatus(`جاري تنزيل خريطة الجزائر: 0/${urls.length}`);
+    try {
+      const cache = await caches.open(TILE_CACHE);
+      for (let i = 0; i < urls.length; i += 4) {
+        const batch = urls.slice(i, i + 4);
+        await Promise.all(batch.map(async url => {
+          try {
+            const response = await fetch(url, { mode:'no-cors', cache:'no-store' });
+            await cache.put(url, response.clone());
+          } catch (_) { failed += 1; }
+          done += 1;
+        }));
+        setStatus(`جاري تنزيل خريطة الجزائر: ${done}/${urls.length}${failed ? ` — تعذر ${failed}` : ''}`);
+      }
+      setStatus(failed ? `اكتمل التنزيل مع ${failed} بلاطات غير متاحة.` : 'تم تنزيل خريطة الجزائر الأساسية ويمكن عرضها دون إنترنت.');
+    } catch (_) {
+      setStatus('تعذر إنشاء التخزين المحلي للخريطة على هذا الجهاز.');
+    } finally { button.disabled = false; }
+  }
   async function findNearby(lat,lon) {
     const query=`[out:json][timeout:20];(node[amenity=place_of_worship](around:15000,${lat},${lon});way[amenity=place_of_worship](around:15000,${lat},${lon}););out center tags;`;
     const response=await fetch('https://overpass-api.de/api/interpreter?data='+encodeURIComponent(query), { headers:{Accept:'application/json'} });
@@ -45,6 +90,7 @@
   }
   document.getElementById('mapLocate').addEventListener('click', locate);
   document.getElementById('mapNearest').addEventListener('click', locate);
+  document.getElementById('mapDownload').addEventListener('click', downloadMap);
   document.getElementById('mapReset').addEventListener('click', () => { map.fitBounds(ALGERIA.bounds); setStatus('تم عرض الجزائر كاملة.'); });
   loadCache();
   map.fitBounds(ALGERIA.bounds);
