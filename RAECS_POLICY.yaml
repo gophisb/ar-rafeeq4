@@ -1,6 +1,6 @@
-# RAECS v3.0 — Machine Policy
+# RAECS 3.1.0 — RAFEEQ ENGINEERING CONSTITUTION V3 Machine Policy
 # Governance changes require ADR + human approval + version bump.
-version: "3.0.0"
+version: "3.1.0"
 status: final
 
 system:
@@ -9,7 +9,6 @@ system:
   principle: "Stability first"
   mode: "governed-autonomy"
 
-# Lower number = higher severity.
 defcon:
   1:
     name: "CRITICAL"
@@ -31,9 +30,12 @@ autonomy:
   default: "bounded"
   levels:
     observe: "Read, inspect, analyze; no mutation"
-    propose: "Prepare changes or commands; human approval before execution when required"
-    execute: "Execute within explicitly authorized task scope"
+    propose: "Prepare changes or commands; approval before execution when required"
+    execute: "Execute only within explicitly authorized task scope"
     govern: "Not autonomous; governance changes require human approval"
+  max_retries: 3
+  stop_on_repeated_failure: true
+  require_checkpoint: true
 
 clearance:
   public:
@@ -48,11 +50,16 @@ clearance:
 
 scope:
   default: "task-bounded"
+  allow_unplanned_changes: false
   expansion_requires: "human approval"
   destructive_actions_require: "human approval"
   production_release_requires: "human approval"
 
 security:
+  self_modify_constitution: false
+  self_modify_policy: false
+  self_modify_invariants: false
+  self_modify_permissions: false
   always_forbidden_files:
     - "AGENTS.md"
     - "INVARIANTS.md"
@@ -68,9 +75,11 @@ security:
   reporting: "do not print secret values"
 
 quality:
+  require_evidence_for_completion: true
   required_before_checkpoint:
     - "invariants"
     - "health"
+    - "scope"
   required_before_release:
     - "policy validation"
     - "intent validation"
@@ -81,7 +90,6 @@ quality:
     - "dependency audit"
     - "static analysis"
     - "Git integrity"
-    - "triple consensus"
     - "evidence chain"
     - "status report"
     - "invariants"
@@ -94,5 +102,13 @@ governance:
   policy_change: "ADR + human approval + version bump"
   invariant_change: "ADR + human approval + version bump"
   agent_rules_change: "ADR + human approval + version bump"
+  constitution_change: "ADR + human approval + version bump"
   audit_trail: ["OPLOG", "ADR", "AAR", "CHANGELOG"]
   stop_the_line: true
+
+status_semantics:
+  planned: "Defined but not implemented"
+  implemented: "Artifact/code exists"
+  tested: "Applicable tests actually ran and passed"
+  proven: "Required evidence, invariant checks, and applicable review are complete"
+  blocked: "Cannot safely proceed without missing evidence, dependency, or human decision"

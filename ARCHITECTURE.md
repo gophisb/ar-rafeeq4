@@ -1,4 +1,4 @@
-# RAECS v3.0 Architecture
+# RAECS V3.1 Architecture — Ar-Rafeeq 4
 
 RAECS is a governance layer around engineering agents. It does not replace the application; it constrains how changes are proposed, executed, verified, recorded, and released.
 
@@ -50,3 +50,7 @@ Health / Tests    Invariant Gate
 5. Human control over governance.
 6. Offline/local artifacts remain deterministic where possible.
 7. Stop-the-line on critical violations.
+
+## Constitution V3 layer
+
+The application remains the product system. RAECS V3.1 is a governance layer around it: constitution → machine policy → task/state → invariants → executable gates → evidence → review/checkpoint. Governance does not replace or redesign application architecture.

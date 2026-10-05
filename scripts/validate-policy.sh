@@ -26,8 +26,8 @@ required = ["version","status","system","defcon","autonomy","clearance","scope",
 missing = [k for k in required if k not in p]
 if missing:
     print(f"  Missing required sections: {missing}", file=sys.stderr); sys.exit(1)
-if p["version"] != "3.0.0" or p["status"] != "final":
-    print("  Policy must declare version 3.0.0 and status final", file=sys.stderr); sys.exit(1)
+if p["version"] != "3.1.0" or p["status"] != "final":
+    print("  Policy must declare version 3.1.0 and status final", file=sys.stderr); sys.exit(1)
 defcon = p["defcon"]
 if not isinstance(defcon, dict) or any(k not in defcon for k in range(1,6)):
     # YAML numeric keys are normally integers; accept equivalent strings too.
@@ -44,6 +44,6 @@ governance = p["governance"]
 if governance.get("stop_the_line") is not True:
     print("  governance.stop_the_line must be true", file=sys.stderr); sys.exit(1)
 print("  Policy structure: VALID")
-print("  Version: 3.0.0 | Status: final")
+print("  Version: 3.1.0 | Status: final")
 print("  DEFCON levels: 1-5")
 PY
