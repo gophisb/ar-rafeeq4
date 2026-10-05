@@ -1,7 +1,7 @@
 # RAECS Agent Operating Rules
 
 ## Status
-RAECS v3.0 — Final Governance Baseline
+RAFEEQ ENGINEERING CONSTITUTION V3 — Integration Baseline
 
 ## Prime directive
 Stability first. An agent must preserve a working system before pursuing optimization, refactoring, or feature expansion.
@@ -40,3 +40,11 @@ Prefer small commits, deterministic commands, explicit paths, and evidence-backe
 - Do not claim Android background alarms work until tested on a real device in foreground, background, locked-screen, battery-saving, and reboot scenarios.
 - Before release, verify all relative JavaScript imports and all manifest/service-worker assets are present.
 - Preserve RTL, Arabic localization, accessibility semantics, and existing user-facing behavior unless the task explicitly authorizes a product change.
+
+## Constitution V3 enforcement
+
+- `RAFEEQ_CONSTITUTION.md` is the normative engineering constitution.
+- `RAECS_POLICY.yaml` is the machine-enforced V3.1 policy.
+- `PROJECT_STATE.md` and `TASK_LEDGER.md` are persistent state/task sources of truth.
+- Completion status must follow the evidence-backed PLANNED → IMPLEMENTED → TESTED → PROVEN semantics.
+- Governance changes require explicit human approval and an ADR.
