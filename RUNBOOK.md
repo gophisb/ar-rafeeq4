@@ -1,4 +1,4 @@
-# RAECS v3.0 Runbook
+# RAECS V3.1 Runbook — Ar-Rafeeq 4
 
 ## First run
 ```bash
@@ -36,3 +36,7 @@ Then document the root cause, resolution, prevention, and action items.
 
 ## Recovery
 Never bypass a failing invariant to obtain a green build. Restore the last known-good state, investigate, then re-run the complete gate.
+
+## Constitution V3 release gate
+
+Before claiming a governance milestone PROVEN, run `bash scripts/release-gate.sh` and preserve its evidence. A green governance gate does not by itself prove application runtime behavior.
