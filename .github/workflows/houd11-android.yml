@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -35,9 +35,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p android/app/src/main/assets/maps
-          curl -fL --retry 4 --retry-all-errors --connect-timeout 30 --max-time 1800 \
-            "https://download.mapsforge.org/maps/v5/africa/algeria.map" \
-            -o android/app/src/main/assets/maps/algeria.map
+          curl -fL --retry 4 --retry-all-errors --connect-timeout 30 --max-time 1800             "https://download.mapsforge.org/maps/v5/africa/algeria.map"             -o android/app/src/main/assets/maps/algeria.map
           test -s android/app/src/main/assets/maps/algeria.map
           SIZE=$(stat -c%s android/app/src/main/assets/maps/algeria.map)
           echo "Algeria map bytes: $SIZE"
@@ -54,8 +52,10 @@ jobs:
           cp assets/audio/adhan.mp3 android/app/src/main/res/raw/adhan.mp3
           test -s android/app/src/main/res/raw/adhan.mp3
           test -f android/app/src/main/assets/www/index.html
+
       - name: Build signed debug APK
         run: cd android && gradle --no-daemon :app:assembleDebug
+
       - name: Verify APK signature
         shell: bash
         run: |
@@ -65,9 +65,27 @@ jobs:
           APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -1)
           "$APKSIGNER" verify --verbose "$APK"
           ls -lh "$APK"
-      - name: Upload installable APK
+          sha256sum "$APK" | tee app-debug.apk.sha256
+
+      - name: Upload installable APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: houd11-android-debug-signed
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: |
+            android/app/build/outputs/apk/debug/app-debug.apk
+            app-debug.apk.sha256
           if-no-files-found: error
+
+      - name: Publish permanent GitHub Release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ar-rafeeq4-offline-latest
+          name: Ar-Rafeeq 4 — Offline Latest
+          body: |
+            Latest verified Ar-Rafeeq 4 Offline APK built by GitHub Actions.
+            This release asset is permanent and does not depend on the temporary Actions artifact URL.
+          prerelease: true
+          make_latest: false
+          files: |
+            android/app/build/outputs/apk/debug/app-debug.apk
+            app-debug.apk.sha256
