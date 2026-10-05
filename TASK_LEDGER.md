@@ -5,7 +5,7 @@ RAECS uses explicit task IDs to keep agent work bounded and auditable.
 | Task ID | Description | Status | Owner | Evidence |
 |---|---|---|---|---|
 | RAECS-300 | Existing RAECS v3.0 governance baseline | DONE | human/agent | repository baseline |
-| GOV-V3-INTEGRATE-001 | Integrate RAFEEQ Engineering Constitution V3 | TESTED | human/agent | Run #288 15/15 PASS; scope review |
+| GOV-V3-INTEGRATE-001 | Integrate RAFEEQ Engineering Constitution V3 | PROVEN | human/agent | Run #293 15/15 PASS; independent scope review; final checkpoint |
 
 ## GOV-V3-INTEGRATE-001 Contract
 
