@@ -28,7 +28,15 @@ grep -q 'INV-G004' INVARIANTS.md || fail "constitution invariant missing"
 grep -q 'INV-G005' INVARIANTS.md || fail "evidence invariant missing"
 
 grep -q '^## GOV-V3-001' TASK_LEDGER.md || fail "V3 task contract missing"
-grep -A1 '^## Current task$' PROJECT_STATE.md | grep -q '^GOV-V3-001$' || fail "project state task mismatch"
+grep -A1 '^## Current task
+
+git diff --check
+echo "RAFEEQ CONSTITUTION V3 VALIDATION: PASS"
+ PROJECT_STATE.md | grep -q '^GOV-V3-INTEGRATE-001
+
+git diff --check
+echo "RAFEEQ CONSTITUTION V3 VALIDATION: PASS"
+ || fail "project state task mismatch"
 
 git diff --check
 echo "RAFEEQ CONSTITUTION V3 VALIDATION: PASS"
