@@ -12,10 +12,10 @@ Integrate the proven RAFEEQ Engineering Constitution V3 governance layer without
 GOV-V3-INTEGRATE-001
 
 ## Current branch
-feat/raecs-v3-proven-integration
+main
 
 ## Last verified commit
-394927d916a05ebf6dbb3fa71e23156f21083201
+27402fd3b7b6dec44809dd77bdea2fa22e3da3ee
 
 ## Build status
 UNKNOWN — no application build claim is made by this governance integration task.
@@ -43,7 +43,7 @@ PASS — GitHub Actions Run #293 passed all 15 release-gate checks after the rev
 - None for automated verification. Merge/release remains a human-owned approval decision.
 
 ## Next recommended task
-Final checkpoint: governance integration verified by Run #293 (15/15 PASS) after independent scope review. Application runtime remains separately governed by applicable tests.
+Final checkpoint: governance integration merged as PR #7 at 27402fd3b7b6dec44809dd77bdea2fa22e3da3ee after Run #296 (15/15 PASS) and independent scope review. Application runtime remains separately governed by applicable tests.
 
 ## Last checkpoint
 Branch created from Ar-Rafeeq 4 main at 394927d916a05ebf6dbb3fa71e23156f21083201.
