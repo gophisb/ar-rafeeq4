@@ -1,6 +1,6 @@
 # Ar-Rafeeq 4 Project State
 
-status: TESTED
+status: PROVEN
 version: 3.1.0
 baseline: Ar-Rafeeq 4 main
 last_verified: 2026-10-05T09:56:53Z
@@ -21,7 +21,7 @@ feat/raecs-v3-proven-integration
 UNKNOWN — no application build claim is made by this governance integration task.
 
 ## Test status
-PASS — GitHub Actions Run #288 passed all 15 release-gate checks.
+PASS — GitHub Actions Run #293 passed all 15 release-gate checks after the review/checkpoint updates.
 
 ## System posture
 - Existing Ar-Rafeeq 4 application behavior is protected.
@@ -43,7 +43,7 @@ PASS — GitHub Actions Run #288 passed all 15 release-gate checks.
 - None for automated verification. Merge/release remains a human-owned approval decision.
 
 ## Next recommended task
-Independent scope review completed; next step is final checkpoint after review.
+Final checkpoint: governance integration verified by Run #293 (15/15 PASS) after independent scope review. Application runtime remains separately governed by applicable tests.
 
 ## Last checkpoint
 Branch created from Ar-Rafeeq 4 main at 394927d916a05ebf6dbb3fa71e23156f21083201.
