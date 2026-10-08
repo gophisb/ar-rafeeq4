@@ -21,6 +21,7 @@ jobs:
         run: |
           node --check pages/quran-recitation.js
           node --check pages/quran.js
+          node --check pages/islamic-library-reader.js
 
       - name: Contract checks
         run: |
@@ -33,6 +34,9 @@ jobs:
           grep -q 'RafeeqRecitation' pages/quran.js
           grep -q 'everyayah.com/data/Minshawy_Murattal_128kbps' pages/quran-recitation.js
           grep -q 'cdn.islamic.network/quran/audio/128/ar.minshawi' pages/quran-recitation.js
+          grep -q 'downloadCurrentSurah' pages/quran.html
+          grep -q 'downloadFullQuran' pages/quran.html
+          grep -q 'getGlobalAyah: globalAyahNumber' pages/quran.js
 
       - name: Library asset integrity
         run: |
