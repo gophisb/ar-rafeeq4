@@ -230,6 +230,51 @@ document.getElementById('recitationStop')?.addEventListener('click', () => {
   window.RafeeqRecitation?.stop();
 });
 
+
+function updateDownloadUI(detail) {
+  const status = document.getElementById('recitationStatus');
+  const progress = document.getElementById('recitationProgress');
+  const cancel = document.getElementById('cancelQuranDownload');
+  if (progress && detail?.downloading && detail.downloadTotal) {
+    progress.hidden = false; progress.max = detail.downloadTotal; progress.value = detail.downloadDone;
+  } else if (progress) { progress.hidden = true; progress.value = 0; }
+  if (cancel) cancel.hidden = !detail?.downloading;
+  if (detail?.downloading && status) status.textContent = `جاري التنزيل: ${detail.downloadDone}/${detail.downloadTotal} آية`;
+}
+window.addEventListener('rafeeq:recitation', e => updateDownloadUI(e.detail));
+
+async function downloadCurrentSurahAudio() {
+  const btn=document.getElementById('downloadCurrentSurah'), status=document.getElementById('recitationStatus'), meta=SURAH_LIST[currentSurah-1];
+  if(!window.RafeeqRecitation||!meta)return;
+  if(btn)btn.disabled=true;
+  try {
+    const result=await window.RafeeqRecitation.downloadSurah(meta.n,meta.ayahs,(done,total,surah,ayah,cached)=>{
+      if(status)status.textContent=`جاري تنزيل سورة ${meta.name}: ${done}/${total} آية${cached?' — محفوظة':''}`;
+    });
+    if(status)status.textContent=`تم تنزيل سورة ${meta.name} — ${result.done}/${result.total} آية محفوظة، والتشغيل متاح دون إنترنت.`;
+  } catch(error) {
+    console.error('Rafeeq Quran surah download failed:',error);
+    if(status)status.textContent=error?.message==='DOWNLOAD_CANCELLED'?'تم إيقاف التنزيل.':(error?.message||'تعذر تنزيل السورة.');
+  } finally { if(btn)btn.disabled=false; }
+}
+async function downloadFullQuranAudio() {
+  const btn=document.getElementById('downloadFullQuran'), status=document.getElementById('recitationStatus');
+  if(!window.RafeeqRecitation||!window.confirm('تنزيل القرآن الصوتي كاملًا يحتاج مساحة تخزين كبيرة واتصالًا مستقرًا. هل تريد المتابعة؟'))return;
+  if(btn)btn.disabled=true;
+  try {
+    const result=await window.RafeeqRecitation.downloadQuran(SURAH_LIST,(done,total,surah,ayah,cached)=>{
+      if(status)status.textContent=`جاري تنزيل القرآن: ${done}/${total} آية — السورة ${surah}، الآية ${ayah}${cached?' — محفوظة':''}`;
+    });
+    if(status)status.textContent=`تم تنزيل القرآن الصوتي كاملًا — ${result.done}/${result.total} آية، والتشغيل متاح دون إنترنت.`;
+  } catch(error) {
+    console.error('Rafeeq Quran full download failed:',error);
+    if(status)status.textContent=error?.message==='DOWNLOAD_CANCELLED'?'تم إيقاف التنزيل.':(error?.message||'توقف تنزيل القرآن؛ يمكنك إعادة المحاولة وسيتم تجاوز الملفات المحفوظة.');
+  } finally { if(btn)btn.disabled=false; }
+}
+document.getElementById('downloadCurrentSurah')?.addEventListener('click',downloadCurrentSurahAudio);
+document.getElementById('downloadFullQuran')?.addEventListener('click',downloadFullQuranAudio);
+document.getElementById('cancelQuranDownload')?.addEventListener('click',()=>window.RafeeqRecitation?.cancelDownload());
+
 function saveQuranProgress() {
   try { localStorage.setItem(quranProgressKey, JSON.stringify([...readAyahs])); } catch (_) {}
   document.dispatchEvent(new CustomEvent('rafeeq:quranProgressChanged'));
