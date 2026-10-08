@@ -33,6 +33,10 @@ jobs:
           grep -q 'everyayah.com/data/Minshawy_Murattal_128kbps' pages/quran-recitation.js
           grep -q 'cdn.islamic.network/quran/audio/128/ar.minshawi' pages/quran-recitation.js
 
+      - name: Library asset integrity
+        run: |
+          bash scripts/verify-library-assets.sh
+
       - name: Quran data integrity
         run: |
           node - <<'NODE'
