@@ -36,7 +36,7 @@
       status.hidden = true;
       body.hidden = false;
     })
-    .catch(() => {
+    .catch((error) => {\n      console.error("Rafeeq local library load failed:", error);
       status.hidden = false;
       body.hidden = true;
       status.innerHTML =
