@@ -32,5 +32,13 @@ if missing:
     print("FAIL: missing local library assets:")
     print("\n".join(missing))
     sys.exit(1)
-print(f"PASS: {sum(len(b.get('localPaths') or ([b['localPath']] if b.get('localPath') else [])) for b in m.get('books',[]))} local library assets exist and match reader contract")
+sw=open("sw.js",encoding="utf-8").read()
+for book in m.get("books",[]):
+    paths=book.get("localPaths") or ([book["localPath"]] if book.get("localPath") else [])
+    for p in paths:
+        shell_path="./"+p
+        if shell_path not in sw:
+            print(f"FAIL: Service Worker APP_SHELL missing {shell_path}")
+            sys.exit(1)
+print(f"PASS: {sum(len(b.get('localPaths') or ([b['localPath']] if b.get('localPath') else [])) for b in m.get('books',[]))} local library assets exist, match reader contract, and are in Service Worker shell")
 PY
