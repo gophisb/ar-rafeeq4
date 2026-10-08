@@ -1,179 +1,52 @@
 /* =========================================================
    Ar-Rafeeq 4 — Minshawy Murattal Recitation
-   Standalone audio controller; no framework/dependency required.
-   Streaming source only; Quran text remains local.
+   Streaming + resumable offline download controller.
 ========================================================= */
 (function (root) {
   'use strict';
-
   const androidOffline = root.location && root.location.protocol === 'file:';
   const localBase = '../assets/audio/minshawy/';
   const primaryBase = 'https://everyayah.com/data/Minshawy_Murattal_128kbps/';
   const fallbackBase = 'https://cdn.islamic.network/quran/audio/128/ar.minshawi/';
-  const pad = (n, w) => String(n).padStart(w, '0');
+  const pad = (n,w) => String(n).padStart(w,'0');
+  const FETCH_TIMEOUT_MS = 30000, MAX_RETRIES = 3, DOWNLOAD_CONCURRENCY = 3;
+  const DB_NAME='rafeeq-quran-audio-v1', STORE='tracks';
+  const audio=new Audio(); audio.preload='metadata';
+  let dbPromise=null, objectUrl=null, downloadCancelled=false, activeControllers=new Set();
+  const state={playing:false,loading:false,downloading:false,downloadDone:0,downloadTotal:0,downloadBytes:0,surah:null,ayah:null,totalAyahs:0,error:null,fallbackTried:false};
+  let onAyahChange=null,onSurahEnd=null,getGlobalAyah=null;
 
-  const audio = new Audio();
-  audio.preload = 'metadata';
-
-  const state = {
-    playing: false,
-    loading: false,
-    surah: null,
-    ayah: null,
-    totalAyahs: 0,
-    error: null,
-    fallbackTried: false
-  };
-
-  let onAyahChange = null;
-  let onSurahEnd = null;
-  let getGlobalAyah = null;
-
-  function primaryUrl(surah, ayah) {
-    const file = pad(surah, 3) + pad(ayah, 3) + '.mp3';
-    return androidOffline ? localBase + file : primaryBase + file;
-  }
-
-  function fallbackUrl(globalAyah) {
-    return fallbackBase + String(globalAyah) + '.mp3';
-  }
-
-  function emit() {
-    root.dispatchEvent(new CustomEvent('rafeeq:recitation', {
-      detail: { ...state }
-    }));
-  }
-
-  function setState(patch) {
-    Object.assign(state, patch);
-    emit();
-  }
-
-  function play(surah, ayah, totalAyahs, globalAyah) {
-    const s = Number(surah);
-    const a = Number(ayah);
-    const total = Number(totalAyahs);
-
-    if (!Number.isInteger(s) || s < 1 || s > 114 ||
-        !Number.isInteger(a) || a < 1 ||
-        !Number.isInteger(total) || a > total) {
-      setState({ playing: false, loading: false, error: 'بيانات التلاوة غير صحيحة' });
-      return;
-    }
-
-    audio.pause();
-    audio.currentTime = 0;
-    state.fallbackTried = false;
-
-    setState({
-      playing: true,
-      loading: true,
-      surah: s,
-      ayah: a,
-      totalAyahs: total,
-      error: null,
-      fallbackTried: false
-    });
-
-    audio.src = primaryUrl(s, a);
-    onAyahChange?.(a);
-
-    const promise = audio.play();
-    if (promise && typeof promise.catch === 'function') {
-      promise.catch((error) => {
-        if (error && error.name === 'AbortError') return;
-        setState({
-          playing: false,
-          loading: false,
-          error: navigator.onLine === false
-            ? 'التلاوة تحتاج إلى الاتصال بالإنترنت في هذه النسخة.'
-            : 'تعذّر تشغيل التلاوة — اضغط تشغيل مرة أخرى.'
-        });
-      });
-    }
-  }
-
-  function stop() {
-    audio.pause();
-    audio.currentTime = 0;
-    setState({ playing: false, loading: false, error: null, surah: null, ayah: null, totalAyahs: 0 });
-  }
-
-  function pause() {
-    audio.pause();
-    setState({ playing: false, loading: false });
-  }
-
-  function resume() {
-    if (state.surah === null || state.ayah === null) return;
-    const promise = audio.play();
-    if (promise && typeof promise.catch === 'function') {
-      promise.catch(() => setState({ playing: false, loading: false, error: 'تعذّر استئناف التلاوة.' }));
-    }
-  }
-
-  function toggle(surah, ayah, totalAyahs, globalAyah) {
-    if (state.playing) return pause();
-    if (state.surah === Number(surah) && state.ayah !== null) return resume();
-    play(surah, ayah, totalAyahs, globalAyah);
-  }
-
-  audio.addEventListener('playing', () => setState({ playing: true, loading: false, error: null }));
-  audio.addEventListener('waiting', () => setState({ loading: true }));
-  audio.addEventListener('pause', () => {
-    if (!audio.ended) setState({ playing: false, loading: false });
-  });
-  audio.addEventListener('error', () => {
-    if (state.surah === null || state.ayah === null) return;
-
-    if (!state.fallbackTried) {
-      state.fallbackTried = true;
-      const global = getGlobalAyah?.(state.surah, state.ayah);
-      if (global) {
-        audio.src = fallbackUrl(global);
-        const promise = audio.play();
-        if (promise && typeof promise.catch === 'function') promise.catch(() => {});
-        return;
-      }
-    }
-
-    setState({
-      playing: false,
-      loading: false,
-      error: navigator.onLine === false
-        ? 'التلاوة غير متاحة دون اتصال في هذه النسخة.'
-        : 'تعذّر تحميل صوت هذه الآية.'
-    });
-  });
-
-  audio.addEventListener('ended', () => {
-    if (state.surah === null || state.ayah === null) return;
-
-    if (state.ayah < state.totalAyahs) {
-      play(state.surah, state.ayah + 1, state.totalAyahs);
-      return;
-    }
-
-    const finishedSurah = state.surah;
-    setState({ playing: false, loading: false });
-    onSurahEnd?.(finishedSurah);
-  });
-
-  function configure(options = {}) {
-    onAyahChange = typeof options.onAyahChange === 'function' ? options.onAyahChange : null;
-    onSurahEnd = typeof options.onSurahEnd === 'function' ? options.onSurahEnd : null;
-    getGlobalAyah = typeof options.getGlobalAyah === 'function' ? options.getGlobalAyah : null;
-  }
-
-  root.RafeeqRecitation = Object.freeze({
-    play,
-    stop,
-    pause,
-    resume,
-    toggle,
-    configure,
-    state,
-    primaryUrl,
-    fallbackUrl
-  });
+  function openDb(){if(dbPromise)return dbPromise;dbPromise=new Promise((resolve,reject)=>{let req;try{req=indexedDB.open(DB_NAME,1);}catch(e){reject(e);return;}req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(STORE))db.createObjectStore(STORE);};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||new Error('IndexedDB open failed'));});return dbPromise;}
+  function trackKey(s,a){return String(s).padStart(3,'0')+String(a).padStart(3,'0');}
+  async function getLocalBlob(s,a){const db=await openDb();return new Promise((resolve,reject)=>{const q=db.transaction(STORE,'readonly').objectStore(STORE).get(trackKey(s,a));q.onsuccess=()=>resolve(q.result||null);q.onerror=()=>reject(q.error||new Error('IndexedDB read failed'));});}
+  async function putLocalBlob(s,a,b){const db=await openDb();await new Promise((resolve,reject)=>{const q=db.transaction(STORE,'readwrite').objectStore(STORE).put(b,trackKey(s,a));q.onsuccess=resolve;q.onerror=()=>reject(q.error||new Error('IndexedDB write failed'));});}
+  async function localTrackCount(){const db=await openDb();return new Promise((resolve,reject)=>{const q=db.transaction(STORE,'readonly').objectStore(STORE).count();q.onsuccess=()=>resolve(q.result||0);q.onerror=()=>reject(q.error||new Error('IndexedDB count failed'));});}
+  async function storageInfo(){if(!navigator.storage?.estimate)return{supported:false,quota:null,usage:null,free:null};const e=await navigator.storage.estimate();const q=Number.isFinite(e.quota)?e.quota:null,u=Number.isFinite(e.usage)?e.usage:0;return{supported:true,quota:q,usage:u,free:q===null?null:Math.max(0,q-u)};}
+  async function requestPersistentStorage(){if(!navigator.storage?.persist)return false;try{return await navigator.storage.persist();}catch(e){console.warn('Rafeeq Quran storage persist unavailable:',e);return false;}}
+  const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  function explain(e,url){if(e?.code==='STORAGE')return'مساحة التخزين ممتلئة أو رفض النظام حفظ الملف.';if(e?.code==='TIMEOUT')return'انتهت مهلة تنزيل الملف الصوتي.';if(e?.code==='HTTP')return'HTTP '+e.status+' عند تنزيل الملف الصوتي.';if(e?.code==='CONTENT')return'الخادم أعاد استجابة ليست ملفًا صوتيًا صالحًا.';if(e?.code==='GLOBAL_AYAH')return'رقم الآية العالمي غير معروف؛ لم تتهيأ بيانات السورة.';if(e?.code==='CANCELLED'||e?.name==='AbortError')return'تم إلغاء تنزيل الملف.';if(e?.name==='TypeError')return'فشل طلب الشبكة/CORS أثناء تنزيل الملف.';return e?.message||('فشل تنزيل الملف: '+url);}
+  async function fetchAudioBlob(url,signal){const c=new AbortController();activeControllers.add(c);const t=setTimeout(()=>c.abort(),FETCH_TIMEOUT_MS);const forward=()=>c.abort();signal?.addEventListener('abort',forward,{once:true});try{const r=await fetch(url,{cache:'no-store',signal:c.signal});if(!r.ok){const e=new Error('HTTP '+r.status);e.code='HTTP';e.status=r.status;throw e;}const type=(r.headers.get('content-type')||'').toLowerCase();const b=await r.blob();if(!b.size){const e=new Error('ملف صوتي فارغ');e.code='CONTENT';throw e;}if(type&&!type.startsWith('audio/')&&!type.includes('mpeg')&&!type.includes('octet-stream')){const e=new Error('استجابة غير صوتية: '+type);e.code='CONTENT';throw e;}return b;}catch(e){if(c.signal.aborted&&!(signal?.aborted)){const x=new Error('انتهت مهلة تنزيل الملف الصوتي');x.code='TIMEOUT';throw x;}throw e;}finally{clearTimeout(t);activeControllers.delete(c);signal?.removeEventListener('abort',forward);}}
+  async function fetchWithRetry(url,signal){let last=null;for(let i=1;i<=MAX_RETRIES;i++){if(signal?.aborted||downloadCancelled){const e=new Error('DOWNLOAD_CANCELLED');e.code='CANCELLED';throw e;}try{return await fetchAudioBlob(url,signal);}catch(e){last=e;if(e.code==='CONTENT'||(e.code==='HTTP'&&e.status===404))throw e;if(i<MAX_RETRIES)await sleep(500*2**(i-1));}}throw last||new Error('فشل تنزيل الملف');}
+  async function downloadTrack(s,a,options={}){const existing=await getLocalBlob(s,a);if(existing)return{downloaded:false,cached:true,bytes:existing.size||0};const global=typeof getGlobalAyah==='function'?getGlobalAyah(s,a):null;if(!global){const e=new Error('رقم الآية العالمي غير معروف');e.code='GLOBAL_AYAH';throw e;}const urls=[primaryBase+pad(s,3)+pad(a,3)+'.mp3',fallbackBase+String(global)+'.mp3'];let last=null;for(const url of urls){try{const b=await fetchWithRetry(url,options.signal);try{await putLocalBlob(s,a,b);}catch(e){e.code='STORAGE';throw e;}return{downloaded:true,cached:false,bytes:b.size||0,url};}catch(e){last=e;if(e.code==='CANCELLED'||options.signal?.aborted)throw e;}}const e=new Error(explain(last,urls[urls.length-1]));e.cause=last;throw e;}
+  async function runQueue(queue,onProgress){const total=queue.length;const existingCount=await localTrackCount();let done=0,bytes=0;state.downloading=true;state.downloadTotal=total;state.downloadDone=0;state.downloadBytes=0;state.error=null;emit();const worker=async()=>{while(queue.length){if(downloadCancelled)throw new Error('DOWNLOAD_CANCELLED');const item=queue.shift();const result=await downloadTrack(item.surah,item.ayah);done++;bytes+=Number(result.bytes||0);state.downloadDone=done;state.downloadBytes=bytes;onProgress?.(done,total,item.surah,item.ayah,result.cached===true);emit();}};try{return await Promise.all(Array.from({length:Math.min(DOWNLOAD_CONCURRENCY,Math.max(1,total))},worker)).then(()=>({total,done,existingCount,bytes}));}finally{state.downloading=false;emit();}}
+  async function downloadSurah(s,total,onProgress){s=Number(s);total=Number(total);if(!Number.isInteger(s)||s<1||s>114||!Number.isInteger(total)||total<1)throw new Error('بيانات السورة غير صحيحة');if((await storageInfo()).supported)await requestPersistentStorage();downloadCancelled=false;return runQueue(Array.from({length:total},(_,i)=>({surah:s,ayah:i+1})),onProgress);}
+  async function downloadQuran(list,onProgress){if(!Array.isArray(list)||!list.length)throw new Error('قائمة السور غير متاحة');if((await storageInfo()).supported)await requestPersistentStorage();downloadCancelled=false;const q=[];for(const s of list)for(let a=1;a<=Number(s.ayahs);a++)q.push({surah:Number(s.n),ayah:a});return runQueue(q,onProgress);}
+  function cancelDownload(){downloadCancelled=true;for(const c of activeControllers)c.abort();}
+  async function playLocalOrRemote(s,a,total,global){const b=await getLocalBlob(s,a);if(b){if(objectUrl)URL.revokeObjectURL(objectUrl);objectUrl=URL.createObjectURL(b);audio.src=objectUrl;const p=audio.play();return p?.then?p.then(()=>true):true;}audio.src=primaryUrl(s,a);const p=audio.play();return p?.then?p.then(()=>false):false;}
+  function primaryUrl(s,a){return androidOffline?localBase+pad(s,3)+pad(a,3)+'.mp3':primaryBase+pad(s,3)+pad(a,3)+'.mp3';}
+  function fallbackUrl(g){return fallbackBase+String(g)+'.mp3';}
+  function emit(){root.dispatchEvent(new CustomEvent('rafeeq:recitation',{detail:{...state}}));}
+  function setState(p){Object.assign(state,p);emit();}
+  function play(s,a,total,global){s=Number(s);a=Number(a);total=Number(total);if(!Number.isInteger(s)||s<1||s>114||!Number.isInteger(a)||a<1||!Number.isInteger(total)||a>total){setState({playing:false,loading:false,error:'بيانات التلاوة غير صحيحة'});return;}audio.pause();audio.currentTime=0;state.fallbackTried=false;setState({playing:true,loading:true,surah:s,ayah:a,totalAyahs:total,error:null,fallbackTried:false});onAyahChange?.(a);const p=playLocalOrRemote(s,a,total,global);p?.catch?.(e=>{if(e?.name==='AbortError')return;setState({playing:false,loading:false,error:navigator.onLine===false?'التلاوة غير متاحة دون اتصال لهذه الآية؛ نزّل السورة أولًا.':'تعذّر تشغيل التلاوة — اضغط تشغيل مرة أخرى.'});});}
+  function stop(){audio.pause();audio.currentTime=0;setState({playing:false,loading:false,error:null,surah:null,ayah:null,totalAyahs:0});}
+  function pause(){audio.pause();setState({playing:false,loading:false});}
+  function resume(){if(state.surah===null||state.ayah===null)return;audio.play().catch(e=>setState({playing:false,loading:false,error:e?.message||'تعذّر استئناف التلاوة.'}));}
+  function toggle(s,a,t,g){if(state.playing)return pause();if(state.surah===Number(s)&&state.ayah!==null)return resume();play(s,a,t,g);}
+  audio.addEventListener('playing',()=>setState({playing:true,loading:false,error:null}));
+  audio.addEventListener('waiting',()=>setState({loading:true}));
+  audio.addEventListener('pause',()=>{if(!audio.ended)setState({playing:false,loading:false});});
+  audio.addEventListener('error',async()=>{if(state.surah===null||state.ayah===null)return;if(!state.fallbackTried){state.fallbackTried=true;const g=getGlobalAyah?.(state.surah,state.ayah);if(g){audio.src=fallbackUrl(g);try{await audio.play();return;}catch(e){console.warn('Recitation fallback playback failed:',e);}}}setState({playing:false,loading:false,error:navigator.onLine===false?'التلاوة غير متاحة دون اتصال في هذه النسخة.':'تعذّر تحميل صوت هذه الآية.'});});
+  audio.addEventListener('ended',()=>{if(state.surah===null||state.ayah===null)return;if(state.ayah<state.totalAyahs){play(state.surah,state.ayah+1,state.totalAyahs,getGlobalAyah?.(state.surah,state.ayah+1));return;}const finished=state.surah;setState({playing:false,loading:false});onSurahEnd?.(finished);});
+  function configure(o={}){onAyahChange=typeof o.onAyahChange==='function'?o.onAyahChange:null;onSurahEnd=typeof o.onSurahEnd==='function'?o.onSurahEnd:null;getGlobalAyah=typeof o.getGlobalAyah==='function'?o.getGlobalAyah:null;}
+  root.RafeeqRecitation=Object.freeze({play,stop,pause,resume,toggle,configure,state,primaryUrl,fallbackUrl,downloadTrack,downloadSurah,downloadQuran,cancelDownload,localTrackCount,storageInfo});
 })(window);
