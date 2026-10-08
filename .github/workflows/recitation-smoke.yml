@@ -40,7 +40,7 @@ jobs:
 
       - name: Library asset integrity
         run: |
-          bash scripts/verify-library-assets.sh
+          bash scripts/verify-rafeeq.sh
 
       - name: Quran data integrity
         run: |
