@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - offline-apk-safe
+      - feat/algeria-certified-prayer-times
 
 permissions:
   contents: read
