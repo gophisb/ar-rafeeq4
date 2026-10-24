@@ -1,0 +1,49 @@
+name: Build Algeria prayer engine bundle
+
+on:
+  push:
+    branches:
+      - feat/algeria-certified-prayer-times
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'scripts/mihrab-algeria-entry.js'
+      - '.github/workflows/build-algeria-prayer-engine.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: algeria-prayer-engine-bundle
+  cancel-in-progress: false
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout implementation branch
+        uses: actions/checkout@v4
+        with:
+          ref: feat/algeria-certified-prayer-times
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install pinned dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build local offline bundle
+        run: npm run build:prayer
+      - name: Commit reproducible bundle and lockfile
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json vendor/mihrab-algeria.js
+          if git diff --cached --quiet; then
+            echo "Bundle and lockfile are already current."
+            exit 0
+          fi
+          git commit -m "build: bundle certified Algeria prayer engine"
+          git push origin feat/algeria-certified-prayer-times
