@@ -8,6 +8,7 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'scripts/mihrab-algeria-entry.js'
+      - 'scripts/test-mihrab-algeria-bundle.cjs'
       - '.github/workflows/build-algeria-prayer-engine.yml'
   workflow_dispatch:
 
@@ -33,8 +34,8 @@ jobs:
           node-version: 20
       - name: Install pinned dependencies
         run: npm install --no-audit --no-fund
-      - name: Build local offline bundle
-        run: npm run build:prayer
+      - name: Build and smoke-test local offline bundle
+        run: npm run test:prayer-bundle
       - name: Commit reproducible bundle and lockfile
         run: |
           git config user.name "github-actions[bot]"
