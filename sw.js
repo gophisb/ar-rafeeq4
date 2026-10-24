@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rafeeq4-core-v20';
+const CACHE_NAME = 'rafeeq4-core-v21';
 const APP_SHELL = [
   './',
   './index.html',
@@ -6,6 +6,7 @@ const APP_SHELL = [
   './variables.css',
   './config.js',
   './prayer.js',
+  './vendor/mihrab-algeria.js',
   './locations.js',
   './router.js?v=6201a31',
   './app.js',
