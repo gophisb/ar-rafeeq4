@@ -45,4 +45,5 @@ jobs:
             exit 0
           fi
           git commit -m "build: bundle certified Algeria prayer engine"
+          git pull --rebase origin feat/algeria-certified-prayer-times
           git push origin feat/algeria-certified-prayer-times
