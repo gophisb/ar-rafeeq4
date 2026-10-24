@@ -14,7 +14,7 @@ function algeriaDateKey(date) {
 }
 
 function toMinutes(label) {
-  if (typeof label !== 'string' || !/^\\d{2}:\\d{2}$/.test(label)) return NaN;
+  if (typeof label !== 'string' || !/^[0-9]{2}:[0-9]{2}$/.test(label)) return NaN;
   const [hours, minutes] = label.split(':').map(Number);
   if (hours > 23 || minutes > 59) return NaN;
   return hours * 60 + minutes;
