@@ -8,7 +8,8 @@
     "cap:sync": "npx cap sync android",
     "cap:add:android": "npx cap add android",
     "android:build": "npm run prepare:web && npx cap sync android && cd android && ./gradlew assembleDebug",
-    "build:prayer": "esbuild scripts/mihrab-algeria-entry.js --bundle --minify --format=iife --target=es2020 --outfile=vendor/mihrab-algeria.js"
+    "build:prayer": "esbuild scripts/mihrab-algeria-entry.js --bundle --minify --format=iife --target=es2020 --outfile=vendor/mihrab-algeria.js",
+    "test:prayer-bundle": "npm run build:prayer && node scripts/test-mihrab-algeria-bundle.cjs"
   },
   "dependencies": {
     "@capacitor/core": "^8.0.0",
