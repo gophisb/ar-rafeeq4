@@ -1084,6 +1084,14 @@ ol {
     font-weight: 800;
 }
 
+.home-gregorian-date {
+    display: block;
+    margin-top: 2px;
+    color: var(--text-muted);
+    font-size: 10px;
+    line-height: 1.35;
+}
+
 .info-divider {
 
     width: 1px;
