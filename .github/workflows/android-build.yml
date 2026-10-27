@@ -38,6 +38,28 @@ jobs:
       - name: Add Android project
         run: npx cap add android
 
+      - name: Apply existing golden mosque launcher icon
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
+          set -eu
+          for spec in mdpi:48 hdpi:72 xhdpi:96 xxhdpi:144 xxxhdpi:192; do
+            density="${spec%%:*}"
+            size="${spec##*:}"
+            dir="android/app/src/main/res/mipmap-${density}"
+            test -d "$dir"
+            convert assets/icons/icon-512.png -resize "${size}x${size}" "$dir/ic_launcher.png"
+            convert assets/icons/icon-512.png -resize "${size}x${size}" "$dir/ic_launcher_round.png"
+            convert assets/icons/icon-512.png -resize "${size}x${size}" "$dir/ic_launcher_foreground.png"
+          done
+          for xml in android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml; do
+            if [ -f "$xml" ]; then
+              sed -i 's/@drawable\/ic_launcher_foreground/@mipmap\/ic_launcher_foreground/g' "$xml"
+            fi
+          done
+          test -s android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          test -s android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png
+
       - name: Install native locked-screen adhan
         run: node scripts/install-android-adhan.mjs
 
