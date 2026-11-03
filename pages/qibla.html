@@ -1,109 +1,112 @@
-<section class="page qibla-page">
+<section class="page qibla-page" aria-labelledby="qiblaPageTitle">
   <header class="hero">
-    <h1>القبلة</h1>
-    <p>اعرف اتجاه القبلة من موقعك الحالي.</p>
+    <h1 id="qiblaPageTitle">اتجاه القبلة</h1>
+    <p>بوصلة تفاعلية باتجاه مكة المكرمة من موقعك المعتمد في الرفيق.</p>
   </header>
 
-  <section class="card qibla-card" aria-labelledby="qiblaHeading">
-    <div class="card-heading">
-      <span class="badge icon-badge" aria-hidden="true"><img src="assets/icons/icon-qibla.png" width="32" height="32" alt=""></span>
-      <div>
-        <h2 id="qiblaHeading">اتجاه القبلة</h2>
-        <p id="qiblaStatus" class="muted" role="status">جاري تحديد الموقع...</p>
+  <section class="card qibla-card" aria-label="بوصلة القبلة">
+    <div class="qibla-stage" id="qiblaStage">
+      <div class="qibla-ring"></div>
+      <div class="qibla-dial" id="qiblaDial">
+        <svg viewBox="-200 -200 400 400" aria-hidden="true">
+          <circle r="190" fill="none" stroke="rgba(212,175,55,.55)" stroke-width="1.5"/>
+          <circle r="181" fill="none" stroke="rgba(212,175,55,.20)" stroke-width="1"/>
+          <g id="qiblaTicks"></g>
+          <g class="qibla-cardinals" text-anchor="middle" dominant-baseline="central">
+            <text x="0" y="-145">N</text><text x="145" y="0">E</text>
+            <text x="0" y="145">S</text><text x="-145" y="0">W</text>
+          </g>
+          <circle r="7" fill="#f5d778"/>
+        </svg>
+        <div class="qibla-target" id="qiblaTarget">
+          <span class="qibla-needle"></span>
+          <span class="qibla-tip"></span>
+        </div>
       </div>
-    </div>
-
-    <style>
-      /* تصميم بصري جديد فقط؛ منطق الحساب والمستشعر في pages/qibla.js لم يتغير. */
-      .qibla-page .qibla-compass {
-        position:relative; isolation:isolate; width:min(78vw,320px); aspect-ratio:1;
-        margin:1.2rem auto; border:1px solid rgba(225,185,91,.65); border-radius:50%;
-        background:radial-gradient(circle at 50% 45%,#f7f3e8 0%,#e7e0cf 62%,#c9bea5 100%);
-        box-shadow:0 12px 30px rgba(0,0,0,.32),inset 0 0 0 5px #252525,inset 0 0 0 7px #d9b65f,inset 0 0 0 12px #f8f3e7;
-        overflow:hidden;
-      }
-      .qibla-page .qibla-rose {position:absolute;inset:4%;width:92%;height:92%;pointer-events:none}
-      .qibla-page .qibla-arrow {
-        position:absolute;z-index:2;top:50%;left:50%;width:33%;height:76%;
-        transform:translate(-50%,-50%) rotate(0deg); transform-origin:50% 50%;
-        transition:transform .28s ease; color:transparent; font-size:0; text-shadow:none;
-        filter:drop-shadow(0 3px 2px rgba(0,0,0,.32)); pointer-events:none;
-      }
-      .qibla-page .qibla-arrow svg {width:100%;height:100%;max-width:none;overflow:visible}
-      .qibla-page .qibla-center {
-        z-index:3;width:3.55rem;height:3.55rem;border:2px solid #e2bd62;
-        background:radial-gradient(circle at 35% 30%,#3a3a35,#090909 70%);
-        box-shadow:0 2px 8px rgba(0,0,0,.38),inset 0 0 0 3px rgba(225,185,91,.22);
-      }
-      .qibla-page .qibla-center span {color:#f4dfaa;font-size:.58rem}
-      .qibla-page .qibla-center img {width:2.45rem;height:2.45rem}
-      .qibla-page .qibla-compass.is-aligned {border-color:#e7c56f;box-shadow:0 0 28px rgba(231,197,111,.35),inset 0 0 0 5px #252525,inset 0 0 0 7px #e7c56f,inset 0 0 0 12px #f8f3e7}
-      .qibla-page .qibla-compass.is-aligned .qibla-center {background:radial-gradient(circle at 35% 30%,#7b5b16,#171006 70%)}
-      .qibla-page .qibla-bearing {color:#e6c36e}
-      @media (max-width:360px) {.qibla-page .qibla-compass {width:min(76vw,280px)}}
-      @media (prefers-reduced-motion:reduce) {.qibla-page .qibla-arrow {transition:none}}
-    </style>
-
-    <div class="qibla-compass" id="qiblaCompass" role="img" aria-label="بوصلة اتجاه القبلة السوداء والذهبية">
-      <svg class="qibla-rose" viewBox="0 0 300 300" aria-hidden="true">
-        <defs>
-          <pattern id="qiblaTicks" width="6" height="6" patternUnits="userSpaceOnUse">
-            <path d="M3 0V5" stroke="#514b40" stroke-width=".7"/>
-          </pattern>
-          <linearGradient id="qiblaGold" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#fff0a8"/><stop offset=".48" stop-color="#d7a83d"/><stop offset="1" stop-color="#8b641c"/>
-          </linearGradient>
-        </defs>
-        <circle cx="150" cy="150" r="140" fill="none" stroke="#d4a943" stroke-width="1.6"/>
-        <circle cx="150" cy="150" r="132" fill="url(#qiblaTicks)" stroke="#514b40" stroke-width="1"/>
-        <circle cx="150" cy="150" r="112" fill="#eee8d9" stroke="#6d6250" stroke-width="1.4"/>
-        <circle cx="150" cy="150" r="104" fill="none" stroke="#8f8067" stroke-width="1"/>
-        <circle cx="150" cy="150" r="84" fill="none" stroke="#b4a58a" stroke-width="1"/>
-        <g fill="#181818" stroke="url(#qiblaGold)" stroke-width="1.2" stroke-linejoin="round">
-          <path d="M150 18 L166 135 L150 150 L134 135 Z"/>
-          <path d="M150 282 L166 165 L150 150 L134 165 Z" fill="#252525"/>
-          <path d="M18 150 L135 134 L150 150 L135 166 Z" fill="#242424"/>
-          <path d="M282 150 L165 134 L150 150 L165 166 Z" fill="#242424"/>
-          <path d="M57 57 L139 139 L150 150 L139 128 Z" fill="#4a463d"/>
-          <path d="M243 57 L161 139 L150 150 L161 128 Z" fill="#4a463d"/>
-          <path d="M57 243 L139 161 L150 150 L128 161 Z" fill="#4a463d"/>
-          <path d="M243 243 L161 161 L150 150 L172 161 Z" fill="#4a463d"/>
-        </g>
-        <g fill="#171717" font-family="Georgia,serif" font-size="20" font-weight="bold" text-anchor="middle">
-          <text x="150" y="43">N</text><text x="257" y="157">E</text>
-          <text x="150" y="276">S</text><text x="43" y="157">W</text>
-        </g>
-        <circle cx="150" cy="150" r="17" fill="url(#qiblaGold)" stroke="#6e4c10" stroke-width="1.5"/>
-        <circle cx="150" cy="150" r="7" fill="#fff0a8" opacity=".8"/>
-      </svg>
-      <div class="qibla-arrow" id="qiblaArrow" aria-hidden="true">
-        <svg viewBox="0 0 100 240">
-          <path d="M50 4 L72 116 L50 139 L28 116 Z" fill="#171717" stroke="#d9b354" stroke-width="2"/>
-          <path d="M50 4 L50 139 L28 116 Z" fill="#292929"/>
-          <path d="M50 145 L69 124 L50 236 L31 124 Z" fill="#c8c6bc" stroke="#252525" stroke-width="1.5"/>
-          <path d="M50 145 L50 236 L31 124 Z" fill="#44443f"/>
-          <path d="M50 8 L50 132" stroke="#f3d77c" stroke-width="2" opacity=".85"/>
+      <div class="qibla-scene" aria-hidden="true">
+        <svg viewBox="0 0 200 200">
+          <defs><linearGradient id="qiblaMosque" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cdbf9a" stop-opacity=".55"/><stop offset="1" stop-color="#8a7a50" stop-opacity=".06"/></linearGradient></defs>
+          <g fill="url(#qiblaMosque)">
+            <path d="M10 170V118q0-14 12-14t12 14v52z"/><rect x="20" y="82" width="4" height="40"/>
+            <path d="M40 170v-30q0-24 22-24t22 24v30z"/><path d="M116 170v-30q0-24 22-24t22 24v30z"/>
+            <path d="M166 170V118q0-14 12-14t12 14v52z"/><rect x="176" y="82" width="4" height="40"/>
+          </g>
         </svg>
       </div>
-      <div class="qibla-center" id="qiblaCenter" aria-live="polite"><img id="qiblaKaaba" src="assets/icons/kaaba.svg" alt="الكعبة المشرفة" width="44" height="44" hidden><span id="qiblaCenterHint">وجّه الهاتف نحو القبلة</span></div>
+      <svg class="qibla-kaaba" id="qiblaKaaba" viewBox="0 0 120 120" aria-hidden="true">
+        <defs><linearGradient id="qiblaKaabaFace" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#343434"/><stop offset="1" stop-color="#090909"/></linearGradient></defs>
+        <polygon points="14,36 70,36 70,108 14,108" fill="url(#qiblaKaabaFace)"/>
+        <polygon points="70,36 106,30 106,102 70,108" fill="#161616"/>
+        <polygon points="14,36 50,24 106,30 70,36" fill="#3b3b3b"/>
+        <rect x="14" y="48" width="56" height="9" fill="#c9a43a"/>
+        <polygon points="70,48 106,42 106,50 70,57" fill="#a8892f"/>
+        <rect x="44" y="70" width="14" height="38" rx="2" fill="#b8932a"/>
+      </svg>
+      <div class="qibla-hub" aria-hidden="true">
+        <svg viewBox="0 0 64 64" fill="#e4c15a"><path d="M32 6c-3 4-3 7-3 9h6c0-2 0-5-3-9zM18 30c0-8 6-13 14-13s14 5 14 13v4H18zM14 34h36v4H14zM16 38h32v20H16zM6 58V28l3-6 3 6v30zM52 58V28l3-6 3 6v30z"/></svg>
+      </div>
+      <span class="qibla-fixed-mark" aria-hidden="true"></span>
     </div>
-    <p class="qibla-bearing" id="qiblaBearing">—</p>
-    <p id="qiblaHeadingValue" class="muted">اتجاه الهاتف: غير متاح</p>
-    <p id="qiblaDifference" class="muted">الفرق بين الهاتف والقبلة: غير متاح</p>
-    <p id="qiblaAlignmentStatus" class="qibla-alignment-status muted" role="status" aria-live="polite">صورة الكعبة تظهر عند اكتشاف اتجاه القبلة.</p>
-    <p id="qiblaCalibration" class="muted" role="status">المعايرة: غير مفعّلة</p>
-    <p class="muted">الزاوية محسوبة من الشمال الحقيقي، وليست بديلًا عن معايرة بوصلة الجهاز.</p>
-    <div class="button-row">
-      <button id="qiblaUseGps" class="btn primary" type="button">استخدام موقعي</button>
-      <button id="qiblaCalibrate" class="btn" type="button">تفعيل بوصلة الجهاز</button>
+
+    <p class="qibla-status" id="qiblaStatus" role="status" aria-live="polite">جارٍ حساب اتجاه القبلة من موقعك…</p>
+    <p class="qibla-hint" id="qiblaHint">اضغط تشغيل البوصلة، ثم أمسك الهاتف أفقيًا.</p>
+    <div class="qibla-readings">
+      <div><strong id="qiblaBearingValue">—</strong><span>اتجاه القبلة</span></div>
+      <div><strong id="qiblaHeadingValue">—</strong><span>اتجاه الهاتف</span></div>
+      <div><strong id="qiblaDistanceValue">—</strong><span>المسافة إلى مكة</span></div>
     </div>
-    <p id="qiblaSensorStatus" class="muted" role="status">يمكنك استخدام الاتجاه المحسوب دون منح إذن المستشعر.</p>
+    <div class="button-row qibla-actions">
+      <button class="btn primary" id="qiblaStart" type="button">تشغيل البوصلة</button>
+      <button class="btn" id="qiblaUseGps" type="button">تحديث موقعي GPS</button>
+    </div>
+    <p class="muted qibla-sensor-note" id="qiblaSensorStatus" role="status">يُستخدم موقع الرفيق الحالي؛ لن تتغير الولاية المختارة إلا بطلبك.</p>
+    <p class="muted qibla-calibration" id="qiblaCalibration">المعايرة: لم يُفعّل المستشعر بعد.</p>
   </section>
 
-  <section class="card">
+  <section class="card qibla-location-card">
     <h2>الموقع المستخدم</h2>
-    <p>الولاية: <strong data-location-name>—</strong> (<span data-location-source>—</span>)</p>
+    <p>المصدر: <strong data-location-source>—</strong></p>
+    <p>الموقع: <strong data-location-name>—</strong></p>
     <p>الإحداثيات: <span data-location-lat>—</span>، <span data-location-lng>—</span></p>
   </section>
-  <script src="./pages/qibla.js"></script>
 </section>
+
+<style>
+.qibla-page .qibla-card{overflow:hidden;text-align:center}
+.qibla-page .qibla-stage{position:relative;width:min(88vw,360px);aspect-ratio:1;margin:22px auto 18px;isolation:isolate}
+.qibla-page .qibla-ring{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,#0f3d33 0%,#0a2a2a 55%,#061a1d 100%);border:7px solid transparent;background-clip:padding-box;box-shadow:0 0 0 7px rgba(212,175,55,.85),0 0 0 9px rgba(120,90,20,.6),0 0 40px rgba(212,175,55,.25),inset 0 0 40px rgba(0,0,0,.6)}
+.qibla-page .qibla-ring:after{content:"";position:absolute;inset:9px;border-radius:50%;border:1px solid rgba(212,175,55,.35)}
+.qibla-page .qibla-dial{position:absolute;inset:0;will-change:transform;transition:transform .12s linear}
+.qibla-page .qibla-dial>svg{width:100%;height:100%;display:block}
+.qibla-page #qiblaTicks line{stroke:rgba(212,175,55,.55);stroke-width:1}
+.qibla-page #qiblaTicks line.major{stroke:rgba(212,175,55,.9);stroke-width:1.7}
+.qibla-page .qibla-cardinals{fill:#fff;font-size:15px;font-weight:700}
+.qibla-page .qibla-cardinals text:first-child{fill:#ffd76a}
+.qibla-page .qibla-target{position:absolute;inset:0;will-change:transform}
+.qibla-page .qibla-needle{position:absolute;left:50%;top:7%;width:20px;height:43%;transform:translateX(-50%);background:linear-gradient(to bottom,#fff6d0,#d4af37 55%,rgba(212,175,55,0));clip-path:polygon(50% 0,100% 100%,0 100%);filter:drop-shadow(0 0 8px rgba(255,220,120,.6))}
+.qibla-page .qibla-tip{position:absolute;left:50%;top:5.5%;width:18px;height:18px;margin-left:-9px;border-radius:50%;border:2px solid #fff3c4;background:rgba(34,197,94,.15);box-shadow:0 0 10px #d4af37}
+.qibla-page .qibla-scene{position:absolute;inset:14%;border-radius:50%;overflow:hidden;pointer-events:none}
+.qibla-page .qibla-scene svg{width:100%;height:100%}
+.qibla-page .qibla-kaaba{position:absolute;left:50%;top:50%;width:34%;transform:translate(-50%,-42%) scale(.92);opacity:.48;transition:opacity .35s,transform .35s;filter:grayscale(.4);pointer-events:none}
+.qibla-page .qibla-hub{position:absolute;left:50%;top:50%;width:17%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#123f33,#082019);border:3px solid #d4af37;display:grid;place-items:center;box-shadow:0 0 14px rgba(212,175,55,.5);pointer-events:none}
+.qibla-page .qibla-hub svg{width:62%;height:62%}
+.qibla-page .qibla-fixed-mark{position:absolute;left:50%;top:-4px;width:0;height:0;margin-left:-8px;border-left:8px solid transparent;border-right:8px solid transparent;border-top:13px solid #d4af37;filter:drop-shadow(0 2px 4px #000)}
+.qibla-page .qibla-stage.aligned .qibla-needle{filter:drop-shadow(0 0 16px #22c55e)}
+.qibla-page .qibla-stage.aligned .qibla-tip{background:#22c55e;box-shadow:0 0 18px #22c55e}
+.qibla-page .qibla-stage.aligned .qibla-kaaba{opacity:1;transform:translate(-50%,-42%) scale(1);filter:drop-shadow(0 0 22px rgba(34,197,94,.55))}
+.qibla-page .qibla-status{min-width:230px;max-width:100%;display:inline-block;text-align:center;padding:10px 18px;border-radius:16px;font-size:17px;font-weight:700;background:rgba(20,70,45,.55);border:1.5px solid rgba(34,197,94,.55);color:#d7f7e2}
+.qibla-page .qibla-status.ok{background:rgba(22,163,74,.28);border-color:#22c55e;box-shadow:0 0 20px rgba(34,197,94,.25)}
+.qibla-page .qibla-status.warn{background:rgba(120,70,10,.25);border-color:rgba(212,175,55,.7);color:#ffe9a8}
+.qibla-page .qibla-hint{margin:10px 0 0;color:var(--text-muted);font-size:14px;min-height:21px}
+.qibla-page .qibla-readings{display:flex;justify-content:space-around;gap:10px;margin:16px 0 6px;color:var(--text-muted);font-size:13px}
+.qibla-page .qibla-readings>div{flex:1;min-width:0;text-align:center}
+.qibla-page .qibla-readings strong{display:block;color:var(--gold,#d8b46a);font-size:18px;font-weight:700}
+.qibla-page .qibla-readings span{display:block}
+.qibla-page .qibla-actions{justify-content:center;flex-wrap:wrap}
+.qibla-page .qibla-sensor-note,.qibla-page .qibla-calibration{font-size:13px;margin-top:10px}
+.qibla-page .qibla-location-card{margin-top:14px}
+.qibla-page .qibla-location-card p{margin-top:6px;overflow-wrap:anywhere}
+@media(max-width:360px){.qibla-page .qibla-stage{width:min(82vw,320px)}.qibla-page .qibla-readings{gap:4px;font-size:12px}.qibla-page .qibla-readings strong{font-size:16px}}
+@media(prefers-reduced-motion:reduce){.qibla-page .qibla-dial,.qibla-page .qibla-kaaba{transition:none}}
+</style>
+<script src="./pages/qibla.js"></script>
