@@ -59,18 +59,26 @@ fs.copyFileSync(
   path.join(launcherIconDir, 'ic_launcher.png')
 );
 
-const applicationTag = xml.match(/<application\\b[^>]*>/);
-if (!applicationTag) throw new Error('Android application manifest tag not found');
-let updatedApplicationTag = applicationTag[0];
+const applicationStart = xml.indexOf('<application');
+const applicationEnd = xml.indexOf('>', applicationStart);
+if (applicationStart < 0 || applicationEnd < 0) {
+  throw new Error('Android application manifest tag not found');
+}
+let updatedApplicationTag = xml.slice(applicationStart, applicationEnd + 1);
 function setApplicationAttribute(tag, name, value) {
-  const pattern = new RegExp('\\\\b' + name + '="[^"]*"');
-  return pattern.test(tag)
-    ? tag.replace(pattern, name + '="' + value + '"')
-    : tag.replace(/>$/, ' ' + name + '="' + value + '">');
+  const attribute = name + '="';
+  const attributeStart = tag.indexOf(attribute);
+  if (attributeStart >= 0) {
+    const valueStart = attributeStart + attribute.length;
+    const valueEnd = tag.indexOf('"', valueStart);
+    if (valueEnd < 0) throw new Error('Malformed Android application attribute: ' + name);
+    return tag.slice(0, valueStart) + value + tag.slice(valueEnd);
+  }
+  return tag.replace(/>$/, ' ' + attribute + value + '">');
 }
 updatedApplicationTag = setApplicationAttribute(updatedApplicationTag, 'android:icon', '@drawable/ic_launcher');
 updatedApplicationTag = setApplicationAttribute(updatedApplicationTag, 'android:roundIcon', '@drawable/ic_launcher');
-xml = xml.replace(applicationTag[0], updatedApplicationTag);
+xml = xml.slice(0, applicationStart) + updatedApplicationTag + xml.slice(applicationEnd + 1);
 
 fs.writeFileSync(manifest, xml);
 console.log('Installed native adhan layer and gold mosque launcher icon.');
