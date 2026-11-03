@@ -121,16 +121,11 @@
     }
     if (typeof event.alpha !== 'number' || !Number.isFinite(event.alpha)) return null;
 
-    // Tilt-compensated azimuth from the device orientation matrix.
-    const beta = (Number(event.beta) || 0) * RAD;
-    const gamma = (Number(event.gamma) || 0) * RAD;
-    const alpha = event.alpha * RAD;
-    const cA = Math.cos(alpha), sA = Math.sin(alpha);
-    const cB = Math.cos(beta), sB = Math.sin(beta);
-    const cG = Math.cos(gamma), sG = Math.sin(gamma);
-    const rA = -cA * sG - sA * sB * cG;
-    const rB = -sA * sG + cA * sB * cG;
-    return normalize(Math.atan2(rA, rB) * DEG);
+    // The page is calibrated for a level phone: alpha is the Z-axis rotation.
+    // Using a tilt matrix here can collapse to atan2(0, 0) when beta/gamma are zero.
+    const screenAngle = typeof screen !== 'undefined' && screen.orientation &&
+      Number.isFinite(screen.orientation.angle) ? screen.orientation.angle : 0;
+    return normalize(360 - event.alpha + screenAngle);
   }
 
   function updateCompass() {
