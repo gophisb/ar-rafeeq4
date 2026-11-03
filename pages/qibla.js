@@ -8,6 +8,7 @@
 
   let initialized = false;
   let sensorHandler = null;
+  let sensorFallbackTimer = null;
   let locationListener = null;
   let qiblaBearing = null;
   let currentHeading = null;
@@ -164,6 +165,7 @@
     const heading = headingFromEvent(event);
     if (heading === null) return;
     sensorActive = true;
+    if (sensorFallbackTimer) { clearTimeout(sensorFallbackTimer); sensorFallbackTimer = null; }
     if (smoothedHeading === null) {
       smoothedHeading = heading;
     } else {
@@ -189,13 +191,19 @@
       const supportsAbsolute = 'ondeviceorientationabsolute' in window;
       if (supportsAbsolute) {
         window.addEventListener('deviceorientationabsolute', sensorHandler, true);
+        sensorFallbackTimer = setTimeout(() => {
+          if (!sensorActive && sensorHandler) {
+            window.removeEventListener('deviceorientationabsolute', sensorHandler, true);
+            window.addEventListener('deviceorientation', sensorHandler, true);
+            if (status) status.textContent = 'لم يصل حدث الاتجاه المطلق؛ جرى التحويل إلى مستشعر الاتجاه المتاح.';
+          }
+          sensorFallbackTimer = null;
+        }, 2500);
       } else {
         window.addEventListener('deviceorientation', sensorHandler, true);
       }
-      if (status) {
-        status.textContent = supportsAbsolute
-          ? 'تم تشغيل مستشعر الاتجاه المطلق.'
-          : 'تم تشغيل مستشعر الاتجاه المتاح؛ قد تختلف دقته حسب الجهاز.';
+      if (status && !supportsAbsolute) {
+        status.textContent = 'تم تشغيل مستشعر الاتجاه المتاح؛ قد تختلف دقته حسب الجهاز.';
       }
       const button = byId('qiblaStart');
       if (button) button.textContent = 'البوصلة تعمل';
@@ -203,7 +211,7 @@
         if (!sensorActive && status) {
           status.textContent = 'لم تصل قراءة من المستشعر. تحقق من دعم البوصلة وجرّب معايرة الهاتف.';
         }
-      }, 3000);
+      }, 3500);
     };
 
     if (typeof DeviceOrientationEvent.requestPermission === 'function') {
@@ -219,6 +227,7 @@
   }
 
   function stopSensors() {
+    if (sensorFallbackTimer) { clearTimeout(sensorFallbackTimer); sensorFallbackTimer = null; }
     if (sensorHandler) {
       window.removeEventListener('deviceorientationabsolute', sensorHandler, true);
       window.removeEventListener('deviceorientation', sensorHandler, true);
