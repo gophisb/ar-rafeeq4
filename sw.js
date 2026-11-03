@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rafeeq4-core-v19';
+const CACHE_NAME = 'rafeeq4-core-v20';
 const APP_SHELL = [
   './',
   './index.html',
