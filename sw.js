@@ -1,11 +1,12 @@
-const CACHE_NAME = 'rafeeq4-core-v20';
+const CACHE_NAME = 'rafeeq4-core-v23';
 const APP_SHELL = [
   './',
   './index.html',
-  './styles.css?v=16',
+  './styles.css?v=17',
   './variables.css',
   './config.js',
   './prayer.js',
+  './vendor/mihrab-algeria.js',
   './locations.js',
   './router.js?v=6201a31',
   './app.js',
@@ -13,7 +14,7 @@ const APP_SHELL = [
   './js/page-modules.js',
   './js/native-notifications.js',
   './pages/home.html',
-  './pages/home.js?v=two-fixes',
+  './pages/home.js?v=gregorian-date-1',
   './pages/quran.html',
   './pages/quran.js',
   './pages/quran-recitation.js',

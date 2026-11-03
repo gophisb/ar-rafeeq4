@@ -83,7 +83,24 @@
     const keyNow = dateKey(now);
     if (!dailyTimes || calculationDateKey !== keyNow) {
       try {
-        dailyTimes = PrayerEngine.calculate(now, location, PrayerEngine.DEFAULT_SETTINGS);
+        if (window.RafeeqAlgeriaPrayer && typeof window.RafeeqAlgeriaPrayer.calculate === 'function') {
+          try {
+            dailyTimes = window.RafeeqAlgeriaPrayer.calculate(now, location);
+            const distance = Number.isFinite(dailyTimes.distanceKm) ? ` (تبعد ${dailyTimes.distanceKm.toFixed(1)} كم)` : '';
+            const placeName = dailyTimes.referencePlace || 'المدينة المرجعية';
+            const certification = dailyTimes.status === 'certified'
+              ? `مطابقة الرزنامة الرسمية موثقة حتى ${dailyTimes.certifiedUntil || 'نهاية الفترة المعتمدة'}.`
+              : `تنبيه: هذا التاريخ خارج فترة المطابقة الرسمية الموثقة (${dailyTimes.certifiedFrom || 'غير محدد'} إلى ${dailyTimes.certifiedUntil || 'غير محدد'})؛ الحساب فلكي وليس شهادة مطابقة لهذا اليوم.`;
+            if (locationStatus) locationStatus.textContent = `المصدر: mihrab-methods للرزنامة الجزائرية. المدينة المرجعية: ${placeName}${distance}. ${certification}`;
+          } catch (engineError) {
+            console.error('Certified Algeria prayer engine failed; using existing local engine with a warning.', engineError);
+            dailyTimes = PrayerEngine.calculate(now, location, PrayerEngine.DEFAULT_SETTINGS);
+            if (locationStatus) locationStatus.textContent = 'تحذير: تعذر محرك المواقيت الجزائري الموثق؛ استُخدم الحساب المحلي الاحتياطي، ولم تثبت مطابقته للرزنامة الرسمية.';
+          }
+        } else {
+          dailyTimes = PrayerEngine.calculate(now, location, PrayerEngine.DEFAULT_SETTINGS);
+          if (locationStatus) locationStatus.textContent = 'تحذير: حزمة المواقيت الجزائرية غير متاحة؛ استُخدم الحساب المحلي الاحتياطي غير الموثق.';
+        }
         calculationDateKey = keyNow;
         renderTimes();
         if (window.RafeeqNativeNotifications) {

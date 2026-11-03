@@ -51,6 +51,14 @@
     }
   }
 
+  function formatGregorian(date) {
+    try {
+      return new Intl.DateTimeFormat('ar-DZ-u-ca-gregory', { day: 'numeric', month: 'long', year: 'numeric' }).format(date);
+    } catch (_) {
+      return new Intl.DateTimeFormat('ar-DZ', { day: '2-digit', month: '2-digit', year: 'numeric' }).format(date);
+    }
+  }
+
   function resolveLocation() {
     if (window.LocationManager) {
       const current = LocationManager.getCurrent() || LocationManager.init();
@@ -159,6 +167,7 @@
   function render(now) {
     setText('home-current-time', formatClock(now));
     setText('home-hijri-date', formatHijri(now));
+    setText('home-gregorian-date', formatGregorian(now));
     const times = calculate(now);
     updateRamadan(now, times);
     if (!times || !window.PrayerEngine) {
@@ -265,6 +274,7 @@
     else {
       setText('home-current-time', formatClock(new Date()));
       setText('home-hijri-date', formatHijri(new Date()));
+      setText('home-gregorian-date', formatGregorian(new Date()));
       setText('home-next-prayer', 'محرك الصلاة غير متاح');
     }
   }
