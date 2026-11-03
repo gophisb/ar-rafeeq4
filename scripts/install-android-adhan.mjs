@@ -51,5 +51,26 @@ for (const permission of permissions) {
 }
 const components = `\\n        <receiver android:name=".RafeeqAdhanReceiver" android:exported="false" />\\n        <receiver android:name=".RafeeqAdhanBootReceiver" android:enabled="true" android:exported="false">\\n            <intent-filter>\\n                <action android:name="android.intent.action.BOOT_COMPLETED" />\\n                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />\\n                <action android:name="android.intent.action.TIME_SET" />\\n                <action android:name="android.intent.action.TIMEZONE_CHANGED" />\\n            </intent-filter>\\n        </receiver>\\n        <service android:name=".RafeeqAdhanService" android:exported="false" android:foregroundServiceType="mediaPlayback" />\\n`;
 if (!xml.includes('android:name=".RafeeqAdhanService"')) xml = xml.replace('</application>', components + '    </application>');
+// Restore the repository's gold mosque launcher icon for the native Android app.
+const launcherIconDir = path.join(pkg, 'res', 'drawable-nodpi');
+fs.mkdirSync(launcherIconDir, { recursive: true });
+fs.copyFileSync(
+  path.join(root, 'assets', 'icons', 'icon-512.png'),
+  path.join(launcherIconDir, 'ic_launcher.png')
+);
+
+const applicationTag = xml.match(/<application\\b[^>]*>/);
+if (!applicationTag) throw new Error('Android application manifest tag not found');
+let updatedApplicationTag = applicationTag[0];
+function setApplicationAttribute(tag, name, value) {
+  const pattern = new RegExp('\\\\b' + name + '="[^"]*"');
+  return pattern.test(tag)
+    ? tag.replace(pattern, name + '="' + value + '"')
+    : tag.replace(/>$/, ' ' + name + '="' + value + '">');
+}
+updatedApplicationTag = setApplicationAttribute(updatedApplicationTag, 'android:icon', '@drawable/ic_launcher');
+updatedApplicationTag = setApplicationAttribute(updatedApplicationTag, 'android:roundIcon', '@drawable/ic_launcher');
+xml = xml.replace(applicationTag[0], updatedApplicationTag);
+
 fs.writeFileSync(manifest, xml);
-console.log('Installed native locked-screen adhan layer.');
+console.log('Installed native adhan layer and gold mosque launcher icon.');
