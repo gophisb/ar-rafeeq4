@@ -28,7 +28,7 @@ else
   printf '  – bandit not applicable\n'
 fi
 
-if find . -path './.git' -prune -o -type f \\( -name '*.js' -o -name '*.ts' -o -name '*.py' -o -name '*.go' \\) -print -quit | grep -q .; then
+if find . -path './.git' -prune -o -type f \( -name '*.js' -o -name '*.ts' -o -name '*.py' -o -name '*.go' \) -print -quit | grep -q .; then
   if command -v semgrep >/dev/null 2>&1; then
     # Keep findings visible in CI logs; --quiet previously hid the evidence needed to triage failures.
     semgrep --config=p/security-audit --error . || fail "SEMGREP" "semgrep reported security findings"
