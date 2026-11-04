@@ -8,6 +8,7 @@ on:
       - feat/algeria-certified-prayer-times
       - feat/qibla-only-integration
       - fix/adhan-resume-after-exact-alarm
+      - style/qibla-rafeeq-palette
 
 permissions:
   contents: read
