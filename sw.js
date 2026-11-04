@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rafeeq4-core-v23';
+const CACHE_NAME = 'rafeeq4-core-v25';
 const APP_SHELL = [
   './',
   './index.html',
@@ -32,6 +32,7 @@ const APP_SHELL = [
   './pages/prayer.js',
   './pages/qibla.html',
   './pages/qibla.js',
+  './js/qibla-compass.js',
   './pages/settings.html',
   './pages/settings.js',
   './manifest.json',

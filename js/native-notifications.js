@@ -7,6 +7,9 @@
   const PRAYER_NAMES = { fajr:'الفجر', sunrise:'الشروق', dhuhr:'الظهر', asr:'العصر', maghrib:'المغرب', isha:'العشاء' };
   const PRAYER_KEYS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
   let lastSignature = '';
+  let lastScheduleContext = null;
+  let resumeTimer = null;
+  let lastResumeAt = 0;
 
   function nativePlugin() {
     const c = window.Capacitor;
@@ -101,6 +104,7 @@
       return { native: true, scheduled: 0, disabled: true };
     }
 
+    lastScheduleContext = { location, todayTimes };
     const signature = JSON.stringify({
       source: location && location.source,
       code: location && location.code,
@@ -165,6 +169,36 @@
     return result.permission || { display: result.granted ? 'granted' : 'denied' };
   }
 
+  async function refreshAfterNativeResume() {
+    if (!enabled() || !lastScheduleContext) return;
+    const now = Date.now();
+    if (now - lastResumeAt < 1500) return;
+    lastResumeAt = now;
+
+    const playback = adhanPlaybackPlugin();
+    if (playback && typeof playback.canScheduleExactAlarms === 'function') {
+      try {
+        const permission = await playback.canScheduleExactAlarms();
+        // Do not reopen Android settings in a loop. Retry only after permission is granted.
+        if (!permission || !permission.allowed) return;
+      } catch (error) {
+        console.warn('تعذر إعادة فحص إذن الأذان بعد استئناف التطبيق.', error);
+        return;
+      }
+    }
+
+    const context = lastScheduleContext;
+    await schedule(context.location, context.todayTimes, true);
+  }
+
+  function queueResumeRefresh() {
+    if (document.visibilityState === 'hidden') return;
+    window.clearTimeout(resumeTimer);
+    resumeTimer = window.setTimeout(() => {
+      refreshAfterNativeResume().catch(error => console.warn('Native adhan resume scheduling failed', error));
+    }, 400);
+  }
+
   async function refreshFromApp() {
     lastSignature = '';
     const location = window.LocationManager && window.LocationManager.getCurrent ? window.LocationManager.getCurrent() : null;
@@ -172,6 +206,11 @@
     const times = window.PrayerEngine.calculate(new Date(), location, window.PrayerEngine.DEFAULT_SETTINGS);
     return schedule(location, times, true);
   }
+
+  // Android returns to the WebView after the exact-alarm settings screen.
+  // Re-check permission and restore the seven-day alarm queue on resume/focus.
+  document.addEventListener('visibilitychange', queueResumeRefresh);
+  window.addEventListener('focus', queueResumeRefresh);
 
   document.addEventListener('rafeeq:adhanChanged', () => refreshFromApp().catch(error => console.warn('Native adhan refresh failed', error)));
   document.addEventListener('rafeeq:locationChanged', () => refreshFromApp().catch(error => console.warn('Native location refresh failed', error)));
