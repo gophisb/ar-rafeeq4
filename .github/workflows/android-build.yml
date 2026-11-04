@@ -6,6 +6,7 @@ on:
     branches:
       - offline-apk-safe
       - feat/algeria-certified-prayer-times
+      - feat/qibla-only-integration
 
 permissions:
   contents: read
