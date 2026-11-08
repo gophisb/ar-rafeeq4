@@ -6,6 +6,7 @@ on:
     branches:
       - offline-apk-safe
       - feat/algeria-certified-prayer-times
+      - feat/qibla-user-compass-model
 
 permissions:
   contents: read

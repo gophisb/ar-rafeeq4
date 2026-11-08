@@ -2,172 +2,274 @@
   'use strict';
 
   const KAABA = { lat: 21.422487, lng: 39.826206 };
-  const ALIGNMENT_TOLERANCE = 8;
-  const REQUIRED_STABLE_READINGS = 3;
+  const RAD = Math.PI / 180;
+  const DEG = 180 / Math.PI;
+  const ALIGN_TOLERANCE = 5;
+
+  const $ = id => document.getElementById(id);
+  let qibla = null;
+  let heading = null;
+  let smooth = null;
+  let wasAligned = false;
+  let sensorOn = false;
   let sensorHandler = null;
   let sensorEventName = null;
-  let initialized = false;
-  let qiblaBearing = null;
-  let aligned = false;
-  let stableReadings = 0;
-  let lastHeading = null;
+  const sensorEventNames = ['deviceorientationabsolute', 'deviceorientation'];
   let locationListener = null;
+  let initialized = false;
+  let sensorTimeout = null;
 
-  function normalize(degrees) { return (Number(degrees) + 360) % 360; }
-  function signedAngle(degrees) {
-    const value = normalize(degrees);
-    return value > 180 ? value - 360 : value;
+  function normalize(value) { return ((value % 360) + 360) % 360; }
+  function angularDifference(target, current) { return ((target - current + 540) % 360) - 180; }
+
+  function qiblaBearing(lat, lng) {
+    const phi1 = lat * RAD;
+    const phi2 = KAABA.lat * RAD;
+    const deltaLambda = (KAABA.lng - lng) * RAD;
+    const y = Math.sin(deltaLambda) * Math.cos(phi2);
+    const x = Math.cos(phi1) * Math.sin(phi2) -
+      Math.sin(phi1) * Math.cos(phi2) * Math.cos(deltaLambda);
+    return normalize(Math.atan2(y, x) * DEG);
   }
-  function angularDistance(a, b) {
-    const difference = Math.abs(normalize(a) - normalize(b));
-    return Math.min(difference, 360 - difference);
+
+  function distanceKm(lat, lng) {
+    const radius = 6371;
+    const phi1 = lat * RAD;
+    const phi2 = KAABA.lat * RAD;
+    const deltaPhi = phi2 - phi1;
+    const deltaLambda = (KAABA.lng - lng) * RAD;
+    const a = Math.sin(deltaPhi / 2) ** 2 +
+      Math.cos(phi1) * Math.cos(phi2) * Math.sin(deltaLambda / 2) ** 2;
+    return 2 * radius * Math.asin(Math.sqrt(a));
   }
-  function bearingFrom(location) {
-    const lat1 = Number(location.lat) * Math.PI / 180;
-    const lat2 = KAABA.lat * Math.PI / 180;
-    const deltaLng = (KAABA.lng - Number(location.lng)) * Math.PI / 180;
-    const y = Math.sin(deltaLng) * Math.cos(lat2);
-    const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(deltaLng);
-    return normalize(Math.atan2(y, x) * 180 / Math.PI);
+
+  function setStatus(message, type = '') {
+    const node = $('rqStatus');
+    if (!node) return;
+    node.textContent = message;
+    node.className = 'rq-pill' + (type ? ' ' + type : '');
   }
-  function setText(id, value) {
-    const node = document.getElementById(id);
-    if (node) node.textContent = value;
-  }
-  function setAlignmentState(isAligned, announce = true) {
-    const compass = document.getElementById('qiblaCompass');
-    const kaaba = document.getElementById('qiblaKaaba');
-    const hint = document.getElementById('qiblaCenterHint');
-    const alignmentStatus = document.getElementById('qiblaAlignmentStatus');
-    if (compass) compass.classList.toggle('is-aligned', isAligned);
-    if (kaaba) kaaba.hidden = !isAligned;
-    if (hint) hint.hidden = isAligned;
-    if (alignmentStatus) {
-      alignmentStatus.classList.toggle('is-aligned', isAligned);
-      alignmentStatus.textContent = isAligned
-        ? 'تم اكتشاف اتجاه القبلة — الكعبة أمامك.'
-        : 'صورة الكعبة تظهر عند اكتشاف اتجاه القبلة.';
+
+  function buildDial() {
+    const svg = $('rqDialSvg');
+    if (!svg || svg.childElementCount) return;
+    const labels = { 0: 'N', 90: 'E', 180: 'S', 270: 'W' };
+    let markup = '';
+    for (let angle = 0; angle < 360; angle += 5) {
+      const major = angle % 30 === 0;
+      const cardinal = angle % 90 === 0;
+      const r1 = 176;
+      const r2 = cardinal ? 160 : major ? 164 : 169;
+      const x1 = Math.sin(angle * RAD) * r1;
+      const y1 = -Math.cos(angle * RAD) * r1;
+      const x2 = Math.sin(angle * RAD) * r2;
+      const y2 = -Math.cos(angle * RAD) * r2;
+      markup += '<line x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) +
+        '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) +
+        '" stroke="rgba(212,175,55,' + (major ? '.8' : '.4') +
+        ')" stroke-width="' + (major ? '1.6' : '1') + '"/>';
     }
-    if (isAligned && !aligned && announce) {
-      if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
-        try { navigator.vibrate([120, 80, 220]); } catch (_) {}
-      }
-      setText('qiblaStatus', 'تم اكتشاف اتجاه القبلة.');
+    for (let angle = 0; angle < 360; angle += 30) {
+      const radius = 144;
+      const x = Math.sin(angle * RAD) * radius;
+      const y = -Math.cos(angle * RAD) * radius;
+      const cls = angle === 0 ? 'rq-tick-label cardinal north' :
+        (angle % 90 === 0 ? 'rq-tick-label cardinal' : 'rq-tick-label');
+      const label = labels[angle] || String(angle);
+      markup += '<text class="' + cls + '" x="' + x.toFixed(1) + '" y="' +
+        y.toFixed(1) + '" text-anchor="middle" dominant-baseline="central" transform="rotate(' +
+        angle + ' ' + x.toFixed(1) + ' ' + y.toFixed(1) + ')">' + label + '</text>';
     }
-    aligned = isAligned;
+    markup += '<line x1="0" y1="-135" x2="0" y2="135" stroke="rgba(255,255,255,.07)"/>' +
+      '<line x1="-135" y1="0" x2="135" y2="0" stroke="rgba(255,255,255,.07)"/>';
+    svg.innerHTML = markup;
   }
-  function updateLocationUI(location) {
-    if (!location) return;
-    document.querySelectorAll('[data-location-name]').forEach(node => { node.textContent = location.name || '—'; });
-    document.querySelectorAll('[data-location-source]').forEach(node => { node.textContent = location.source === 'gps' ? 'GPS' : 'الولاية'; });
-    document.querySelectorAll('[data-location-lat]').forEach(node => { node.textContent = Number(location.lat).toFixed(4); });
-    document.querySelectorAll('[data-location-lng]').forEach(node => { node.textContent = Number(location.lng).toFixed(4); });
-  }
-  function render(location) {
-    if (!location) {
-      setText('qiblaStatus', 'تعذر تحديد الموقع المحلي. اختر ولاية من الإعدادات.');
+
+  function updateLocation(location) {
+    if (!location || !Number.isFinite(Number(location.lat)) || !Number.isFinite(Number(location.lng))) {
+      qibla = null;
+      setStatus('تعذر قراءة موقع الرفيق الحالي', 'warn');
       return;
     }
-    qiblaBearing = bearingFrom(location);
-    stableReadings = 0;
-    lastHeading = null;
-    setAlignmentState(false, false);
-    setText('qiblaStatus', `الموقع: ${location.name || 'الموقع المحفوظ'} — الاتجاه محسوب محليًا`);
-    setText('qiblaBearing', `${Math.round(qiblaBearing)}° من الشمال الحقيقي`);
-    updateLocationUI(location);
-    const arrow = document.getElementById('qiblaArrow');
-    if (arrow) arrow.style.transform = 'translate(-50%, -50%) rotate(0deg)';
+    const lat = Number(location.lat);
+    const lng = Number(location.lng);
+    if (Math.abs(lat) > 90 || Math.abs(lng) > 180) {
+      qibla = null;
+      setStatus('إحداثيات الموقع غير صالحة', 'warn');
+      return;
+    }
+    qibla = qiblaBearing(lat, lng);
+    $('rqQibla').textContent = Math.round(qibla) + '°';
+    $('rqDistance').textContent = Math.round(distanceKm(lat, lng)).toLocaleString('ar-DZ') + ' كم';
+    $('rqLocation').textContent = 'الموقع المستخدم: ' + (location.name || 'الموقع المحفوظ') +
+      ' — ' + (location.source === 'gps' ? 'GPS' : 'الولاية');
+    $('rqSub').textContent = 'اتجاه القبلة محسوب من موقع الرفيق الحالي';
+    wasAligned = false;
+    $('rqStage').classList.remove('is-aligned');
+    render();
   }
+
+  function screenAngle() {
+    const angle = window.screen && window.screen.orientation &&
+      Number.isFinite(window.screen.orientation.angle)
+      ? window.screen.orientation.angle
+      : (Number.isFinite(window.orientation) ? window.orientation : 0);
+    return normalize(angle);
+  }
+
   function headingFromEvent(event) {
-    let heading = null;
     if (typeof event.webkitCompassHeading === 'number' && Number.isFinite(event.webkitCompassHeading)) {
-      heading = event.webkitCompassHeading;
-    } else if (typeof event.alpha === 'number' && Number.isFinite(event.alpha)) {
-      heading = 360 - event.alpha;
+      return normalize(event.webkitCompassHeading);
     }
-    if (heading === null) return null;
-    const orientation = typeof screen !== 'undefined' && screen.orientation && Number.isFinite(screen.orientation.angle)
-      ? screen.orientation.angle : 0;
-    return normalize(heading + orientation);
+    if (event.alpha == null || event.beta == null || event.gamma == null) return null;
+
+    const beta = event.beta * RAD;
+    const gamma = event.gamma * RAD;
+    const alpha = event.alpha * RAD;
+    if (Math.abs(beta) < 1e-6 && Math.abs(gamma) < 1e-6) return null;
+    const cosA = Math.cos(alpha), sinA = Math.sin(alpha);
+    const sinB = Math.sin(beta), cosG = Math.cos(gamma), sinG = Math.sin(gamma);
+    const rA = -cosA * sinG - sinA * sinB * cosG;
+    const rB = -sinA * sinG + cosA * sinB * cosG;
+    // W3C absolute-orientation heading, adjusted from natural to current screen orientation.
+    return normalize(Math.atan2(rA, rB) * DEG + screenAngle());
   }
-  function updateHeading(heading) {
-    if (heading === null || qiblaBearing === null) return;
-    lastHeading = heading;
-    const signedDifference = signedAngle(qiblaBearing - heading);
-    const distance = Math.abs(signedDifference);
-    setText('qiblaHeadingValue', `اتجاه الهاتف: ${Math.round(heading)}° من الشمال`);
-    setText('qiblaDifference', `الفرق بين الهاتف والقبلة: ${Math.round(distance)}°`);
-    setText('qiblaCalibration', 'المعايرة: مستشعر الاتجاه يعمل');
-    const arrow = document.getElementById('qiblaArrow');
-    if (arrow) arrow.style.transform = `translate(-50%, -50%) rotate(${signedDifference}deg)`;
-    if (distance <= ALIGNMENT_TOLERANCE) {
-      stableReadings += 1;
-      if (stableReadings >= REQUIRED_STABLE_READINGS) setAlignmentState(true);
+
+  function onOrientation(event) {
+    // Relative orientation has no geographic north reference and cannot drive a Qibla compass.
+    if (event.type === 'deviceorientation' && event.absolute !== true &&
+        !(typeof event.webkitCompassHeading === 'number' && Number.isFinite(event.webkitCompassHeading))) return;
+    if (event.type === 'deviceorientationabsolute' && event.absolute === false) return;
+    const value = headingFromEvent(event);
+    if (value == null || !Number.isFinite(value)) return;
+    sensorOn = true;
+    if (sensorTimeout !== null) { window.clearTimeout(sensorTimeout); sensorTimeout = null; }
+    if (smooth == null) smooth = value;
+    else {
+      const delta = ((value - (smooth % 360) + 540) % 360) - 180;
+      smooth += delta * 0.18;
+    }
+    heading = normalize(smooth);
+    render();
+  }
+
+  function render() {
+    if (qibla == null) return;
+    if (heading == null) {
+      setStatus('اضغط «تشغيل البوصلة» ثم أمسك الهاتف أفقيًا');
+      return;
+    }
+    $('rqDial').style.transform = 'rotate(' + (-heading) + 'deg)';
+    const relativeQibla = normalize(qibla - heading);
+    $('rqTarget').style.transform = 'rotate(' + relativeQibla + 'deg)';
+    $('rqHeading').textContent = Math.round(heading) + '°';
+    const difference = angularDifference(qibla, heading);
+    const aligned = Math.abs(difference) < ALIGN_TOLERANCE;
+    $('rqStage').classList.toggle('is-aligned', aligned);
+    if (aligned) {
+      setStatus('أنت الآن في اتجاه القبلة ✓', 'ok');
+      $('rqSub').textContent = 'اتجاه القبلة صحيح';
+      $('rqHint').textContent = 'ثبّت الهاتف للحظة';
+      if (!wasAligned && typeof navigator.vibrate === 'function') {
+        try { navigator.vibrate([200, 100, 200]); } catch (_) {}
+      }
     } else {
-      stableReadings = 0;
-      if (aligned) setAlignmentState(false);
+      const side = difference > 0 ? 'يمينًا' : 'يسارًا';
+      setStatus('أدر الهاتف ' + side + ' ' + Math.abs(Math.round(difference)) + '°');
+      $('rqSub').textContent = 'اقترب من الاتجاه الصحيح';
+      $('rqHint').textContent = 'عند المحاذاة: توهج البوصلة • تظهر الكعبة • يهتز الهاتف';
     }
+    wasAligned = aligned;
   }
-  function startSensor() {
-    const status = document.getElementById('qiblaSensorStatus');
-    const start = () => {
-      if (sensorHandler) return;
-      sensorEventName = ('ondeviceorientationabsolute' in window) ? 'deviceorientationabsolute' : 'deviceorientation';
-      sensorHandler = event => updateHeading(headingFromEvent(event));
-      window.addEventListener(sensorEventName, sensorHandler, true);
-      setText('qiblaCalibration', 'المعايرة: حرّك الهاتف على شكل رقم 8 إذا كان الاتجاه غير مستقر.');
-      if (status) status.textContent = 'تم تفعيل مستشعر الاتجاه؛ حرّك الهاتف حتى يتجه السهم إلى القبلة.';
-    };
+
+  async function startSensors() {
+    if (sensorHandler) return;
     try {
       if (typeof DeviceOrientationEvent === 'undefined') {
-        if (status) status.textContent = 'هذا الجهاز لا يدعم مستشعر الاتجاه؛ الزاوية المحسوبة ما زالت متاحة.';
+        setStatus('هذا الجهاز لا يوفّر مستشعر اتجاه البوصلة', 'warn');
+        $('rqSensorNote').textContent = 'يمكن عرض اتجاه القبلة المحسوب، لكن يلزم مستشعر اتجاه لقياس اتجاه الهاتف.';
         return;
       }
       if (typeof DeviceOrientationEvent.requestPermission === 'function') {
-        DeviceOrientationEvent.requestPermission().then(result => {
-          if (result === 'granted') start();
-          else if (status) status.textContent = 'لم يُمنح إذن المستشعر؛ الزاوية المحسوبة ما زالت متاحة.';
-        }).catch(() => { if (status) status.textContent = 'تعذر طلب إذن المستشعر؛ الزاوية المحسوبة ما زالت متاحة.'; });
-      } else {
-        start();
+        const permission = await DeviceOrientationEvent.requestPermission();
+        if (permission !== 'granted') {
+          setStatus('لم يُمنح إذن مستشعر الاتجاه', 'warn');
+          return;
+        }
       }
+      sensorEventName = 'deviceorientationabsolute';
+      sensorHandler = onOrientation;
+      sensorEventNames.forEach(name => window.addEventListener(name, sensorHandler, true));
+      $('rqStart').disabled = true;
+      $('rqStart').textContent = 'البوصلة تعمل';
+      $('rqSensorNote').textContent = 'المستشعر يعمل. أمسك الهاتف أفقيًا وحرّكه ببطء نحو القبلة.';
+      sensorTimeout = window.setTimeout(() => {
+        sensorTimeout = null;
+        if (!sensorOn && sensorHandler) {
+          sensorEventNames.forEach(name => window.removeEventListener(name, sensorHandler, true));
+          sensorHandler = null;
+          sensorEventName = null;
+          setStatus('لم تصل قراءة من مستشعر الاتجاه', 'warn');
+          $('rqSensorNote').textContent = 'تحقق من دعم الجهاز للمستشعر ومن أذوناته.';
+          $('rqStart').disabled = false;
+          $('rqStart').textContent = 'إعادة تشغيل البوصلة';
+        }
+      }, 3000);
     } catch (_) {
-      if (status) status.textContent = 'تعذر تشغيل المستشعر؛ الزاوية المحسوبة ما زالت متاحة.';
+      setStatus('تعذر تشغيل مستشعر الاتجاه', 'warn');
+      $('rqSensorNote').textContent = 'قد يمنع المتصفح أو نظام الجهاز تشغيل المستشعر.';
     }
   }
-  function stopSensor() {
-    if (sensorHandler) {
-      if (sensorEventName) window.removeEventListener(sensorEventName, sensorHandler, true);
-      sensorHandler = null;
-      sensorEventName = null;
+
+  function requestGps() {
+    if (typeof LocationManager === 'undefined') {
+      setStatus('مدير الموقع في الرفيق غير متاح', 'warn');
+      return;
     }
+    setStatus('جاري تحديث الموقع عبر GPS…');
+    LocationManager.requestGPS().then(updateLocation).catch(() => {
+      setStatus('تعذر تحديث GPS؛ بقي موقع الرفيق المحفوظ', 'warn');
+      updateLocation(LocationManager.getCurrent());
+    });
+  }
+
+  function stop() {
+    if (sensorTimeout !== null) { window.clearTimeout(sensorTimeout); sensorTimeout = null; }
+    if (sensorHandler && sensorEventName) {
+      sensorEventNames.forEach(name => window.removeEventListener(name, sensorHandler, true));
+    }
+    sensorHandler = null;
+    sensorEventName = null;
     if (locationListener) {
       document.removeEventListener('rafeeq:locationChanged', locationListener);
       locationListener = null;
     }
-    aligned = false;
-    lastHeading = null;
+    sensorOn = false;
+    heading = null;
+    smooth = null;
+    wasAligned = false;
   }
+
   function initialize() {
     if (initialized) return;
     initialized = true;
-    const location = typeof LocationManager !== 'undefined' ? (LocationManager.getCurrent() || LocationManager.init()) : null;
-    render(location);
-    const gps = document.getElementById('qiblaUseGps');
-    const calibrate = document.getElementById('qiblaCalibrate');
-    if (gps) gps.onclick = () => {
-      setText('qiblaStatus', 'جاري طلب الموقع...');
-      LocationManager.requestGPS().then(render).catch(() => {
-        setText('qiblaStatus', 'تعذر الوصول إلى GPS؛ استُخدم الموقع المحفوظ محليًا.');
-        render(LocationManager.getCurrent());
-      });
-    };
-    if (calibrate) calibrate.onclick = startSensor;
-    locationListener = event => render(event.detail);
-    document.addEventListener('rafeeq:locationChanged', locationListener);
+    buildDial();
+    if (typeof LocationManager === 'undefined') {
+      setStatus('مدير الموقع في الرفيق غير متاح', 'warn');
+    } else {
+      updateLocation(LocationManager.getCurrent() || LocationManager.init());
+      locationListener = event => updateLocation(event.detail);
+      document.addEventListener('rafeeq:locationChanged', locationListener);
+    }
+    $('rqStart').addEventListener('click', startSensors);
+    $('rqGps').addEventListener('click', requestGps);
   }
+
   window.RafeeqPages = window.RafeeqPages || {};
   window.RafeeqPages.qibla = initialize;
-  window.RafeeqPages['qibla:destroy'] = () => { stopSensor(); initialized = false; };
+  window.RafeeqPages['qibla:destroy'] = () => {
+    stop();
+    initialized = false;
+  };
   initialize();
 })();
