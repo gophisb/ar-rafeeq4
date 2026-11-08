@@ -16,6 +16,7 @@
   let sensorEventName = null;
   let locationListener = null;
   let initialized = false;
+  let sensorTimeout = null;
 
   function normalize(value) { return ((value % 360) + 360) % 360; }
   function angularDifference(target, current) { return ((target - current + 540) % 360) - 180; }
@@ -132,6 +133,7 @@
     const value = headingFromEvent(event);
     if (value == null || !Number.isFinite(value)) return;
     sensorOn = true;
+    if (sensorTimeout !== null) { window.clearTimeout(sensorTimeout); sensorTimeout = null; }
     if (smooth == null) smooth = value;
     else {
       const delta = ((value - (smooth % 360) + 540) % 360) - 180;
@@ -190,8 +192,12 @@
       $('rqStart').disabled = true;
       $('rqStart').textContent = 'البوصلة تعمل';
       $('rqSensorNote').textContent = 'المستشعر يعمل. أمسك الهاتف أفقيًا وحرّكه ببطء نحو القبلة.';
-      window.setTimeout(() => {
+      sensorTimeout = window.setTimeout(() => {
+        sensorTimeout = null;
         if (!sensorOn && sensorHandler) {
+          window.removeEventListener(sensorEventName, sensorHandler, true);
+          sensorHandler = null;
+          sensorEventName = null;
           setStatus('لم تصل قراءة من مستشعر الاتجاه', 'warn');
           $('rqSensorNote').textContent = 'تحقق من دعم الجهاز للمستشعر ومن أذوناته.';
           $('rqStart').disabled = false;
@@ -217,6 +223,7 @@
   }
 
   function stop() {
+    if (sensorTimeout !== null) { window.clearTimeout(sensorTimeout); sensorTimeout = null; }
     if (sensorHandler && sensorEventName) {
       window.removeEventListener(sensorEventName, sensorHandler, true);
     }
