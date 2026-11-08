@@ -14,6 +14,7 @@
   let sensorOn = false;
   let sensorHandler = null;
   let sensorEventName = null;
+  const sensorEventNames = ['deviceorientationabsolute', 'deviceorientation'];
   let locationListener = null;
   let initialized = false;
   let sensorTimeout = null;
@@ -102,34 +103,43 @@
     $('rqDistance').textContent = Math.round(distanceKm(lat, lng)).toLocaleString('ar-DZ') + ' كم';
     $('rqLocation').textContent = 'الموقع المستخدم: ' + (location.name || 'الموقع المحفوظ') +
       ' — ' + (location.source === 'gps' ? 'GPS' : 'الولاية');
-    $('rqTarget').style.transform = 'rotate(' + qibla + 'deg)';
     $('rqSub').textContent = 'اتجاه القبلة محسوب من موقع الرفيق الحالي';
     wasAligned = false;
     $('rqStage').classList.remove('is-aligned');
     render();
   }
 
+  function screenAngle() {
+    const angle = window.screen && window.screen.orientation &&
+      Number.isFinite(window.screen.orientation.angle)
+      ? window.screen.orientation.angle
+      : (Number.isFinite(window.orientation) ? window.orientation : 0);
+    return normalize(angle);
+  }
+
   function headingFromEvent(event) {
     if (typeof event.webkitCompassHeading === 'number' && Number.isFinite(event.webkitCompassHeading)) {
       return normalize(event.webkitCompassHeading);
     }
-    if (event.alpha == null) return null;
+    if (event.alpha == null || event.beta == null || event.gamma == null) return null;
 
-    const beta = (event.beta || 0) * RAD;
-    const gamma = (event.gamma || 0) * RAD;
+    const beta = event.beta * RAD;
+    const gamma = event.gamma * RAD;
     const alpha = event.alpha * RAD;
+    if (Math.abs(beta) < 1e-6 && Math.abs(gamma) < 1e-6) return null;
     const cosA = Math.cos(alpha), sinA = Math.sin(alpha);
-    const cosB = Math.cos(beta), sinB = Math.sin(beta);
-    const cosG = Math.cos(gamma), sinG = Math.sin(gamma);
+    const sinB = Math.sin(beta), cosG = Math.cos(gamma), sinG = Math.sin(gamma);
     const rA = -cosA * sinG - sinA * sinB * cosG;
     const rB = -sinA * sinG + cosA * sinB * cosG;
-    return normalize(Math.atan2(rA, rB) * DEG);
+    // W3C absolute-orientation heading, adjusted from natural to current screen orientation.
+    return normalize(Math.atan2(rA, rB) * DEG + screenAngle());
   }
 
   function onOrientation(event) {
-    if (event.type === 'deviceorientation' &&
-        ('ondeviceorientationabsolute' in window) &&
-        !event.webkitCompassHeading) return;
+    // Relative orientation has no geographic north reference and cannot drive a Qibla compass.
+    if (event.type === 'deviceorientation' && event.absolute !== true &&
+        !(typeof event.webkitCompassHeading === 'number' && Number.isFinite(event.webkitCompassHeading))) return;
+    if (event.type === 'deviceorientationabsolute' && event.absolute === false) return;
     const value = headingFromEvent(event);
     if (value == null || !Number.isFinite(value)) return;
     sensorOn = true;
@@ -149,7 +159,9 @@
       setStatus('اضغط «تشغيل البوصلة» ثم أمسك الهاتف أفقيًا');
       return;
     }
-    $('rqDial').style.transform = 'rotate(' + (-smooth) + 'deg)';
+    $('rqDial').style.transform = 'rotate(' + (-heading) + 'deg)';
+    const relativeQibla = normalize(qibla - heading);
+    $('rqTarget').style.transform = 'rotate(' + relativeQibla + 'deg)';
     $('rqHeading').textContent = Math.round(heading) + '°';
     const difference = angularDifference(qibla, heading);
     const aligned = Math.abs(difference) < ALIGN_TOLERANCE;
@@ -185,17 +197,16 @@
           return;
         }
       }
-      sensorEventName = ('ondeviceorientationabsolute' in window)
-        ? 'deviceorientationabsolute' : 'deviceorientation';
+      sensorEventName = 'deviceorientationabsolute';
       sensorHandler = onOrientation;
-      window.addEventListener(sensorEventName, sensorHandler, true);
+      sensorEventNames.forEach(name => window.addEventListener(name, sensorHandler, true));
       $('rqStart').disabled = true;
       $('rqStart').textContent = 'البوصلة تعمل';
       $('rqSensorNote').textContent = 'المستشعر يعمل. أمسك الهاتف أفقيًا وحرّكه ببطء نحو القبلة.';
       sensorTimeout = window.setTimeout(() => {
         sensorTimeout = null;
         if (!sensorOn && sensorHandler) {
-          window.removeEventListener(sensorEventName, sensorHandler, true);
+          sensorEventNames.forEach(name => window.removeEventListener(name, sensorHandler, true));
           sensorHandler = null;
           sensorEventName = null;
           setStatus('لم تصل قراءة من مستشعر الاتجاه', 'warn');
@@ -225,7 +236,7 @@
   function stop() {
     if (sensorTimeout !== null) { window.clearTimeout(sensorTimeout); sensorTimeout = null; }
     if (sensorHandler && sensorEventName) {
-      window.removeEventListener(sensorEventName, sensorHandler, true);
+      sensorEventNames.forEach(name => window.removeEventListener(name, sensorHandler, true));
     }
     sensorHandler = null;
     sensorEventName = null;
