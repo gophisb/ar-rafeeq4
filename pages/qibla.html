@@ -1,40 +1,75 @@
 <section class="page qibla-page">
-  <header class="hero">
-    <h1>القبلة</h1>
-    <p>اعرف اتجاه القبلة من موقعك الحالي.</p>
-  </header>
+  <style>
+    .rq-wrap{--rq-gold:#d4af37;--rq-green:#16a34a;--rq-green-lit:#22c55e;--rq-bg:#01172a;--rq-light:#f6fafc;max-width:480px;margin:0 auto;padding:8px 0 22px;text-align:center}
+    .rq-header{padding:10px 0 0}.rq-title{margin:0;color:var(--text);font-size:1.65rem;font-weight:900}.rq-sub{margin:3px 0 0;color:#4ade80;font-size:.9rem}
+    .rq-stage{position:relative;width:min(84vw,350px);aspect-ratio:1;margin:20px auto 16px}
+    .rq-ring{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,#0f3d33 0%,#0a2a2a 55%,#061a1d 100%);border:7px solid transparent;background-clip:padding-box;box-shadow:0 0 0 7px rgba(212,175,55,.85),0 0 0 9px rgba(120,90,20,.6),0 0 40px rgba(212,175,55,.25),inset 0 0 40px rgba(0,0,0,.6)}
+    .rq-ring:after{content:"";position:absolute;inset:9px;border-radius:50%;border:1px solid rgba(212,175,55,.35)}
+    .rq-dial,.rq-target{position:absolute;inset:0;will-change:transform}.rq-dial svg{width:100%;height:100%;display:block}
+    .rq-tick-label{fill:#cfe3d8;font-size:11px;font-weight:600}.rq-tick-label.cardinal{fill:#fff;font-size:15px;font-weight:700}.rq-tick-label.north{fill:#ffd76a}
+    .rq-target .rq-needle{position:absolute;left:50%;top:7%;width:20px;height:43%;transform:translateX(-50%);background:linear-gradient(to bottom,#fff6d0,var(--rq-gold) 55%,rgba(212,175,55,0));clip-path:polygon(50% 0,100% 100%,0 100%);filter:drop-shadow(0 0 8px rgba(255,220,120,.6));transition:filter .4s}
+    .rq-target .rq-tip{position:absolute;left:50%;top:5.5%;width:18px;height:18px;margin-left:-9px;border-radius:50%;border:2px solid #fff3c4;background:rgba(34,197,94,.15);box-shadow:0 0 10px var(--rq-gold)}
+    .rq-stage.is-aligned .rq-needle{filter:drop-shadow(0 0 16px var(--rq-green-lit))}.rq-stage.is-aligned .rq-tip{background:var(--rq-green-lit);box-shadow:0 0 18px var(--rq-green-lit)}
+    .rq-fixed-mark{position:absolute;left:50%;top:-4px;width:0;height:0;margin-left:-8px;border-left:8px solid transparent;border-right:8px solid transparent;border-top:13px solid var(--rq-gold);filter:drop-shadow(0 2px 4px #000)}
+    .rq-scene{position:absolute;inset:14%;border-radius:50%;overflow:hidden;pointer-events:none}.rq-scene svg{width:100%;height:100%}
+    .rq-kaaba{position:absolute;left:50%;top:50%;width:34%;transform:translate(-50%,-42%) scale(.92);opacity:.55;transition:all .5s;filter:grayscale(.4)}
+    .rq-stage.is-aligned .rq-kaaba{opacity:1;transform:translate(-50%,-42%) scale(1);filter:drop-shadow(0 0 22px rgba(34,197,94,.55))}
+    .rq-hub{position:absolute;left:50%;top:50%;width:17%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#123f33,#082019);border:3px solid var(--rq-gold);display:grid;place-items:center;box-shadow:0 0 14px rgba(212,175,55,.5)}
+    .rq-hub svg{width:62%;height:62%}
+    .rq-pill{display:inline-block;min-width:min(230px,90%);text-align:center;padding:10px 22px;border-radius:16px;font-size:1.05rem;font-weight:900;background:rgba(20,70,45,.55);border:1.5px solid rgba(34,197,94,.55);color:#d7f7e2;transition:all .3s}
+    .rq-pill.ok{background:rgba(22,163,74,.28);border-color:var(--rq-green-lit);box-shadow:0 0 20px rgba(34,197,94,.35)}
+    .rq-pill.warn{background:rgba(120,70,10,.35);border-color:rgba(212,175,55,.6);color:#ffe9a8}
+    .rq-hint{margin:9px 0 0;color:var(--text-muted);font-size:.86rem;min-height:1.5em}
+    .rq-info{display:flex;justify-content:center;gap:clamp(12px,5vw,24px);margin-top:13px;color:var(--text-muted);font-size:.78rem;flex-wrap:wrap}
+    .rq-info div{text-align:center;min-width:75px}.rq-info b{display:block;color:var(--gold);font-weight:900;font-size:1rem}
+    .rq-actions{display:flex;gap:9px;margin:17px 0 8px;flex-wrap:wrap;justify-content:center}
+    .rq-actions .btn{flex:1 1 9rem}.rq-note{margin:8px 0 0;color:var(--text-muted);font-size:.78rem;line-height:1.7}
+    @media(prefers-reduced-motion:reduce){.rq-wrap *{transition:none!important}}
+  </style>
 
-  <section class="card qibla-card" aria-labelledby="qiblaHeading">
-    <div class="card-heading">
-      <span class="badge icon-badge" aria-hidden="true"><img src="assets/icons/icon-qibla.png" width="32" height="32" alt=""></span>
-      <div>
-        <h2 id="qiblaHeading">اتجاه القبلة</h2>
-        <p id="qiblaStatus" class="muted" role="status">جاري تحديد الموقع...</p>
+  <div class="rq-wrap">
+    <header class="rq-header">
+      <h1 class="rq-title">اتجاه القبلة</h1>
+      <p class="rq-sub" id="rqSub">اقترب من الاتجاه الصحيح</p>
+    </header>
+
+    <div class="rq-stage" id="rqStage" role="img" aria-label="بوصلة اتجاه القبلة">
+      <div class="rq-ring"></div>
+      <div class="rq-dial" id="rqDial"><svg viewBox="-200 -200 400 400" id="rqDialSvg" aria-hidden="true"></svg></div>
+      <div class="rq-target" id="rqTarget"><div class="rq-needle"></div><div class="rq-tip"></div></div>
+      <div class="rq-scene" aria-hidden="true">
+        <svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMax slice">
+          <defs><linearGradient id="rqMos" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cdbf9a" stop-opacity=".5"/><stop offset="1" stop-color="#8a7a50" stop-opacity=".05"/></linearGradient></defs>
+          <g fill="url(#rqMos)">
+            <path d="M10 170V118q0-14 12-14t12 14v52z"/><rect x="20" y="82" width="4" height="40"/>
+            <path d="M40 170v-30q0-24 22-24t22 24v30z"/><path d="M116 170v-30q0-24 22-24t22 24v30z"/>
+            <path d="M166 170V118q0-14 12-14t12 14v52z"/><rect x="176" y="82" width="4" height="40"/>
+          </g>
+        </svg>
       </div>
+      <svg class="rq-kaaba" viewBox="0 0 120 120" aria-hidden="true">
+        <defs><linearGradient id="rqKf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b2b2b"/><stop offset="1" stop-color="#0b0b0b"/></linearGradient></defs>
+        <polygon points="14,36 70,36 70,108 14,108" fill="url(#rqKf)"/><polygon points="70,36 106,30 106,102 70,108" fill="#161616"/>
+        <polygon points="14,36 50,24 106,30 70,36" fill="#2e2e2e"/><rect x="14" y="48" width="56" height="9" fill="#c9a43a"/>
+        <polygon points="70,48 106,42 106,50 70,57" fill="#a8892f"/><rect x="44" y="70" width="14" height="38" rx="2" fill="#b8932a"/>
+      </svg>
+      <div class="rq-hub" aria-hidden="true"><svg viewBox="0 0 64 64" fill="#e4c15a"><path d="M32 6c-3 4-3 7-3 9h6c0-2 0-5-3-9zM18 30c0-8 6-13 14-13s14 5 14 13v4H18zM14 34h36v4H14zM16 38h32v20H16zM6 58V28l3-6 3 6v30zM52 58V28l3-6 3 6v30z"/></svg></div>
+      <div class="rq-fixed-mark"></div>
     </div>
-    <p class="qibla-help">أمسك الهاتف أفقيًا. السهم يبيّن جهة الالتفاف؛ عندما يشير إلى الأعلى بثبات تكون القبلة أمامك.</p>
-    <div class="qibla-compass" id="qiblaCompass" role="img" aria-label="بوصلة اتجاه القبلة">
-      <div class="qibla-ring" aria-hidden="true"><span>N</span><span>E</span><span>S</span><span>W</span></div>
-      <svg class="qibla-arrow" id="qiblaArrow" viewBox="0 0 48 96" aria-hidden="true" focusable="false"><path d="M24 3 40 43 28 36 28 92 20 92 20 36 8 43Z" fill="currentColor"/></svg>
-      <div class="qibla-center" id="qiblaCenter" aria-live="polite"><img id="qiblaKaaba" src="assets/icons/kaaba.svg" alt="الكعبة المشرفة" width="44" height="44" hidden><span id="qiblaCenterHint">وجّه الهاتف نحو القبلة</span></div>
-    </div>
-    <p class="qibla-bearing" id="qiblaBearing">—</p>
-    <p id="qiblaHeadingValue" class="muted">اتجاه الهاتف: غير متاح</p>
-    <p id="qiblaDifference" class="muted">الفرق بين الهاتف والقبلة: غير متاح</p>
-    <p id="qiblaAlignmentStatus" class="qibla-alignment-status muted" role="status" aria-live="polite">صورة الكعبة تظهر عند اكتشاف اتجاه القبلة.</p>
-    <p id="qiblaCalibration" class="muted" role="status">المعايرة: غير مفعّلة</p>
-    <p class="muted">الزاوية محسوبة من الشمال الحقيقي، وليست بديلًا عن معايرة بوصلة الجهاز.</p>
-    <div class="button-row">
-      <button id="qiblaUseGps" class="btn primary" type="button">استخدام موقعي</button>
-      <button id="qiblaCalibrate" class="btn" type="button">تفعيل بوصلة الجهاز</button>
-    </div>
-    <p id="qiblaSensorStatus" class="muted" role="status">يمكنك استخدام الاتجاه المحسوب دون منح إذن المستشعر.</p>
-  </section>
 
-  <section class="card">
-    <h2>الموقع المستخدم</h2>
-    <p>الولاية: <strong data-location-name>—</strong> (<span data-location-source>—</span>)</p>
-    <p>الإحداثيات: <span data-location-lat>—</span>، <span data-location-lng>—</span></p>
-  </section>
-  <script src="./pages/qibla.js"></script>
+    <div class="rq-pill" id="rqStatus" role="status" aria-live="polite">جاري تحديد الاتجاه…</div>
+    <p class="rq-hint" id="rqHint">عند المحاذاة: توهج البوصلة • تظهر الكعبة • يهتز الهاتف</p>
+    <div class="rq-info">
+      <div><b id="rqQibla">—</b>اتجاه القبلة</div>
+      <div><b id="rqHeading">—</b>اتجاه هاتفك</div>
+      <div><b id="rqDistance">—</b>المسافة إلى مكة</div>
+    </div>
+    <div class="rq-actions">
+      <button class="btn primary" type="button" id="rqStart">تشغيل البوصلة</button>
+      <button class="btn" type="button" id="rqGps">تحديث الموقع عبر GPS</button>
+    </div>
+    <p class="rq-note" id="rqLocation">الموقع المستخدم: —</p>
+    <p class="rq-note" id="rqSensorNote">أمسك الهاتف أفقيًا، وقد يحتاج المستشعر إلى المعايرة.</p>
+  </div>
+  <script src="./pages/qibla.js?v=qibla-user-model-1"></script>
 </section>
