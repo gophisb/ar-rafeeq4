@@ -3,6 +3,7 @@
 
   const KAABA = { lat: 21.422487, lng: 39.826206 };
   const ALIGNMENT_TOLERANCE = 8;
+  const ALIGNMENT_EXIT_TOLERANCE = 12;
   const REQUIRED_STABLE_READINGS = 5;
   const FILTER_SLOW = 0.14;
   const FILTER_FAST = 0.32;
@@ -18,6 +19,7 @@
   let lastAbsoluteAt = 0;
   let permissionPending = false;
   let locationListener = null;
+  let torchBusy = false;
 
   function normalize(degrees) { return ((Number(degrees) % 360) + 360) % 360; }
   function signedAngle(degrees) {
@@ -40,6 +42,68 @@
     const node = document.getElementById(id);
     if (node) node.textContent = value;
   }
+
+  function wait(milliseconds) {
+    return new Promise(resolve => window.setTimeout(resolve, milliseconds));
+  }
+
+  async function flashTorchTwice() {
+    let stream = null;
+    let track = null;
+    try {
+      if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function') return false;
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: { facingMode: { ideal: 'environment' } }
+      });
+      track = stream.getVideoTracks()[0];
+      if (!track || typeof track.applyConstraints !== 'function') return false;
+
+      const capabilities = typeof track.getCapabilities === 'function' ? track.getCapabilities() : null;
+      if (!capabilities || capabilities.torch !== true) return false;
+
+      const setTorch = enabled => track.applyConstraints({ advanced: [{ torch: enabled }] });
+      await setTorch(true);
+      await wait(180);
+      await setTorch(false);
+      await wait(160);
+      await setTorch(true);
+      await wait(180);
+      await setTorch(false);
+      return true;
+    } catch (_) {
+      return false;
+    } finally {
+      if (track) {
+        try { await track.applyConstraints({ advanced: [{ torch: false }] }); } catch (_) {}
+      }
+      if (stream) {
+        stream.getTracks().forEach(videoTrack => {
+          try { videoTrack.stop(); } catch (_) {}
+        });
+      }
+    }
+  }
+
+  function triggerAlignmentAlert() {
+    try {
+      if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+        navigator.vibrate([600, 120, 600]);
+      }
+    } catch (_) {}
+
+    if (torchBusy) return;
+    torchBusy = true;
+    flashTorchTwice().then(available => {
+      torchBusy = false;
+      setText('qiblaSensorStatus', available
+        ? 'تم اكتشاف القبلة: اهتزاز وتنبيهان ضوئيان.'
+        : 'تم اكتشاف القبلة والاهتزاز؛ الفلاش غير متاح أو لم يُمنح إذن الكاميرا.');
+    }).catch(() => {
+      torchBusy = false;
+      setText('qiblaSensorStatus', 'تم اكتشاف القبلة والاهتزاز؛ تعذر تشغيل الفلاش على هذا الجهاز.');
+    });
+  }
   function setAlignmentState(isAligned, announce = true) {
     const compass = document.getElementById('qiblaCompass');
     const kaaba = document.getElementById('qiblaKaaba');
@@ -55,9 +119,7 @@
         : 'صورة الكعبة تظهر عند اكتشاف اتجاه القبلة.';
     }
     if (isAligned && !aligned && announce) {
-      if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
-        try { navigator.vibrate([120, 80, 220]); } catch (_) {}
-      }
+      triggerAlignmentAlert();
       setText('qiblaStatus', 'تم اكتشاف اتجاه القبلة.');
     }
     aligned = isAligned;
@@ -87,19 +149,41 @@
   }
 
   function headingFromEvent(event) {
-    if (typeof event.webkitCompassHeading === 'number' && Number.isFinite(event.webkitCompassHeading)) {
-      return normalize(event.webkitCompassHeading);
-    }
-
-    // لا نستخدم alpha النسبي على أنه شمال حقيقي؛ لا يصلح لحساب القبلة.
+    const hasEulerAngles = Number.isFinite(event.alpha) &&
+      Number.isFinite(event.beta) && Number.isFinite(event.gamma);
     const isAbsolute = event.absolute === true || event.type === 'deviceorientationabsolute';
-    if (!isAbsolute || typeof event.alpha !== 'number' || !Number.isFinite(event.alpha)) return null;
+    if (!isAbsolute || !hasEulerAngles) return null;
+
+    const radians = Math.PI / 180;
+    const alpha = event.alpha * radians;
+    const beta = event.beta * radians;
+    const gamma = event.gamma * radians;
+    const cA = Math.cos(alpha);
+    const sA = Math.sin(alpha);
+    const cB = Math.cos(beta);
+    const sB = Math.sin(beta);
+    const cG = Math.cos(gamma);
+    const sG = Math.sin(gamma);
+
+    // الإسقاط الأفقي للمتجه العمودي على الشاشة؛ يصبح صالحًا عند حمل الهاتف عموديًا.
+    const normalEast = -cA * sG - sA * sB * cG;
+    const normalNorth = -sA * sG + cA * sB * cG;
+    const normalHorizontal = Math.hypot(normalEast, normalNorth);
 
     const screenAngle = typeof screen !== 'undefined' && screen.orientation &&
       Number.isFinite(screen.orientation.angle) ? screen.orientation.angle : 0;
-    return normalize(360 - event.alpha + screenAngle);
-  }
 
+    // عندما تكون الشاشة شبه أفقية، يكون أعلى الشاشة هو محور الاتجاه الأنسب.
+    if (normalHorizontal < 0.55) {
+      if (typeof event.webkitCompassHeading === 'number' && Number.isFinite(event.webkitCompassHeading)) {
+        return normalize(event.webkitCompassHeading + screenAngle);
+      }
+      return normalize(360 - event.alpha + screenAngle);
+    }
+
+    // عند حمل الهاتف عموديًا، نحسب اتجاه واجهة الشاشة بعد تعويض الميل ثلاثي الأبعاد.
+    return normalize(Math.atan2(normalEast, normalNorth) / radians);
+  }
   function smoothHeading(rawHeading, now) {
     if (filteredHeading === null || !lastSampleAt) {
       filteredHeading = rawHeading;
@@ -133,12 +217,16 @@
     const arrow = document.getElementById('qiblaArrow');
     if (arrow) arrow.style.transform = `translate(-50%, -50%) rotate(${signedDifference.toFixed(1)}deg)`;
 
-    if (distance <= ALIGNMENT_TOLERANCE) {
+    if (aligned) {
+      if (distance > ALIGNMENT_EXIT_TOLERANCE) {
+        stableReadings = 0;
+        setAlignmentState(false);
+      }
+    } else if (distance <= ALIGNMENT_TOLERANCE) {
       stableReadings += 1;
       if (stableReadings >= REQUIRED_STABLE_READINGS) setAlignmentState(true);
     } else {
       stableReadings = 0;
-      if (aligned) setAlignmentState(false);
     }
   }
 
