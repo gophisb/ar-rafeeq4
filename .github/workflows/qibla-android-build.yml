@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - feat/qibla-android-build
+      - fix/qibla-android-build-stable-2026-11-15
   workflow_dispatch:
 
 permissions:
