@@ -3,16 +3,23 @@
 
   const KAABA = { lat: 21.422487, lng: 39.826206 };
   const ALIGNMENT_TOLERANCE = 8;
-  const REQUIRED_STABLE_READINGS = 3;
+  const REQUIRED_STABLE_READINGS = 5;
+  const FILTER_SLOW = 0.14;
+  const FILTER_FAST = 0.32;
+  const ABSOLUTE_FALLBACK_WINDOW_MS = 1200;
+
   let sensorHandler = null;
   let initialized = false;
   let qiblaBearing = null;
   let aligned = false;
   let stableReadings = 0;
-  let lastHeading = null;
+  let filteredHeading = null;
+  let lastSampleAt = 0;
+  let lastAbsoluteAt = 0;
+  let permissionPending = false;
   let locationListener = null;
 
-  function normalize(degrees) { return (Number(degrees) + 360) % 360; }
+  function normalize(degrees) { return ((Number(degrees) % 360) + 360) % 360; }
   function signedAngle(degrees) {
     const value = normalize(degrees);
     return value > 180 ? value - 360 : value;
@@ -69,7 +76,8 @@
     }
     qiblaBearing = bearingFrom(location);
     stableReadings = 0;
-    lastHeading = null;
+    filteredHeading = null;
+    lastSampleAt = 0;
     setAlignmentState(false, false);
     setText('qiblaStatus', `الموقع: ${location.name || 'الموقع المحفوظ'} — الاتجاه محسوب محليًا`);
     setText('qiblaBearing', `${Math.round(qiblaBearing)}° من الشمال الحقيقي`);
@@ -77,28 +85,54 @@
     const arrow = document.getElementById('qiblaArrow');
     if (arrow) arrow.style.transform = 'translate(-50%, -50%) rotate(0deg)';
   }
+
   function headingFromEvent(event) {
-    let heading = null;
     if (typeof event.webkitCompassHeading === 'number' && Number.isFinite(event.webkitCompassHeading)) {
-      heading = event.webkitCompassHeading;
-    } else if (typeof event.alpha === 'number' && Number.isFinite(event.alpha)) {
-      heading = 360 - event.alpha;
+      return normalize(event.webkitCompassHeading);
     }
-    if (heading === null) return null;
-    const orientation = typeof screen !== 'undefined' && screen.orientation && Number.isFinite(screen.orientation.angle)
-      ? screen.orientation.angle : 0;
-    return normalize(heading + orientation);
+
+    // لا نستخدم alpha النسبي على أنه شمال حقيقي؛ لا يصلح لحساب القبلة.
+    const isAbsolute = event.absolute === true || event.type === 'deviceorientationabsolute';
+    if (!isAbsolute || typeof event.alpha !== 'number' || !Number.isFinite(event.alpha)) return null;
+
+    const screenAngle = typeof screen !== 'undefined' && screen.orientation &&
+      Number.isFinite(screen.orientation.angle) ? screen.orientation.angle : 0;
+    return normalize(360 - event.alpha + screenAngle);
   }
-  function updateHeading(heading) {
-    if (heading === null || qiblaBearing === null) return;
-    lastHeading = heading;
+
+  function smoothHeading(rawHeading, now) {
+    if (filteredHeading === null || !lastSampleAt) {
+      filteredHeading = rawHeading;
+      lastSampleAt = now;
+      return filteredHeading;
+    }
+
+    const delta = angularDistance(filteredHeading, rawHeading);
+    // استجابة أسرع عند تدوير الهاتف فعليًا، وتنعيم أقوى للاهتزازات الصغيرة.
+    const factor = delta > 25 ? FILTER_FAST : FILTER_SLOW;
+    const currentRad = filteredHeading * Math.PI / 180;
+    const targetRad = rawHeading * Math.PI / 180;
+    const x = (1 - factor) * Math.cos(currentRad) + factor * Math.cos(targetRad);
+    const y = (1 - factor) * Math.sin(currentRad) + factor * Math.sin(targetRad);
+    filteredHeading = normalize(Math.atan2(y, x) * 180 / Math.PI);
+    lastSampleAt = now;
+    return filteredHeading;
+  }
+
+  function updateHeading(rawHeading) {
+    if (rawHeading === null || qiblaBearing === null) return;
+
+    const heading = smoothHeading(rawHeading, Date.now());
     const signedDifference = signedAngle(qiblaBearing - heading);
     const distance = Math.abs(signedDifference);
+
     setText('qiblaHeadingValue', `اتجاه الهاتف: ${Math.round(heading)}° من الشمال`);
     setText('qiblaDifference', `الفرق بين الهاتف والقبلة: ${Math.round(distance)}°`);
     setText('qiblaCalibration', 'المعايرة: مستشعر الاتجاه يعمل');
+
     const arrow = document.getElementById('qiblaArrow');
-    if (arrow) arrow.style.transform = `translate(-50%, -50%) rotate(${signedDifference}deg)`;
+    if (arrow) arrow.style.transform = `translate(-50%, -50%) rotate(${signedDifference.toFixed(1)}deg)`;
+
     if (distance <= ALIGNMENT_TOLERANCE) {
       stableReadings += 1;
       if (stableReadings >= REQUIRED_STABLE_READINGS) setAlignmentState(true);
@@ -107,33 +141,71 @@
       if (aligned) setAlignmentState(false);
     }
   }
+
+  function onOrientation(event) {
+    const now = Date.now();
+    const isAbsoluteEvent = event.type === 'deviceorientationabsolute' || event.absolute === true;
+
+    // بعض المتصفحات تطلق الحدثين معًا؛ لا نسمح للقراءة النسبية بإفساد القراءة المطلقة.
+    if (!isAbsoluteEvent && now - lastAbsoluteAt < ABSOLUTE_FALLBACK_WINDOW_MS) return;
+    if (isAbsoluteEvent) lastAbsoluteAt = now;
+
+    const heading = headingFromEvent(event);
+    if (heading === null) {
+      setText('qiblaCalibration', 'المعايرة: ننتظر قراءة شمال حقيقي من المستشعر.');
+      return;
+    }
+    updateHeading(heading);
+  }
+
+  function startListening() {
+    if (sensorHandler) return;
+    filteredHeading = null;
+    lastSampleAt = 0;
+    lastAbsoluteAt = 0;
+    sensorHandler = onOrientation;
+    window.addEventListener('deviceorientationabsolute', sensorHandler, true);
+    window.addEventListener('deviceorientation', sensorHandler, true);
+
+    setText('qiblaCalibration', 'المعايرة: جارٍ انتظار قراءة المستشعر...');
+    const status = document.getElementById('qiblaSensorStatus');
+    if (status) status.textContent = 'تم طلب تشغيل البوصلة. أبقِ الهاتف بعيدًا عن المعادن والمغناطيس.';
+    window.setTimeout(() => {
+      if (sensorHandler && !lastSampleAt && status) {
+        status.textContent = 'لم تصل قراءة بوصلة صالحة. تحقق من دعم المستشعر وأذوناته، ثم أعد المحاولة.';
+      }
+    }, 2500);
+  }
+
   function startSensor() {
     const status = document.getElementById('qiblaSensorStatus');
-    const start = () => {
-      if (sensorHandler) return;
-      sensorHandler = event => updateHeading(headingFromEvent(event));
-      window.addEventListener('deviceorientationabsolute', sensorHandler, true);
-      window.addEventListener('deviceorientation', sensorHandler, true);
-      setText('qiblaCalibration', 'المعايرة: حرّك الهاتف على شكل رقم 8 إذا كان الاتجاه غير مستقر.');
-      if (status) status.textContent = 'تم تفعيل مستشعر الاتجاه؛ حرّك الهاتف حتى يتجه السهم إلى القبلة.';
-    };
+    if (sensorHandler || permissionPending) return;
+
     try {
       if (typeof DeviceOrientationEvent === 'undefined') {
-        if (status) status.textContent = 'هذا الجهاز لا يدعم مستشعر الاتجاه؛ الزاوية المحسوبة ما زالت متاحة.';
+        if (status) status.textContent = 'هذا الجهاز أو المتصفح لا يوفّر مستشعر اتجاه صالحًا.';
         return;
       }
+
       if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+        permissionPending = true;
         DeviceOrientationEvent.requestPermission().then(result => {
-          if (result === 'granted') start();
-          else if (status) status.textContent = 'لم يُمنح إذن المستشعر؛ الزاوية المحسوبة ما زالت متاحة.';
-        }).catch(() => { if (status) status.textContent = 'تعذر طلب إذن المستشعر؛ الزاوية المحسوبة ما زالت متاحة.'; });
+          permissionPending = false;
+          if (result === 'granted') startListening();
+          else if (status) status.textContent = 'لم يُمنح إذن المستشعر. اسمح بالوصول إلى الحركة والاتجاه من إعدادات المتصفح.';
+        }).catch(() => {
+          permissionPending = false;
+          if (status) status.textContent = 'تعذر طلب إذن المستشعر. تحقق من إعدادات المتصفح وحاول مجددًا.';
+        });
       } else {
-        start();
+        startListening();
       }
     } catch (_) {
-      if (status) status.textContent = 'تعذر تشغيل المستشعر؛ الزاوية المحسوبة ما زالت متاحة.';
+      permissionPending = false;
+      if (status) status.textContent = 'تعذر تشغيل المستشعر؛ تحقق من دعم الجهاز وإعدادات الأذونات.';
     }
   }
+
   function stopSensor() {
     if (sensorHandler) {
       window.removeEventListener('deviceorientationabsolute', sensorHandler, true);
@@ -144,14 +216,18 @@
       document.removeEventListener('rafeeq:locationChanged', locationListener);
       locationListener = null;
     }
+    permissionPending = false;
     aligned = false;
-    lastHeading = null;
+    filteredHeading = null;
+    lastSampleAt = 0;
   }
+
   function initialize() {
     if (initialized) return;
     initialized = true;
     const location = typeof LocationManager !== 'undefined' ? (LocationManager.getCurrent() || LocationManager.init()) : null;
     render(location);
+
     const gps = document.getElementById('qiblaUseGps');
     const calibrate = document.getElementById('qiblaCalibrate');
     if (gps) gps.onclick = () => {
@@ -165,6 +241,7 @@
     locationListener = event => render(event.detail);
     document.addEventListener('rafeeq:locationChanged', locationListener);
   }
+
   window.RafeeqPages = window.RafeeqPages || {};
   window.RafeeqPages.qibla = initialize;
   window.RafeeqPages['qibla:destroy'] = () => { stopSensor(); initialized = false; };
