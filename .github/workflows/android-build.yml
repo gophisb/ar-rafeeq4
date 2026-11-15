@@ -6,6 +6,7 @@ on:
     branches:
       - offline-apk-safe
       - feat/algeria-certified-prayer-times
+      - fix/qibla-native-haptics-rafeeq-algeria-2026-11-15
 
 permissions:
   contents: read
