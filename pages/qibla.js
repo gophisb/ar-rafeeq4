@@ -99,26 +99,33 @@
   }
 
   async function flashTorchTwice() {
+    const nativeTorch = window.Capacitor && window.Capacitor.Plugins &&
+      window.Capacitor.Plugins.RafeeqTorch;
+    if (nativeTorch && typeof nativeTorch.flashTwice === 'function') {
+      try {
+        await nativeTorch.flashTwice();
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+
     let stream = null;
     let track = null;
     try {
       if (!navigator.mediaDevices ||
           typeof navigator.mediaDevices.getUserMedia !== 'function') return false;
-
       stream = await navigator.mediaDevices.getUserMedia({
         audio: false,
         video: { facingMode: { ideal: 'environment' } }
       });
       track = stream.getVideoTracks()[0];
       if (!track || typeof track.applyConstraints !== 'function') return false;
-
       const capabilities = typeof track.getCapabilities === 'function'
         ? track.getCapabilities() : null;
       if (capabilities && capabilities.torch === false) return false;
-
       const setTorch = enabled =>
         track.applyConstraints({ advanced: [{ torch: enabled }] });
-
       await setTorch(true);
       await wait(180);
       await setTorch(false);
