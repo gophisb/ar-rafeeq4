@@ -60,7 +60,7 @@
       if (!track || typeof track.applyConstraints !== 'function') return false;
 
       const capabilities = typeof track.getCapabilities === 'function' ? track.getCapabilities() : null;
-      if (!capabilities || capabilities.torch !== true) return false;
+      if (capabilities && capabilities.torch === false) return false;
 
       const setTorch = enabled => track.applyConstraints({ advanced: [{ torch: enabled }] });
       await setTorch(true);
