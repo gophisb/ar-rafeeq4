@@ -49,10 +49,21 @@
         : 'صورة الكعبة تظهر عند اكتشاف اتجاه القبلة.';
     }
     if (isAligned && !aligned && announce) {
-      if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+      const capacitor = window.Capacitor;
+      const nativePlatform = capacitor &&
+        (typeof capacitor.isNativePlatform !== 'function' || capacitor.isNativePlatform());
+      const haptics = nativePlatform && capacitor.Plugins && capacitor.Plugins.RafeeqHaptics;
+      if (haptics && typeof haptics.vibrate === 'function') {
+        haptics.vibrate().catch(error => {
+          console.warn('Native Qibla vibration failed; trying browser vibration.', error);
+          if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+            try { navigator.vibrate([600, 120, 600]); } catch (_) {}
+          }
+        });
+      } else if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
         try { navigator.vibrate([600, 120, 600]); } catch (_) {}
       }
-      setText('qiblaStatus', 'تم اكتشاف اتجاه القبلة.');
+      setText('qiblaStatus', 'تم اكتشاف اتجاه القبلة — اهتزاز تأكيد الاتجاه.');
     }
     aligned = isAligned;
   }
