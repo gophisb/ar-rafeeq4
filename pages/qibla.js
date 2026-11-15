@@ -257,7 +257,7 @@
 
     setText('qiblaCalibration', 'المعايرة: جارٍ انتظار قراءة المستشعر...');
     const status = document.getElementById('qiblaSensorStatus');
-    if (status) status.textContent = 'تم طلب تشغيل البوصلة. أبقِ الهاتف بعيدًا عن المعادن والمغناطيس.';
+    if (status) status.textContent = 'تم تشغيل البوصلة. عند اكتشاف القبلة سيهتز الهاتف؛ وقد يطلب إذن الكاميرا لتشغيل الفلاش مرتين. أبقِ الهاتف بعيدًا عن المعادن والمغناطيس.';
     window.setTimeout(() => {
       if (sensorHandler && !lastSampleAt && status) {
         status.textContent = 'لم تصل قراءة بوصلة صالحة. تحقق من دعم المستشعر وأذوناته، ثم أعد المحاولة.';
