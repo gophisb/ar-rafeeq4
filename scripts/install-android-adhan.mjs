@@ -43,7 +43,8 @@ const permissions = [
   'android.permission.RECEIVE_BOOT_COMPLETED',
   'android.permission.FOREGROUND_SERVICE',
   'android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK',
-  'android.permission.WAKE_LOCK'
+  'android.permission.WAKE_LOCK',
+  'android.permission.VIBRATE'
 ];
 for (const permission of permissions) {
   const tag = `    <uses-permission android:name="${permission}" />\n`;

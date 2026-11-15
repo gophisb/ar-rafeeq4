@@ -5,6 +5,7 @@
   const ALIGNMENT_TOLERANCE = 8;
   const REQUIRED_STABLE_READINGS = 3;
   let sensorHandler = null;
+  let sensorEventName = null;
   let initialized = false;
   let qiblaBearing = null;
   let aligned = false;
@@ -49,7 +50,7 @@
     }
     if (isAligned && !aligned && announce) {
       if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
-        try { navigator.vibrate([120, 80, 220]); } catch (_) {}
+        try { navigator.vibrate([600, 120, 600]); } catch (_) {}
       }
       setText('qiblaStatus', 'تم اكتشاف اتجاه القبلة.');
     }
@@ -111,9 +112,9 @@
     const status = document.getElementById('qiblaSensorStatus');
     const start = () => {
       if (sensorHandler) return;
+      sensorEventName = ('ondeviceorientationabsolute' in window) ? 'deviceorientationabsolute' : 'deviceorientation';
       sensorHandler = event => updateHeading(headingFromEvent(event));
-      window.addEventListener('deviceorientationabsolute', sensorHandler, true);
-      window.addEventListener('deviceorientation', sensorHandler, true);
+      window.addEventListener(sensorEventName, sensorHandler, true);
       setText('qiblaCalibration', 'المعايرة: حرّك الهاتف على شكل رقم 8 إذا كان الاتجاه غير مستقر.');
       if (status) status.textContent = 'تم تفعيل مستشعر الاتجاه؛ حرّك الهاتف حتى يتجه السهم إلى القبلة.';
     };
@@ -136,9 +137,9 @@
   }
   function stopSensor() {
     if (sensorHandler) {
-      window.removeEventListener('deviceorientationabsolute', sensorHandler, true);
-      window.removeEventListener('deviceorientation', sensorHandler, true);
+      if (sensorEventName) window.removeEventListener(sensorEventName, sensorHandler, true);
       sensorHandler = null;
+      sensorEventName = null;
     }
     if (locationListener) {
       document.removeEventListener('rafeeq:locationChanged', locationListener);

@@ -1084,6 +1084,14 @@ ol {
     font-weight: 800;
 }
 
+.home-gregorian-date {
+    display: block;
+    margin-top: 2px;
+    color: var(--text-muted);
+    font-size: 10px;
+    line-height: 1.35;
+}
+
 .info-divider {
 
     width: 1px;
@@ -3173,7 +3181,8 @@ html[data-font-size="large"] { font-size: 18px; }
 .qibla-ring span:nth-child(2) { top: 50%; left: 100%; }
 .qibla-ring span:nth-child(3) { top: 100%; left: 50%; }
 .qibla-ring span:nth-child(4) { top: 50%; left: 0; }
-.qibla-arrow { position: absolute; top: 50%; left: 50%; color: #6be0c6; font-size: 4rem; line-height: 1; transform-origin: 50% 50%; transition: transform .35s ease; text-shadow: 0 0 18px rgba(107,224,198,.45); }
+.qibla-arrow { position: absolute; top: 50%; left: 50%; width: 2.75rem; height: 8rem; color: #6be0c6; transform-origin: 50% 50%; transition: transform .35s ease; filter: drop-shadow(0 0 10px rgba(107,224,198,.45)); }
+.qibla-help { margin: .75rem 0 1rem; padding: .8rem 1rem; border-radius: 14px; background: rgba(107,224,198,.08); color: var(--text-muted, #a9c2c0); line-height: 1.8; text-align: center; font-size: .9rem; }
 .qibla-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 5rem; height: 5rem; display: grid; place-items: center; border-radius: 50%; background: rgba(7,25,35,.82); color: var(--text, #fff); font-size: .8rem; text-align: center; overflow: hidden; }
 .qibla-center img { display: block; width: 3.2rem; height: 3.2rem; object-fit: contain; filter: drop-shadow(0 2px 5px rgba(0,0,0,.35)); }
 .qibla-center img[hidden] { display: none; }
