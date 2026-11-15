@@ -14,7 +14,8 @@ for (const name of [
   'RafeeqAdhanPlugin.java',
   'RafeeqAdhanReceiver.java',
   'RafeeqAdhanService.java',
-  'RafeeqAdhanBootReceiver.java'
+  'RafeeqAdhanBootReceiver.java',
+  'RafeeqTorchPlugin.java'
 ]) {
   fs.copyFileSync(path.join(root, 'scripts', 'android', name), path.join(javaDir, name));
 }
@@ -30,6 +31,7 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(RafeeqAdhanPlugin.class);
+        registerPlugin(RafeeqTorchPlugin.class);
         super.onCreate(savedInstanceState);
     }
 }
@@ -43,7 +45,8 @@ const permissions = [
   'android.permission.RECEIVE_BOOT_COMPLETED',
   'android.permission.FOREGROUND_SERVICE',
   'android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK',
-  'android.permission.WAKE_LOCK'
+  'android.permission.WAKE_LOCK',
+  'android.permission.CAMERA'
 ];
 for (const permission of permissions) {
   const tag = `    <uses-permission android:name="${permission}" />\\n`;
