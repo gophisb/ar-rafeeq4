@@ -50,7 +50,7 @@
     }
     if (isAligned && !aligned && announce) {
       if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
-        try { navigator.vibrate([120, 80, 220]); } catch (_) {}
+        try { navigator.vibrate([600, 120, 600]); } catch (_) {}
       }
       setText('qiblaStatus', 'تم اكتشاف اتجاه القبلة.');
     }
