@@ -12,6 +12,7 @@ fs.mkdirSync(rawDir, { recursive: true });
 
 for (const name of [
   'RafeeqAdhanPlugin.java',
+  'RafeeqHapticsPlugin.java',
   'RafeeqAdhanReceiver.java',
   'RafeeqAdhanService.java',
   'RafeeqAdhanBootReceiver.java'
@@ -30,6 +31,7 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(RafeeqAdhanPlugin.class);
+        registerPlugin(RafeeqHapticsPlugin.class);
         super.onCreate(savedInstanceState);
     }
 }
