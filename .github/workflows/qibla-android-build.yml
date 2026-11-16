@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - feat/qibla-android-build
-      - fix/qibla-android-build-stable-2026-11-15
+      - fix/rafeeq-algeria-quran-native-haptics-2026-11-15
   workflow_dispatch:
 
 permissions:
@@ -31,6 +31,9 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
+      - name: Verify bundled Algeria prayer engine
+        run: npm run test:prayer-bundle
 
       - name: Prepare web assets
         run: npm run prepare:web
