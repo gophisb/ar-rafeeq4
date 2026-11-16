@@ -168,17 +168,7 @@
       } catch (_) {}
     }
 
-    if (torchBusy) return;
-    torchBusy = true;
-    flashTorchTwice().then(available => {
-      torchBusy = false;
-      setText('qiblaSensorStatus', available
-        ? 'تم تثبيت اتجاه القبلة: اهتزاز وتنبيهان ضوئيان.'
-        : 'تم تثبيت اتجاه القبلة والاهتزاز؛ الفلاش غير مدعوم أو لم يُسمح باستخدام الكاميرا.');
-    }).catch(() => {
-      torchBusy = false;
-      setText('qiblaSensorStatus', 'تم تثبيت اتجاه القبلة والاهتزاز؛ تعذر تشغيل الفلاش على هذا الجهاز.');
-    });
+    setText('qiblaSensorStatus', 'تم تثبيت اتجاه القبلة مع اهتزاز تأكيدي.');
   }
 
   function updateAlignment(isAligned, announce = true) {
