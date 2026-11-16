@@ -230,6 +230,49 @@ document.getElementById('recitationStop')?.addEventListener('click', () => {
   window.RafeeqRecitation?.stop();
 });
 
+async function downloadCurrentSurahAudio() {
+  const btn = document.getElementById('downloadCurrentSurah');
+  const status = document.getElementById('recitationStatus');
+  const meta = SURAH_LIST[currentSurah - 1];
+  if (!window.RafeeqRecitation || !meta) return;
+  if (btn) btn.disabled = true;
+  try {
+    await window.RafeeqRecitation.downloadSurah(meta.n, meta.ayahs, (done, total) => {
+      if (status) status.textContent = `جاري تنزيل سورة ${meta.name}: ${done}/${total} آية`;
+    });
+    if (status) status.textContent = `تم تنزيل سورة ${meta.name} — تعمل الآن دون إنترنت.`;
+  } catch (error) {
+    if (status) status.textContent = error?.message === 'DOWNLOAD_CANCELLED'
+      ? 'تم إيقاف التنزيل.'
+      : 'تعذّر تنزيل السورة. تحقق من الاتصال ثم أعد المحاولة.';
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+async function downloadFullQuranAudio() {
+  const btn = document.getElementById('downloadFullQuran');
+  const status = document.getElementById('recitationStatus');
+  if (!window.RafeeqRecitation) return;
+  if (!window.confirm('تنزيل القرآن الصوتي كاملًا يحتاج مساحة تخزين كبيرة واتصالًا مستقرًا. هل تريد المتابعة؟')) return;
+  if (btn) btn.disabled = true;
+  try {
+    await window.RafeeqRecitation.downloadQuran(SURAH_LIST, (done, total, surah, ayah) => {
+      if (status) status.textContent = `جاري تنزيل القرآن: ${done}/${total} آية — السورة ${surah}، الآية ${ayah}`;
+    });
+    if (status) status.textContent = 'تم تنزيل القرآن الصوتي كاملًا — التشغيل متاح دون إنترنت.';
+  } catch (error) {
+    if (status) status.textContent = error?.message === 'DOWNLOAD_CANCELLED'
+      ? 'تم إيقاف التنزيل.'
+      : 'توقف تنزيل القرآن. يمكنك إعادة المحاولة، وسيتم تجاوز الملفات المحفوظة.';
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+document.getElementById('downloadCurrentSurah')?.addEventListener('click', downloadCurrentSurahAudio);
+document.getElementById('downloadFullQuran')?.addEventListener('click', downloadFullQuranAudio);
+
 function saveQuranProgress() {
   try { localStorage.setItem(quranProgressKey, JSON.stringify([...readAyahs])); } catch (_) {}
   document.dispatchEvent(new CustomEvent('rafeeq:quranProgressChanged'));
