@@ -149,11 +149,24 @@
   }
 
   function triggerAlignmentAlert() {
-    try {
-      if (typeof navigator.vibrate === 'function') {
-        navigator.vibrate([600, 120, 600]);
-      }
-    } catch (_) {}
+    const capacitor = window.Capacitor;
+    const nativePlatform = capacitor &&
+      (typeof capacitor.isNativePlatform !== 'function' || capacitor.isNativePlatform());
+    const nativeHaptics = nativePlatform && capacitor.Plugins &&
+      capacitor.Plugins.RafeeqHaptics;
+
+    if (nativeHaptics && typeof nativeHaptics.vibrate === 'function') {
+      nativeHaptics.vibrate().catch(error => {
+        console.warn('Native Qibla vibration failed; using browser fallback.', error);
+        try {
+          if (typeof navigator.vibrate === 'function') navigator.vibrate([600, 120, 600]);
+        } catch (_) {}
+      });
+    } else {
+      try {
+        if (typeof navigator.vibrate === 'function') navigator.vibrate([600, 120, 600]);
+      } catch (_) {}
+    }
 
     if (torchBusy) return;
     torchBusy = true;
