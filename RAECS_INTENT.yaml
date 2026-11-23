@@ -1,4 +1,4 @@
-version: "1"
+version: "1.1"
 purpose: "Maintain Ar-Rafeeq 4 as a stable offline-first Islamic application under RAECS governance"
 allowed_paths:
   - "app.js"
@@ -21,6 +21,7 @@ allowed_paths:
   - "OPLOG/"
   - "scripts/"
   - "RAECS_EXECUTABLES_ALLOWLIST.txt"
+  - "android/app/src/main/java/com/gophisb/houd11/MainActivity.java"
 forbidden_actions:
   - "execute unreviewed downloaded code"
   - "exfiltrate secrets or private data"
