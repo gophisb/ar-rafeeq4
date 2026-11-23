@@ -240,6 +240,56 @@
     return dhikrPromise;
   }
 
+  const appShareUrl = 'https://gophisb.github.io/ar-rafeeq4/';
+
+  function bindAppShare() {
+    const button = document.getElementById('home-share-button');
+    if (!button || button.dataset.shareBound === 'true') return;
+    button.dataset.shareBound = 'true';
+
+    button.addEventListener('click', async () => {
+      const message = 'ازرع خيراً واترك أثراً\\nشارك تطبيق الرفيق مع من تحب:';
+      const shareText = `${message}\\n${appShareUrl}`;
+      const status = document.getElementById('home-share-status');
+
+      if (window.HoudAndroid && typeof window.HoudAndroid.shareText === 'function') {
+        try {
+          window.HoudAndroid.shareText(shareText);
+          return;
+        } catch (_) {}
+      }
+
+      if (typeof navigator.share === 'function') {
+        try {
+          await navigator.share({ title: 'الرفيق 4', text: message, url: appShareUrl });
+          return;
+        } catch (error) {
+          if (error && error.name === 'AbortError') return;
+        }
+      }
+
+      try {
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+          await navigator.clipboard.writeText(shareText);
+        } else {
+          const field = document.createElement('textarea');
+          field.value = shareText;
+          field.setAttribute('readonly', '');
+          field.style.position = 'fixed';
+          field.style.opacity = '0';
+          document.body.appendChild(field);
+          field.select();
+          const copied = document.execCommand('copy');
+          field.remove();
+          if (!copied) throw new Error('clipboard-unavailable');
+        }
+        if (status) status.textContent = 'تم نسخ رابط الرفيق؛ أرسله لمن تحب.';
+      } catch (_) {
+        if (status) status.textContent = 'تعذّر النسخ تلقائياً؛ يمكنك نسخ الرابط: ' + appShareUrl;
+      }
+    });
+  }
+
   function destroy() {
     document.removeEventListener('rafeeq:quranProgressChanged', renderQuranProgress);
     window.clearTimeout(timer);
@@ -255,7 +305,7 @@
     location = resolveLocation();
     loadDailyVerse();
     loadDailyDhikr();
-    bindVerseReading();
+    bindVerseReading();\n    bindAppShare();
     renderQuranProgress();
     document.addEventListener('rafeeq:quranProgressChanged', renderQuranProgress);
     if (location) {
