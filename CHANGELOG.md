@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## Unreleased
+- Added the branded home-screen share card and Android native share chooser; refreshed the service-worker cache version.
+
 - [2026-09-07T18:57:49Z] [RAECS-SMOKE] release baseline smoke test
 ## 3.0.0 — 2026-09-07
 - Established the final RAECS v3.0 governance baseline.
