@@ -18,7 +18,7 @@ Compared with PR base `feature/rafeeq-native-share-card`:
 - `pages/home.html`: unchanged.
 - `pages/home.js`: unchanged.
 - `sw.js`: unchanged.
-- `.github/workflows/qibla-android-build.yml`: unchanged.
+- `.github/workflows/qibla-android-build.yml`: updated only to include this design branch in the existing Android build push trigger; build workflow steps are unchanged.
 - Current PR application diff: `styles.css` only.
 
 ## Static review
@@ -27,8 +27,8 @@ Compared with PR base `feature/rafeeq-native-share-card`:
 - No HTML, JavaScript, prayer engine, native bridge, or data content changed.
 
 ## Verification status
-- RAECS Governance Gate: PASS.
-- Android APK build/signature: NOT RUN for this change.
+- RAECS Governance Gate: PASS (reported for the earlier implementation commit; not independently re-run after the workflow-trigger update).
+- Android APK build/signature: no run result could be retrieved through the available GitHub Actions tools; build remains UNVERIFIED.
 - Real-device visual review: PENDING.
 
 ## Decision
