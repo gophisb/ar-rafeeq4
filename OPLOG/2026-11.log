@@ -1,0 +1,16 @@
+2026-11-23 | RAFEEQ-SHARE-001 | IMPLEMENTED
+
+Scope:
+- Add the home-page share card with the motto "ازرع خيراً واترك أثراً".
+- Add a dedicated Capacitor Android plugin that opens the native ACTION_SEND chooser.
+- Register the plugin through the existing Android installer without replacing existing native plugins.
+- Cache the new stylesheet and invalidate the old service-worker cache.
+
+Protected areas not intentionally changed:
+- Package identity and Capacitor configuration.
+- Prayer calculations, adhan scheduling/playback, torch, haptics, qibla, Quran content/audio, and existing dependencies.
+
+Verification:
+- Source-level changes prepared on an isolated branch.
+- Android build, APK signature/integrity, and real-device share-sheet behavior remain pending.
+- No APK has been built or released in this task stage.
