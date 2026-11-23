@@ -27,9 +27,19 @@ RAECS uses explicit task IDs to keep agent work bounded and auditable.
 - **Status semantics:** PLANNED → IMPLEMENTED → TESTED → PROVEN only with evidence. BLOCKED stops progression.
 
 | RAFEEQ-SHARE-001 | Add the home sharing card and native Android share chooser | IMPLEMENTED | agent | RAECS PASS #536; Android build #16 and APK v2 signature verification PASS; physical-device test and matching update signature pending |
+| RAFEEQ-HOME-UI-001 | Apply the approved premium visual direction to the existing home page without changing behavior | IMPLEMENTED; visual/device verification pending | agent | PR #22; styles.css-only diff; home HTML/JS and SW unchanged |
 
 ## Rules
 - Every material task gets a unique ID.
 - Do not silently change task scope.
 - A failed task is not marked DONE.
 - Closed tasks must point to evidence.
+
+## RAFEEQ-HOME-UI-001 Contract
+
+- **Objective:** Restyle the existing Rafeeq 4 home page to follow the user-provided premium reference: dark emerald/navy surfaces, restrained gold outlines, Arabic welcome panel, Hijri date/location strip, and prominent next-prayer countdown card.
+- **Allowed application change:** append a scoped `.page-home` visual layer to `styles.css` only.
+- **Protected:** `pages/home.html`, `pages/home.js`, prayer calculations, countdown data flow, routing, sharing behavior, service worker, Android/native integration, Quran/tafsir/adhkar content, qibla, adhan, and app identity.
+- **Verification required:** CSS selector-to-DOM audit; `git diff --check`; Android web asset preparation and APK build/signature verification; visual review on an Android device.
+- **Current evidence:** CSS selector audit found 34 selectors and no missing home-page classes; HTML, JS, Service Worker, and Android workflow match the selected base branch. Governance gate passed. Android build and device visual review remain pending.
+- **Rollback:** revert the single `styles.css` change from PR #22.
