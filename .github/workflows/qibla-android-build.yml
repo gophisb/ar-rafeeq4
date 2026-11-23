@@ -5,6 +5,7 @@ on:
     branches:
       - feat/qibla-android-build
       - fix/rafeeq-algeria-quran-native-haptics-2026-11-15
+      - design/home-premium-reference-2026-11-23
   workflow_dispatch:
 
 permissions:
