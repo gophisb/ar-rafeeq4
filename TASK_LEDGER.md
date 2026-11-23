@@ -26,7 +26,7 @@ RAECS uses explicit task IDs to keep agent work bounded and auditable.
 - **Rollback:** abandon this branch or revert only the governance commits.
 - **Status semantics:** PLANNED → IMPLEMENTED → TESTED → PROVEN only with evidence. BLOCKED stops progression.
 
-| RAFEEQ-SHARE-001 | Add the home sharing card and native Android share chooser | IMPLEMENTED | agent | `feature/rafeeq-native-share-card`; build/device verification pending |
+| RAFEEQ-SHARE-001 | Add the home sharing card and native Android share chooser | IMPLEMENTED | agent | RAECS PASS #536; Android build #16 and APK v2 signature verification PASS; physical-device test and matching update signature pending |
 
 ## Rules
 - Every material task gets a unique ID.
