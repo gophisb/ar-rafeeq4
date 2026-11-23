@@ -248,8 +248,8 @@
     button.dataset.shareBound = 'true';
 
     button.addEventListener('click', async () => {
-      const message = 'ازرع خيراً واترك أثراً\\nشارك تطبيق الرفيق الجزائري مع من تحب:';
-      const shareText = `${message}\\n${appShareUrl}`;
+      const message = 'ازرع خيراً واترك أثراً\nشارك تطبيق الرفيق الجزائري مع من تحب:';
+      const shareText = `${message}\n${appShareUrl}`;
       const status = document.getElementById('home-share-status');
       const nativeShare = window.Capacitor?.Plugins?.RafeeqShare;
 
