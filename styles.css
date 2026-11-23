@@ -3334,3 +3334,371 @@ html[data-font-size="large"] { font-size: 18px; }
     align-items: center;
     gap: 10px;
 }
+
+
+/* ==========================================================
+   RAFEEQ 4 — HOME VISUAL POLISH
+   Visual-only layer: preserves existing markup, IDs and logic.
+   Scoped to .page-home so other screens remain untouched.
+========================================================== */
+
+.page-home {
+    --home-emerald: #073629;
+    --home-emerald-deep: #05271f;
+    --home-emerald-soft: #0d493a;
+    --home-gold: #d8bd75;
+    --home-gold-soft: rgba(216, 189, 117, .34);
+    --home-mint: #79d8bd;
+}
+
+.page-home .hero-section {
+    min-height: 274px;
+    padding: 21px 20px 25px;
+    border: 1px solid rgba(216, 189, 117, .58);
+    border-radius: 30px;
+    background:
+        radial-gradient(ellipse at 78% 8%, rgba(26, 126, 99, .34), transparent 42%),
+        radial-gradient(ellipse at 8% 100%, rgba(216, 189, 117, .12), transparent 38%),
+        linear-gradient(145deg, #0b3d31 0%, #082e25 52%, #061f1b 100%);
+    box-shadow:
+        0 18px 42px rgba(0, 0, 0, .24),
+        inset 0 1px 0 rgba(255, 244, 205, .12);
+}
+
+.page-home .hero-section::before {
+    background:
+        radial-gradient(ellipse at 50% 100%, rgba(216, 189, 117, .12), transparent 56%),
+        linear-gradient(115deg, rgba(255,255,255,.045), transparent 48%);
+    opacity: 1;
+}
+
+.page-home .hero-section::after {
+    width: 190px;
+    height: 190px;
+    right: -92px;
+    top: -104px;
+    background: radial-gradient(circle, rgba(121, 216, 189, .17), transparent 70%);
+}
+
+.page-home .hero-top,
+.page-home .hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.page-home .hero-brand-mark {
+    width: 48px;
+    height: 48px;
+    border-radius: 17px;
+    color: #f0d88f;
+    border-color: rgba(216, 189, 117, .38);
+    background: linear-gradient(145deg, rgba(216,189,117,.17), rgba(121,216,189,.08));
+}
+
+.page-home .hero-brand-name {
+    color: #fffdf5;
+    font-size: 23px;
+    letter-spacing: -.35px;
+}
+
+.page-home .hero-brand-caption {
+    color: rgba(239, 241, 229, .74);
+    font-size: 11px;
+}
+
+.page-home .icon-button {
+    border-color: rgba(216, 189, 117, .3);
+    background: rgba(255, 255, 255, .055);
+    color: #f1dfaa;
+}
+
+.page-home .hero-content {
+    margin-top: 31px;
+}
+
+.page-home .hero-greeting {
+    padding: 7px 12px;
+    color: #8be0c4;
+    border-color: rgba(121, 216, 189, .23);
+    background: rgba(5, 39, 31, .46);
+    font-size: 11px;
+    line-height: 1.65;
+}
+
+.page-home .hero-content h1 {
+    margin-top: 14px;
+    color: #fffdf7;
+    font-size: clamp(28px, 7.8vw, 37px);
+    line-height: 1.38;
+    letter-spacing: -.8px;
+}
+
+.page-home .hero-content h1 strong {
+    color: #83ddc1;
+    text-shadow: 0 0 24px rgba(121, 216, 189, .16);
+}
+
+.page-home .hero-content p {
+    max-width: 100%;
+    color: rgba(239, 241, 229, .78);
+    font-size: 12px;
+    line-height: 1.8;
+}
+
+.page-home .info-strip {
+    min-height: 82px;
+    padding: 12px 14px;
+    border: 1px solid rgba(216, 189, 117, .5);
+    border-radius: 23px;
+    background: linear-gradient(115deg, rgba(7, 54, 41, .92), rgba(10, 43, 37, .94));
+    box-shadow: 0 10px 24px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.045);
+}
+
+.page-home .info-icon {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+    border-radius: 14px;
+    color: #e8d18e;
+    background: rgba(216, 189, 117, .11);
+}
+
+.page-home .info-label {
+    color: rgba(230, 237, 226, .62);
+    font-size: 10px;
+}
+
+.page-home .info-item strong {
+    color: #fffdf4;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.page-home .info-divider {
+    background: rgba(216, 189, 117, .28);
+}
+
+.page-home .prayer-hero {
+    padding: 20px;
+    border: 1px solid rgba(216, 189, 117, .48);
+    border-radius: 27px;
+    background:
+        radial-gradient(ellipse at 14% 100%, rgba(216,189,117,.12), transparent 42%),
+        radial-gradient(ellipse at 92% 0%, rgba(38,153,119,.24), transparent 43%),
+        linear-gradient(145deg, #0b4033, #082b24 68%, #071f1b);
+    box-shadow: 0 16px 34px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.055);
+}
+
+.page-home .prayer-glow {
+    background: radial-gradient(circle, rgba(121,216,189,.16), transparent 70%);
+}
+
+.page-home .prayer-header h2 {
+    color: #fffdf5;
+    font-size: 23px;
+}
+
+.page-home .prayer-header .eyebrow {
+    color: rgba(236, 237, 219, .68);
+    font-size: 11px;
+}
+
+.page-home .home-current-time {
+    color: #86ddc1;
+    font-size: 14px;
+}
+
+.page-home .prayer-symbol {
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    border-color: rgba(216,189,117,.4);
+    background: rgba(216,189,117,.1);
+}
+
+.page-home .prayer-symbol-image {
+    width: 52px;
+    height: 52px;
+}
+
+.page-home .prayer-main {
+    align-items: end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.page-home .prayer-time-large {
+    color: #fff1c1;
+    font-size: clamp(34px, 9.5vw, 49px);
+    line-height: 1.15;
+    letter-spacing: -1.4px;
+    text-shadow: 0 0 22px rgba(216,189,117,.16);
+    white-space: nowrap;
+}
+
+.page-home .prayer-countdown {
+    min-width: 142px;
+    padding: 10px 13px;
+    border: 1px solid rgba(121,216,189,.2);
+    border-radius: 17px;
+    background: rgba(3, 25, 21, .42);
+}
+
+.page-home .prayer-countdown span {
+    color: rgba(231, 238, 225, .7);
+    font-size: 10px;
+}
+
+.page-home .prayer-countdown strong {
+    color: #8be0c4;
+    font-size: clamp(19px, 5.2vw, 25px);
+    line-height: 1.4;
+    direction: ltr;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.page-home .prayer-footer {
+    border-top-color: rgba(216,189,117,.2);
+    color: rgba(231,238,225,.7);
+}
+
+.page-home .prayer-footer .text-button {
+    color: #8be0c4;
+}
+
+.page-home .section-heading h2,
+.page-home .progress-header h2 {
+    color: #fffdf5;
+}
+
+.page-home .section-kicker {
+    color: #8bdcc0;
+}
+
+.page-home .quick-card,
+.page-home .verse-card,
+.page-home .progress-card,
+.page-home .dhikr-card,
+.page-home .service-item {
+    border-color: rgba(216, 189, 117, .27);
+    background:
+        radial-gradient(ellipse at 100% 0%, rgba(37, 133, 105, .19), transparent 54%),
+        linear-gradient(145deg, rgba(9, 57, 44, .94), rgba(7, 37, 31, .96));
+    box-shadow: 0 10px 26px rgba(0,0,0,.15), inset 0 1px 0 rgba(255,255,255,.045);
+}
+
+.page-home .quick-card {
+    min-height: 128px;
+    border-radius: 22px;
+}
+
+.page-home .quick-card-quran,
+.page-home .quick-card-azkar,
+.page-home .quick-card-qibla,
+.page-home .quick-card-nawawi {
+    background:
+        radial-gradient(ellipse at 100% 0%, rgba(121,216,189,.15), transparent 54%),
+        linear-gradient(145deg, rgba(9,57,44,.96), rgba(7,37,31,.97));
+}
+
+.page-home .quick-icon {
+    border-color: rgba(216,189,117,.25);
+    background: rgba(216,189,117,.09);
+}
+
+.page-home .quick-content h3 {
+    color: #fffdf5;
+}
+
+.page-home .quick-content p,
+.page-home .quick-arrow {
+    color: rgba(231,238,225,.68);
+}
+
+.page-home .verse-card,
+.page-home .progress-card,
+.page-home .dhikr-card {
+    border-radius: 24px;
+}
+
+.page-home .verse-card blockquote {
+    color: #fff8df;
+    line-height: 2;
+}
+
+.page-home .verse-reference,
+.page-home .progress-footer,
+.page-home .dhikr-content small {
+    color: rgba(231,238,225,.7);
+}
+
+.page-home .progress-track {
+    background: rgba(255,255,255,.1);
+}
+
+.page-home .progress-value {
+    background: linear-gradient(90deg, #b99a52, #83ddc1);
+}
+
+.page-home .progress-number,
+.page-home .dhikr-content p {
+    color: #8be0c4;
+}
+
+.page-home .dhikr-action {
+    border: 1px solid rgba(216,189,117,.32);
+    border-radius: 13px;
+    color: #f1d991;
+    background: rgba(216,189,117,.1);
+}
+
+@media (max-width: 380px) {
+    .page-home .hero-section {
+        min-height: 258px;
+        padding: 18px 16px 21px;
+    }
+
+    .page-home .hero-content {
+        margin-top: 25px;
+    }
+
+    .page-home .info-strip {
+        padding-inline: 10px;
+    }
+
+    .page-home .info-item {
+        gap: 7px;
+    }
+
+    .page-home .info-item strong {
+        font-size: 11px;
+    }
+
+    .page-home .prayer-hero {
+        padding: 16px;
+    }
+
+    .page-home .prayer-main {
+        gap: 8px;
+    }
+
+    .page-home .prayer-countdown {
+        min-width: 124px;
+        padding-inline: 9px;
+    }
+
+    .page-home .prayer-time-large {
+        font-size: clamp(29px, 8.8vw, 36px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .page-home *,
+    .page-home *::before,
+    .page-home *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
