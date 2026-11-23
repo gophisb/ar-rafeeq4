@@ -1,8 +1,9 @@
-const CACHE_NAME = 'rafeeq4-core-v25';
+const CACHE_NAME = 'rafeeq4-core-v26';
 const APP_SHELL = [
   './',
   './index.html',
   './styles.css?v=17',
+  './share-card.css?v=1',
   './variables.css',
   './config.js',
   './prayer.js',
@@ -14,7 +15,7 @@ const APP_SHELL = [
   './js/page-modules.js',
   './js/native-notifications.js',
   './pages/home.html',
-  './pages/home.js?v=gregorian-date-1',
+  './pages/home.js?v=app-share-v1',
   './pages/quran.html',
   './pages/quran.js',
   './pages/quran-recitation.js',
