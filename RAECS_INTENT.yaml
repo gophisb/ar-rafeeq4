@@ -21,7 +21,7 @@ allowed_paths:
   - "OPLOG/"
   - "scripts/"
   - "RAECS_EXECUTABLES_ALLOWLIST.txt"
-  - "android/app/src/main/java/com/gophisb/houd11/MainActivity.java"
+  - "android/"
 forbidden_actions:
   - "execute unreviewed downloaded code"
   - "exfiltrate secrets or private data"
