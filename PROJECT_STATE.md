@@ -63,7 +63,7 @@ Branch created from Ar-Rafeeq 4 main at 394927d916a05ebf6dbb3fa71e23156f21083201
 - Status: IMPLEMENTED; visual/device verification pending.
 - Branch: `design/home-premium-reference-2026-11-23` (PR #22, based on `feature/rafeeq-native-share-card`).
 - Scope: one-file visual-only CSS layer appended to `styles.css`.
-- Protected and confirmed unchanged against base: `pages/home.html`, `pages/home.js`, `sw.js`, and `.github/workflows/qibla-android-build.yml`.
+- Protected and confirmed unchanged against base: `pages/home.html`, `pages/home.js`, `sw.js`, ; `.github/workflows/qibla-android-build.yml` was subsequently changed only to add this branch to its push trigger.
 - Static review: 34 CSS selectors mapped to existing home-page classes; no missing selectors found.
-- CI: RAECS Governance Gate passed. Android build has not yet run for this change; no APK is claimed.
+- CI: RAECS Governance Gate passed. Android build result is UNVERIFIED: the available GitHub Actions integration cannot list push-triggered runs or dispatch a workflow; no APK is claimed.
 - Next gate: build and verify APK, then review actual Android screenshot before marking TESTED/PROVEN.
