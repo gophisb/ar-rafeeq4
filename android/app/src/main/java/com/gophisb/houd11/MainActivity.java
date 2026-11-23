@@ -59,6 +59,16 @@ public class MainActivity extends Activity {
     }
 
     private class HoudAndroidBridge {
+        @JavascriptInterface public void shareText(String text) {
+            final String payload = text == null ? "" : text;
+            runOnUiThread(() -> {
+                Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                sendIntent.setType("text/plain");
+                sendIntent.putExtra(Intent.EXTRA_TEXT, payload);
+                startActivity(Intent.createChooser(sendIntent, "مشاركة الرفيق"));
+            });
+        }
+
         @JavascriptInterface public void openMosqueMap() {
             startActivity(new Intent(MainActivity.this, MosqueMapActivity.class));
         }
