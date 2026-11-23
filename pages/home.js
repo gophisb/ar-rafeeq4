@@ -248,8 +248,8 @@
     button.dataset.shareBound = 'true';
 
     button.addEventListener('click', async () => {
-      const message = 'ازرع خيراً واترك أثراً\\nشارك تطبيق الرفيق مع من تحب:';
-      const shareText = `${message}\\n${appShareUrl}`;
+      const message = 'ازرع خيراً واترك أثراً\nشارك تطبيق الرفيق مع من تحب:';
+      const shareText = `${message}\n${appShareUrl}`;
       const status = document.getElementById('home-share-status');
 
       if (window.HoudAndroid && typeof window.HoudAndroid.shareText === 'function') {
