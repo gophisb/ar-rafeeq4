@@ -271,7 +271,7 @@
     button.addEventListener('click', async () => {
       const status = document.getElementById('home-share-status');
       const url = 'https://gophisb.github.io/ar-rafeeq4/';
-      const message = 'ازرع خيراً واترك أثراً.\\nشارك تطبيق الرفيق مع من تحب.';
+      const message = 'ازرع خيراً واترك أثراً.\nشارك تطبيق الرفيق مع من تحب.';
       button.disabled = true;
       if (status) status.textContent = '';
 
@@ -290,7 +290,7 @@
           }
         }
 
-        await copyShareMessage(message + '\\n' + url);
+        await copyShareMessage(message + '\n' + url);
         if (status) status.textContent = 'نُسخ رابط الرفيق؛ يمكنك إرساله لمن تحب.';
       } catch (_) {
         if (status) status.textContent = 'تعذر النسخ تلقائياً. استخدم رابط الرفيق الظاهر أدناه.';
