@@ -23,6 +23,16 @@ UNKNOWN — no application build claim is made by this governance integration ta
 ## Test status
 PASS — GitHub Actions Run #293 passed all 15 release-gate checks after the review/checkpoint updates.
 
+## Active scoped task — RAFEEQ-SHARE-001
+
+- Status: IMPLEMENTED; CI build and RAECS verification passed. Real-device share-sheet test remains pending.
+- Branch: `feature/rafeeq-native-share-card` (based on the APK-matching Android integration source branch).
+- Scope: home-page share card, one Capacitor share plugin, installer registration, and offline cache entry.
+- Preserved: package ID `com.gophisb.arrafeeq4`, adhan, torch, haptics, prayer engine, qibla, Quran data/audio, and all existing dependencies.
+- Build: Android debug APK build #16 succeeded; APK v2 signature verification passed. SHA-256: `238b2c69b68c2068c89111246ff0708c8b810ba3a4730dcfd753ad0a58af7eb4`.
+- Signing limitation: the CI debug certificate differs from the supplied `base.apk` certificate. Do not install as an update over the existing app; a matching original signing key is required.
+- Runtime status: share chooser not yet tested on a physical Android device.
+
 ## System posture
 - Existing Ar-Rafeeq 4 application behavior is protected.
 - Governance V3 is being introduced on an isolated branch.

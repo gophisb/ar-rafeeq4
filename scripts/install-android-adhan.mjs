@@ -16,7 +16,8 @@ for (const name of [
   'RafeeqAdhanService.java',
   'RafeeqAdhanBootReceiver.java',
   'RafeeqTorchPlugin.java',
-  'RafeeqHapticsPlugin.java'
+  'RafeeqHapticsPlugin.java',
+  'RafeeqSharePlugin.java'
 ]) {
   fs.copyFileSync(path.join(root, 'scripts', 'android', name), path.join(javaDir, name));
 }
@@ -34,6 +35,7 @@ public class MainActivity extends BridgeActivity {
         registerPlugin(RafeeqAdhanPlugin.class);
         registerPlugin(RafeeqTorchPlugin.class);
         registerPlugin(RafeeqHapticsPlugin.class);
+        registerPlugin(RafeeqSharePlugin.class);
         super.onCreate(savedInstanceState);
     }
 }
