@@ -240,6 +240,66 @@
     return dhikrPromise;
   }
 
+
+  function copyShareMessage(message) {
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(message);
+    }
+    return new Promise((resolve, reject) => {
+      const field = document.createElement('textarea');
+      field.value = message;
+      field.setAttribute('readonly', '');
+      field.style.position = 'fixed';
+      field.style.left = '-9999px';
+      field.style.opacity = '0';
+      document.body.appendChild(field);
+      field.select();
+      field.setSelectionRange(0, field.value.length);
+      let copied = false;
+      try { copied = document.execCommand('copy'); } catch (_) {}
+      field.remove();
+      if (copied) resolve();
+      else reject(new Error('clipboard-unavailable'));
+    });
+  }
+
+  function bindAppSharing() {
+    const button = document.getElementById('home-share-app');
+    if (!button || button.dataset.shareBound === 'true') return;
+    button.dataset.shareBound = 'true';
+
+    button.addEventListener('click', async () => {
+      const status = document.getElementById('home-share-status');
+      const url = 'https://gophisb.github.io/ar-rafeeq4/';
+      const message = 'ازرع خيراً واترك أثراً.\\nشارك تطبيق الرفيق مع من تحب.';
+      button.disabled = true;
+      if (status) status.textContent = '';
+
+      try {
+        if (typeof navigator.share === 'function') {
+          try {
+            await navigator.share({
+              title: 'الرفيق',
+              text: message,
+              url
+            });
+            if (status) status.textContent = 'تم فتح قائمة مشاركة الرفيق.';
+            return;
+          } catch (error) {
+            if (error && error.name === 'AbortError') return;
+          }
+        }
+
+        await copyShareMessage(message + '\\n' + url);
+        if (status) status.textContent = 'نُسخ رابط الرفيق؛ يمكنك إرساله لمن تحب.';
+      } catch (_) {
+        if (status) status.textContent = 'تعذر النسخ تلقائياً. استخدم رابط الرفيق الظاهر أدناه.';
+      } finally {
+        button.disabled = false;
+      }
+    });
+  }
+
   function destroy() {
     document.removeEventListener('rafeeq:quranProgressChanged', renderQuranProgress);
     window.clearTimeout(timer);
@@ -256,6 +316,7 @@
     loadDailyVerse();
     loadDailyDhikr();
     bindVerseReading();
+    bindAppSharing();
     renderQuranProgress();
     document.addEventListener('rafeeq:quranProgressChanged', renderQuranProgress);
     if (location) {
