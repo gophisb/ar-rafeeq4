@@ -240,6 +240,62 @@
     return dhikrPromise;
   }
 
+  const appShareUrl = 'https://gophisb.github.io/ar-rafeeq4/';
+
+  function bindAppShare() {
+    const button = document.getElementById('home-share-button');
+    if (!button || button.dataset.shareBound === 'true') return;
+    button.dataset.shareBound = 'true';
+
+    button.addEventListener('click', async () => {
+      const message = 'ازرع خيراً واترك أثراً\\nشارك تطبيق الرفيق الجزائري مع من تحب:';
+      const shareText = `${message}\\n${appShareUrl}`;
+      const status = document.getElementById('home-share-status');
+      const nativeShare = window.Capacitor?.Plugins?.RafeeqShare;
+
+      if (nativeShare && typeof nativeShare.share === 'function') {
+        try {
+          await nativeShare.share({ title: 'مشاركة الرفيق', text: shareText });
+          if (status) status.textContent = 'اختر التطبيق أو جهة الاتصال لمشاركة رابط الرفيق.';
+          return;
+        } catch (_) {}
+      }
+
+      if (typeof navigator.share === 'function') {
+        try {
+          await navigator.share({
+            title: 'الرفيق الجزائري',
+            text: message,
+            url: appShareUrl
+          });
+          return;
+        } catch (error) {
+          if (error && error.name === 'AbortError') return;
+        }
+      }
+
+      try {
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+          await navigator.clipboard.writeText(shareText);
+        } else {
+          const field = document.createElement('textarea');
+          field.value = shareText;
+          field.setAttribute('readonly', '');
+          field.style.position = 'fixed';
+          field.style.opacity = '0';
+          document.body.appendChild(field);
+          field.select();
+          const copied = document.execCommand('copy');
+          field.remove();
+          if (!copied) throw new Error('clipboard-unavailable');
+        }
+        if (status) status.textContent = 'تم نسخ رابط الرفيق؛ أرسله لمن تحب.';
+      } catch (_) {
+        if (status) status.textContent = 'تعذّر النسخ تلقائياً؛ يمكنك نسخ الرابط: ' + appShareUrl;
+      }
+    });
+  }
+
   function destroy() {
     document.removeEventListener('rafeeq:quranProgressChanged', renderQuranProgress);
     window.clearTimeout(timer);
@@ -256,6 +312,7 @@
     loadDailyVerse();
     loadDailyDhikr();
     bindVerseReading();
+    bindAppShare();
     renderQuranProgress();
     document.addEventListener('rafeeq:quranProgressChanged', renderQuranProgress);
     if (location) {
