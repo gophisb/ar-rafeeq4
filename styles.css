@@ -2200,6 +2200,83 @@ ol {
    18 — FOOTER
    ========================================================== */
 
+
+/* ==========================================================
+   مشاركة تطبيق الرفيق — إضافة محدودة للصفحة الرئيسية
+========================================================== */
+
+.share-app-card {
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    margin-top: 24px;
+    padding: 22px 18px;
+    border-radius: var(--radius-lg);
+    text-align: center;
+}
+
+.share-app-copy h2 {
+    margin-top: 5px;
+    color: var(--text);
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.share-app-tagline {
+    margin-top: 8px;
+    color: #E9C767;
+    font-size: 14px;
+    font-weight: 900;
+}
+
+.share-app-description {
+    margin-top: 5px;
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.share-app-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 48px;
+    margin-top: 5px;
+    padding: 11px 24px;
+    border: 1px solid rgba(233, 199, 103, .38);
+    border-radius: 999px;
+    background: #1E8A5E;
+    color: #fff;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: transform var(--transition), background var(--transition);
+}
+
+.share-app-button:hover {
+    transform: translateY(-2px);
+    background: #0F5C3E;
+}
+
+.share-app-button:disabled {
+    opacity: .7;
+    cursor: wait;
+}
+
+.share-app-status {
+    min-height: 16px;
+    color: var(--text-muted);
+    font-size: 10px;
+}
+
+.share-app-link {
+    color: #E9C767;
+    font-size: 10px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
 .home-footer {
 
     display:
