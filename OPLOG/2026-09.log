@@ -1,3 +1,5 @@
 [2026-09-07T18:57:49Z] [DEFCON-5] [agent] [unknown] [RAECS-SMOKE] release baseline smoke test — PASS
 
 [2026-11-23T14:00:00+01:00] [DEFCON-4] [agent] [RAFEQ-SHARE-01] [REPOSITORY-MAP] Documented canonical Android source location in README: gophisb/ar-rafeeq4, branch houd11-android-offline, directory android/. Read-only inspection found native WebViewAssetLoader + HoudAndroid bridge. No application code or governance boundaries changed. Android share implementation BLOCKED pending explicit approval to expand RAECS_INTENT.yaml allowed_paths to android/ and a governance ADR; no build/device test performed.
+
+[2026-11-23T15:00:00+01:00] [DEFCON-4] [agent] [RAFEQ-SHARE-01] [IMPLEMENTATION] Recorded ADR-20261123-001 and RAECS_INTENT v1.1 scope expansion for android/. Added the home share card, Android ACTION_SEND chooser bridge, browser share/clipboard fallback, and cache v26. No prayer, adhan, qibla, Quran, tafsir, adhkar, hadith, library, or map logic/data intentionally changed. Static repository review pending; no APK build or real-device test performed.
