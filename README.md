@@ -598,3 +598,15 @@ Ar-Rafeeq 4 | الرفيق 4
 Ar-Rafeeq 4 — Built progressively. Tested deliberately. Designed to remain useful offline.
 
 </div>
+
+
+## Android source of truth (repository navigation)
+
+For Android-native implementation and maintenance, use this repository and branch:
+
+- Repository: https://github.com/gophisb/ar-rafeeq4
+- Android branch: `houd11-android-offline`
+- Android project directory: [`android/`](https://github.com/gophisb/ar-rafeeq4/tree/houd11-android-offline/android)
+- Branch baseline inspected for this note: `0bad8f20efcbc4ba02af27977a004f2839ce183f`
+
+The default `main` branch is not the Android source location. The Android branch currently contains a native Android WebView project using `WebViewAssetLoader` and the `HoudAndroid` JavaScript bridge; do not assume that the presence of `capacitor.config.json` means a complete Capacitor runtime is integrated. Re-check the branch head and RAECS scope before every change.
